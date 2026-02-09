@@ -1,0 +1,173 @@
+input ActuatorData {
+  connector_type: String!
+  mounting: String!
+  voltage: String!
+  rotation_angle: String!
+  notes: String!
+}
+
+input BlowerMotorData {
+  mounting: String!
+  connector_type: String!
+  impeller: String!
+  resistance: String!
+  motor_mounting: String!
+  motor_type: String!
+  voltage: String!
+  notes: String!
+}
+
+input CabinFilterData {
+  type: String!
+  dimensions: String!
+  material: String!
+  notes: String!
+}
+
+input ChillerUnitData {
+  type: String!
+  voltage: String!
+  notes: String!
+}
+
+input ClutchAssyData {
+  pulley_ribs: String!
+  pulley_size: String!
+  compressor_details: String!
+  connector_type: String!
+  voltage: String!
+  shaft_type: String!
+  notes: String!
+}
+
+input CompressorValveData {
+  type: String!
+  voltage: String!
+  connector_type: String!
+  compressor_details: String!
+  notes: String!
+}
+
+input CondFanAssyData {
+  voltage: String!
+  motor_type: String!
+  resistance: String!
+  fan_blade_diameter: String!
+  number_of_blades: Int
+  shroud: String!
+  connector_type: String!
+  notes: String!
+}
+
+input CondenserData {
+  size: String!
+  pipe_connector: String!
+  drier: String!
+  pressure_switch: String!
+  notes: String!
+}
+
+input EvaporatorData {
+  mounting: String!
+  exp_valve: String!
+  additional_info: String!
+  dimensions: String!
+  pipe_connector: String!
+  notes: String!
+}
+
+input ExpansionValveData {
+  type: String!
+  material: String!
+  refrigerant: String!
+  notes: String!
+}
+
+input FilterDrierData {
+  pipe_connector: String!
+  size: String!
+  pressure_switch: String!
+  notes: String!
+}
+
+input HeaterCoreData {
+  size: String!
+  pipe: String!
+  type: String!
+  notes: String!
+}
+
+input IntercoolerData {
+  size: String!
+  temp_sensor: String!
+  notes: String!
+}
+
+input PressureSwitchData {
+  connector_type: String!
+  thread_type: String!
+  notes: String!
+}
+
+input RadiatorData {
+  size: String!
+  transmission: String!
+  temp_sensor: String!
+  tank: String!
+  notes: String!
+}
+
+input RadFanAssyData {
+  voltage: String!
+  motor_type: String!
+  resistance: String!
+  number_of_sockets: Int
+  shroud: String!
+  connector_type: String!
+  fan_blade_diameter: String!
+  number_of_blades: Int
+  notes: String!
+}
+
+input RadFanMotorData {
+  fan_blade_diameter: String!
+  number_of_blades: Int
+  voltage: String!
+  number_of_sockets: Int
+  connector_type: String!
+  notes: String!
+}
+
+input ResistorData {
+  type: String!
+  connector_type: String!
+  voltage: String!
+  notes: String!
+}
+
+input RotorData {
+  pulley_ribs: String!
+  pulley_size: String!
+  compressor_details: String!
+  notes: String!
+}
+
+input StatorData {
+  voltage: String!
+  compressor_details: String!
+  notes: String!
+}
+
+input CompressorData {
+  compressor_id: String!
+  oil: String!
+  refrigerant: String!
+  voltage: String!
+  pulley_ribs: String!
+  pulley_size: String!
+  pipe_connector: String!
+  comp_type: String!
+  comp_mounting: String!
+  connector_type: String!
+  notes: String!
+}

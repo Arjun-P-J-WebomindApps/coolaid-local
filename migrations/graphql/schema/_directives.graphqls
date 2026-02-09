@@ -1,0 +1,2 @@
+
+directive @role(roles: [String!]!) on FIELD_DEFINITION

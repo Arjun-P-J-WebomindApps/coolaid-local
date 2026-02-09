@@ -1,0 +1,25 @@
+input ProductDetailsInput {
+  company: String
+  model: String
+  categories: [String!]
+  brands: [String!]
+  gen: [String!]
+  fuel_type: [String!]
+  mark: [String!]
+  unicodeCategories: [String!]
+  part_no: String
+}
+
+type ProductDetails {
+  company: String!
+  model: String!
+  category: String!
+  brand: String!
+  brand_image:String! #Brand Image
+  part_no:String!
+  
+  model_variant: ModelVariant
+  pricing: ProductPricing
+  inventory: ProductInventory
+  offer:ProductOffer
+}

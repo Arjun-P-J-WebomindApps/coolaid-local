@@ -1,0 +1,21 @@
+type Category {
+  id: UUID!
+  name: String!
+  image: String!
+}
+
+input CreateCategoryInput {
+  name: String!
+  image: String!
+}
+
+
+input UpdateCategoryInput {
+  id: UUID!
+  name: String!
+  image: String!
+}
+
+type CategoryDeleteInfo {
+  isDeleted: Boolean!
+}

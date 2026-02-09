@@ -1,0 +1,83 @@
+# -- Ticket -----------------------------------------------
+type OrderTicket {
+  id: UUID! # recommended
+  ticketDate: Time!
+  dailyNumber: String!
+  status: String!
+  paf:Float!
+  isPaid:Boolean!
+  customerCompanyName: String!
+  contactPerson: String!
+  customerPhone: String!
+  customerType:String!
+  paymentMode:String!
+  isImagesIncluded:Boolean!
+  items: [OrderTicketItem!]!
+}
+
+# -- Ticket Item ------------------------------------------
+type OrderTicketItem {
+  id: UUID! # recommended
+  partNo: String!
+  model: String!
+  quantity: Int!
+  unitPrice: Float!
+  brand: String!
+  category: String!
+  is_selected: Boolean!
+  location:String!
+  itemIndex: Int!
+}
+
+# --- Inputs ----------------------------------------------
+input TicketPartInput {
+  partNo: String!
+  model: String!
+  quantity: Int!
+  unitPrice: Float!
+  isSelected: Boolean!
+  location:String!
+  itemIndex: Int!
+}
+
+input CreateOrderTicketInput {
+  ticketDate: Time!
+  customerMobileNo: String!
+  status: String!
+  paf:Float!
+  items: [TicketPartInput!]!
+}
+
+input FilterTicketInput {
+  status: String
+  tokenNumber: String
+  date: Time
+  limit: Int = 50
+  offset: Int = 0
+}
+
+input UpdateTicketPartInput {
+  partNo: String!
+  model:String!
+  quantity: Int!
+  isSelected: Boolean!
+  location:String!
+}
+
+
+input UpdateOrderTicketInput {
+  status:String
+  ticketDate: Time!
+  dailyNumber: String!
+  paf:Float
+  isPaid:Boolean
+  # New fields based on your latest PostgreSQL columns
+  transportMode: String              
+  inspectionImages: [String!]
+  checkForDamage: Boolean
+  removeAllLabels: Boolean
+  excludeDocuments: Boolean
+  urgentRequirement: Boolean
+  # Items
+  items: [UpdateTicketPartInput!]
+}

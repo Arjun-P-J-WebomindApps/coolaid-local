@@ -1,0 +1,36 @@
+type Model {
+  id: UUID!
+  company_id: UUID!
+  name: String!
+  image: String!
+}
+
+input CreateModelInput {
+  company_name: String!
+  name: String!
+  image: String!
+}
+
+input UpdateModelInput {
+  id: UUID!
+  company_name: String!
+  name: String!
+  image: String!
+}
+
+type DeleteModelInfo {
+  isDeleted: Boolean!
+}
+
+# Used for search related functionality (mostly in the model exits region i guess?)
+type ModelQuery {
+  id: UUID!
+  company: String!
+  model: String!
+  image:String!
+}
+
+input ModelQueryInput {
+  company: String!
+  model: String!
+}

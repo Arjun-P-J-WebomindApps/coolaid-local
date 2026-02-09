@@ -1,0 +1,24 @@
+input FilterInput {
+  company_name: String
+  model_name: String
+  brand_name: String
+  category_name: String
+  unicode: String
+}
+
+type FilterOrigin {
+  company_name: String!
+  company_image: String!
+  model_name: String!
+  model_image: String!
+  brand_name: String!
+  brand_image: String!
+  category_name: String!
+  category_image: String!
+  part_no: String!
+}
+
+type FilteredResponse {
+  self: [FilterOrigin!]
+  unicode: [FilterOrigin!]
+}

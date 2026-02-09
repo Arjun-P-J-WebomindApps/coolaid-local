@@ -1,0 +1,53 @@
+# -----------------------------------------------------------------------------------------------------------------------------
+# Vendor
+#------------------------------------------------------------------------------------------------------------------------------
+
+type Vendor {
+  Id: UUID!
+  CompanyName: String!
+  VendorContacts: [VendorContact!]
+}
+
+type VendorContact{
+  Id: String!
+  ContactPerson: String!
+  MobileNumber: String!
+  EmailId: String!
+}
+
+input CreateVendorInput {
+  CompanyName: String!
+  VendorContacts:[CreateVendorContactInput!]
+}
+
+input CreateVendorContactInput {
+  VendorContactPerson: String!
+  MobileNumber: String!
+  EmailId: String!
+}
+
+input UpdateVendorInput {
+  Id: UUID!
+  CompanyName: String!
+  VendorContacts:[CreateVendorContactInput!]
+}
+
+type VendorDeleteInfo {
+  Id: UUID!
+}
+
+# ------------------------------------------------------------------------------------------------------------------------
+#  Vendor Lisitng
+# -------------------------------------------------------------------------------------------------------------------------
+
+type VendorList {
+  VendorName: String!
+  VendorPartNo: String!
+  VendorPrice: Float!
+}
+
+input VendorListData {
+  VendorName: String!
+  VendorPartNo: String!
+  VendorPrice: Float!
+}

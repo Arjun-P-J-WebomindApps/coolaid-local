@@ -1,0 +1,75 @@
+type Mutation {
+  # ---Auth Mutations---------------------------------------------------
+
+  # Login-----------------------------------------------------------------------------
+  login(input: LoginInput!): AuthPayload! 
+
+  # Registrations --------------------------------------------------------------------
+  createUser(input: CreateUserInput!): CreateUserPayload!  #@role(roles: ["admin"])
+  verifyTOTP(input: VerifyUserTOTPInput!): AuthPayload!  #@role(roles: ["user","admin"])
+  
+  checkUserStatus:AuthPayload!
+  logout(username:String!):Boolean!
+
+  forgotPassword(input:ForgotPasswordInput!):Boolean!
+  resetPassword(input: ResetPasswordInput!): Boolean!
+
+  #revokeRefreshToken(tokenId: UUID!): Boolean!  @role(roles: ["admin"])
+  refreshAuth:Boolean!
+  
+
+  
+
+  #------------------------------------------------------------------------------------
+  #--Company
+  #------------------------------------------------------------------------------------
+  createCompany(input: CreateCompanyInput!): Company!   #@role(roles: ["admin"])
+  updateCompany(input: UpdateCompanyInput!): Company!   #@role(roles: ["admin"])
+  # deleteCompany(id: UUID!): CompanyDeleteInfo!
+
+  #-------------------------------------------------------------------------------------
+  #--Model
+  #--------------------------------------------------------------------------------------
+  createModel(input: CreateModelInput!): Model!   #@role(roles: ["admin"])
+  updateModel(input: UpdateModelInput!): Model!   #@role(roles: ["admin"])
+  # deleteModel(id: UUID!): DeleteModelInfo!  #@role(roles: ["admin"])
+
+  #--Category-------------------------------------------------------------------------------
+  createCategory(input: CreateCategoryInput!): Category!  #@role(roles: ["admin"])
+  updateCategory(input: UpdateCategoryInput!): Category!  #@role(roles: ["admin"])
+  # deleteCategory(id: UUID!): CategoryDeleteInfo!  #@role(roles: ["admin"])
+
+  #--Brand----------------------------------------------------------------------------------
+  createBrand(input: CreateBrandInput!): Brand!  #@role(roles: ["admin"])
+  updateBrand(input: UpdateBrandInput!): Brand!  #@role(roles: ["admin"])
+  # deleteBrand(id: UUID!): BrandDeleteInfo!  #@role(roles: ["admin"])
+
+  #-----------------------------------------------------------------------------------------
+  #   Customer
+  #-----------------------------------------------------------------------------------------
+  createCustomer(input: CreateCustomerInput!): Customer!   #@role(roles: ["admin"])
+  updateCustomer(input: UpdateCustomerInput!): Customer!  #@role(roles: ["admin"])
+  # deleteCustomer(id: UUID!): CustomerDeleteInfo!  #@role(roles: ["admin"])
+
+  # Vendor
+  createVendor(input: CreateVendorInput!): Vendor!   #@role(roles: ["admin"])
+  updateVendor(input: UpdateVendorInput!): Vendor!  #@role(roles: ["admin"])
+  # deleteVendor(id: UUID!): VendorDeleteInfo!  #@role(roles: ["admin"])
+
+  # -----------------------------------------------------------------------------------------
+  #     Ticket
+  # -----------------------------------------------------------------------------------------
+  createTicket(input: CreateOrderTicketInput!): OrderTicket!   #@role(roles: ["user","admin"])
+  updateTicket(input: UpdateOrderTicketInput!): OrderTicket!   #@role(roles: ["user","admin"])
+
+  # Product
+  createProduct(input: CreateProductInput): Product!   #@role(roles: ["admin"])
+  updateProduct(input: UpdateProductInput): Product!   #@role(roles: ["admin"])
+  deleteProduct(input: DeleteProductInput): Product!   #@role(roles: ["admin"])
+
+
+
+  # OutOfStockOrder
+  createOutOfStockOrder(input: CreateInventoryOrderInput!): InventoryOrder!   #@role(roles: ["admin"])
+  updateOutOfStockOrder(input: UpdateInventoryOrderInput!): InventoryOrder!   #@role(roles: ["admin"])
+}

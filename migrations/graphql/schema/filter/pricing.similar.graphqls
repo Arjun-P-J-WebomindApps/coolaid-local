@@ -1,0 +1,12 @@
+input SimilarPricingInput {
+  company_name: String
+  model_name: String
+  category_name: String
+  type:String
+}
+
+
+type SimilarPricing {
+ brand_name:String   
+ pricing:ProductPricing
+}

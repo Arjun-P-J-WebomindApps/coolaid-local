@@ -1,0 +1,27 @@
+# --------------------------
+# Inventory Type
+# --------------------------
+type ProductInventory {
+  id: UUID!
+  part_no: String!
+  minimum_order_level: Int!
+  maximum_order_level: Int!
+  qty_in_stock: Int!
+  location: String!
+  is_flash: Boolean!
+  is_requested_for_supply: Boolean!
+  vendor_id: UUID
+}
+
+# --------------------------
+# Inventory Data Input
+# --------------------------
+input ProductInventoryData {
+  part_no: String!
+  minimum_order_level: Int!
+  maximum_order_level: Int!
+  qty_in_stock: Int!
+  location: String!
+  is_flash: Boolean!
+  vendor_name:String!
+}

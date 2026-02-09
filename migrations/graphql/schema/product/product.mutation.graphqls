@@ -1,0 +1,36 @@
+type Product {
+  id: UUID!
+  part_no: String!
+}
+
+input ProductPrimaryData {
+  company_name: String!
+  model_name: String!
+  category_name: String!
+  brand_name: String!
+  # Part No   
+  part_no: String!
+
+  base_data:ModelVariantData!
+}
+
+
+input CreateProductInput {
+  main: ProductPrimaryData!
+  pricing: ProductPricingData!
+  inventory: ProductInventoryData!
+  offer:ProductOfferData!
+  technical_specs:ProductCategoryData!
+}
+
+input UpdateProductInput {
+  main: ProductPrimaryData!
+  pricing: ProductPricingData!
+  inventory: ProductInventoryData!
+  offer:ProductOfferData!
+  technical_specs:ProductCategoryData!
+}
+
+input DeleteProductInput{
+  part_no:String!
+}

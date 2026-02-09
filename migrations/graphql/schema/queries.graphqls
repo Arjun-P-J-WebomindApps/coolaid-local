@@ -1,0 +1,132 @@
+scalar UUID
+scalar Time
+scalar NullString
+scalar Date
+
+
+
+type Query {
+  #--Auth Queries------------------------------------------------
+  getUserById(id: UUID!): User
+  getLatestOTP(userId: UUID!): UserOTP
+  getSessionByUserId(userId: UUID!): UserSession
+  getSessionStatus(sessionId: UUID!): SessionStatus
+
+  #------------------------------------------------------------------------------
+  ######### Master   #################################################
+  #------------------------------------------------------------------------------
+
+  getCompanyListByName(name: String): [Company!]  #@role(roles: [ "admin"]) # Suggestions
+
+  getModelsListByName(input: ModelQueryInput!): [ModelQuery!]  #@role(roles: [ "admin"]) # Suggestions
+
+  getCategoryByName(category: String!): [String]  #@role(roles: [ "admin"]) # Currently used in identifying similar filter items e.g. Compressor, Compressor Valve
+ 
+  getCategoryListByName(category: String!): [Category!]  #@role(roles: [ "admin"]) # Suggestions
+  
+  getBrandListByName(brand: String!): [Brand!]  #@role(roles: [ "admin"]) #Suggestions
+  
+  getTypeListByName(input: TypeSelectionInput!): [String!]  #@role(roles: [ "admin"]) #Suggestions
+
+  getCustomerById(customerId: UUID!): Customer  #@role(roles: [ "admin"]) # Suggestion
+
+  # Get Customer and filter bby company,contact person,mobile
+  getCustomersByAttributes(
+    customerCompanyName: String
+    contactPerson: String
+    mobile: String
+  ): [Customer!]  #@role(roles: ["user", "admin"])
+
+  #Get Vendors
+  getVendors(name:String):[Vendor!]  #@role(roles: [ "admin"])
+
+  #--Products---------------------
+  getFilteredPartNo(partNo: String): [String!]  #@role(roles: ["user", "admin"]) # Deprecated
+
+  getFilteredParts(filter: FilterInput!): FilteredResponse!  #@role(roles: ["user", "admin"]) # Filters like compressor etc
+
+  getProductPartNo(partNo:String!):[String!]   #@role(roles: ["user", "admin"]) # Suggestions in Editing Panel and Admin Panel
+
+  getProductDetails(productDetails: ProductDetailsInput!): [ProductDetails!]  #@role(roles: ["user", "admin"]) # Full Products
+
+  getSimilarPricing(input:SimilarPricingInput):[SimilarPricing!]!  #@role(roles: [ "admin"]) #Suggestions in Add Edit and Clone
+
+
+  #---------------------------------------------------------------------------------
+  ########  Ticket  ################################################
+  #---------------------------------------------------------------------------------
+  getTicketDetails(input: FilterTicketInput): [OrderTicket!]  #@role(roles: ["user", "admin"]) # Tickets API both pending and Completed
+
+  #---------------------------------------------------------------------------------
+  ########  Inventory
+  #-----------------------------------------------------------------------------------------
+  getOutOfStockList:[OutOfStockItem!]  #@role(roles: ["user", "admin"]) # Out Of Stock Lisitng Inventory
+  getPlacedOrders:[RestockOrdersByDate!]!  #@role(roles: ["user", "admin"]) # Placed Orders Lisiting
+
+  # -------------------------------------------------------------
+  # Queries for all 21 Product Categories
+  # -------------------------------------------------------------
+
+  # Actuator
+  getActuatorByPartNo(partNo: String!): Actuator  #@role(roles: ["user", "admin"])
+
+  # Blower Motor
+  getBlowerMotorByPartNo(partNo: String!): BlowerMotor  #@role(roles: ["user", "admin"])
+
+  # Cabin Filter
+  getCabinFilterByPartNo(partNo: String!): CabinFilter  #@role(roles: ["user", "admin"])
+
+  # Chiller Unit
+  getChillerUnitByPartNo(partNo: String!): ChillerUnit  #@role(roles: ["user", "admin"])
+
+  # Clutch Assy
+  getClutchAssyByPartNo(partNo: String!): ClutchAssy  #@role(roles: ["user", "admin"])
+
+  # Compressor Valve
+  getCompressorValveByPartNo(partNo: String!): CompressorValve  #@role(roles: ["user", "admin"])
+
+  # Cond Fan Assy
+  getCondFanAssyByPartNo(partNo: String!): CondFanAssy  #@role(roles: ["user", "admin"])
+
+  # Condenser
+  getCondenserByPartNo(partNo: String!): Condenser  #@role(roles: ["user", "admin"])
+
+  # Evaporator
+  getEvaporatorByPartNo(partNo: String!): Evaporator  #@role(roles: ["user", "admin"])
+
+  # Expansion Valve
+  getExpansionValveByPartNo(partNo: String!): ExpansionValve  #@role(roles: ["user", "admin"])
+
+  # Filter Drier
+  getFilterDrierByPartNo(partNo: String!): FilterDrier  #@role(roles: ["user", "admin"])
+
+  # Heater Core
+  getHeaterCoreByPartNo(partNo: String!): HeaterCore  #@role(roles: ["user", "admin"])
+
+  # Intercooler
+  getIntercoolerByPartNo(partNo: String!): Intercooler  #@role(roles: ["user", "admin"])
+
+  # Pressure Switch
+  getPressureSwitchByPartNo(partNo: String!): PressureSwitch  #@role(roles: ["user", "admin"])
+
+  # Radiator
+  getRadiatorByPartNo(partNo: String!): Radiator  #@role(roles: ["user", "admin"])
+
+  # Rad Fan Assy
+  getRadFanAssyByPartNo(partNo: String!): RadFanAssy  #@role(roles: ["user", "admin"])
+
+  # Rad Fan Motor
+  getRadFanMotorByPartNo(partNo: String!): RadFanMotor  #@role(roles: ["user", "admin"])
+
+  # Resistor
+  getResistorByPartNo(partNo: String!): Resistor  #@role(roles: ["user", "admin"])
+
+  # Rotor
+  getRotorByPartNo(partNo: String!): Rotor  #@role(roles: ["user", "admin"])
+
+  # Stator
+  getStatorByPartNo(partNo: String!): Stator  #@role(roles: ["user", "admin"])
+
+  # Compressor
+  getCompressorByPartNo(partNo: String!): Compressor  #@role(roles: ["user", "admin"])
+}

@@ -1,0 +1,30 @@
+# -------------------------------------------------------------
+# Unified Product Category Data Input
+# -------------------------------------------------------------
+input ProductCategoryData {
+  # Mandatory category type selector
+  type: String!
+
+  # Optional category-specific data blocks (send one based on type)
+  actuator: ActuatorData
+  blower_motor: BlowerMotorData
+  cabin_filter: CabinFilterData
+  chiller_unit: ChillerUnitData
+  clutch_assy: ClutchAssyData
+  compressor_valve: CompressorValveData
+  cond_fan_assy: CondFanAssyData
+  condenser: CondenserData
+  evaporator: EvaporatorData
+  expansion_valve: ExpansionValveData
+  filter_drier: FilterDrierData
+  heater_core: HeaterCoreData
+  intercooler: IntercoolerData
+  pressure_switch: PressureSwitchData
+  radiator: RadiatorData
+  rad_fan_assy: RadFanAssyData
+  rad_fan_motor: RadFanMotorData
+  resistor: ResistorData
+  rotor: RotorData
+  stator: StatorData
+  compressor: CompressorData
+}

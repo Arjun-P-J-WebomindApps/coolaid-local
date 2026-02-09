@@ -1,0 +1,68 @@
+# --------------------------
+# Product Pricing Type
+# --------------------------
+type ProductPricing {
+  basic_price: Float!
+  freight: Float!
+  gst: Float!
+
+  tax: Float!
+
+  ac_workshop: Float!
+  ac_workshop_per: Float!
+  ac_workshop_amt: Float!
+
+  multibrand_workshop: Float!
+  multibrand_workshop_per: Float!
+  multibrand_workshop_amt: Float!
+
+  auto_trader: Float!
+  auto_trader_per: Float!
+  auto_trader_amt: Float!
+
+  ac_trader: Float!
+  ac_trader_per: Float!
+  ac_trader_amt: Float!
+
+  outstation_class_a: Float!
+  outstation_note: String!
+
+  oem_mrp: Float!
+  unit_measure: String!
+  minimum_purchase_quantity:Int!
+
+  created_at: String!
+  updated_at: String!
+}
+
+# --------------------------
+# Product Pricing Data Input
+# --------------------------
+input ProductPricingData {
+  basic_price: Float!
+  freight: Float!
+  gst: Float!
+
+  ac_workshop: Float!
+  ac_workshop_per: Float!
+  ac_workshop_amt: Float!
+
+  multibrand_workshop: Float!
+  multibrand_workshop_per: Float!
+  multibrand_workshop_amt: Float!
+
+  auto_trader: Float!
+  auto_trader_per: Float!
+  auto_trader_amt: Float!
+
+  ac_trader: Float!
+  ac_trader_per: Float!
+  ac_trader_amt: Float!
+
+  outstation_class_a: Float!
+  outstation_note: String!
+
+  oem_mrp: Float!
+  unit_measure: String!
+  minimum_purchase_quantity:Int!
+}

@@ -1,0 +1,55 @@
+type Customer {
+  id: UUID!
+  customer_company_name: String!
+  contact_person: String!
+  mobile: String!
+  type: String!
+  customer_designation: NullString
+  address: String!
+  flat: String!
+  street: String!
+  city: String!
+  state: String!
+  pincode: String!
+  payment_mode: String!
+}
+
+input CreateCustomerInput {
+  customer_company_name: String!
+  contact_person: String!
+  mobile: String!
+  type: String!
+  customer_designation: String!
+  address: String!
+  flat: String!
+  street: String!
+  city: String!
+  state: String!
+  pincode: String!
+  payment_mode: String!
+}
+
+type CustomerInfo {
+  customer_company_name: String!
+  type: String!
+}
+
+input UpdateCustomerInput {
+  id: UUID!
+  customer_company_name: String!
+  contact_person: String!
+  mobile: String!
+  type: String!
+  customer_designation: String!
+  address: String!
+  flat: String!
+  street: String!
+  city: String!
+  state: String!
+  pincode: String!
+  payment_mode: String!
+}
+
+type CustomerDeleteInfo {
+  isDeleted: Boolean!
+}

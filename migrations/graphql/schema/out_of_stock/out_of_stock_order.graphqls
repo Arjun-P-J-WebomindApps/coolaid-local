@@ -1,0 +1,64 @@
+type OutOfStockItem{
+  vendor:String,
+  item:ProductInventory,
+  model:String,
+  category:String,
+  vendorPartNo:String,
+}
+
+
+# ----------------------------------------------------------------------
+#   Create and Update
+# ----------------------------------------------------------------------
+
+type InventoryOrder{
+   order_id:UUID!
+}
+
+"""
+Represents a single restocked item in an order.
+"""
+type RestockItem {
+  partNo: String!
+  quantityOrdered: Int!
+}
+
+"""
+Represents a single vendor order containing multiple restock items.
+"""
+type RestockOrder {
+  vendorName: String!
+  isRequestedByEmail: Boolean!
+  isRequestedByWhatsapp: Boolean!
+  items: [RestockItem!]!
+}
+
+"""
+Groups multiple restock orders by their placement date.
+"""
+type RestockOrdersByDate {
+  date: String!
+  orders: [RestockOrder!]!
+}
+
+
+input IncludedPartsInput{
+  partNo:String!
+  quantity:Int!
+}
+
+input CreateInventoryOrderInput{
+  vendorName:String!
+  userId:String!
+  partsOutOfStock:[IncludedPartsInput!]
+  requestedByEmail:Boolean!
+  requestedByWhatsapp:Boolean!
+}
+
+input UpdateInventoryOrderInput{
+  order_id:UUID!
+  requestedByEmail:Boolean!
+  requestedByWhatsapp:Boolean!
+}
+
+

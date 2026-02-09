@@ -1,0 +1,67 @@
+# --------------------------
+# Model Variant Object (final version)
+# --------------------------
+type ModelVariant {
+  # Main Identifiers
+  type: String!
+  gen: String!
+  fuel_types: [String!]          # optional, can be []
+  hsn_code: String!
+
+  # Optional Identifiers
+  engine_cc: Float!              # always required
+  transmission_type: [String!]
+  platform_codes: [String!]
+  placement: String!
+
+  # Image Links
+  image_1_link: String
+  image_2_link: String
+  image_3_link: String
+  image_4_link: String
+
+  # Identifiers
+  make: String!
+  oem_numbers: [OEMListing!]
+  unicode: [String!]
+  vendor: [VendorList!]          # optional list, non-null items
+
+  # Year range
+  year_start: Int!
+  year_end: Int!
+
+  # Extra
+  additional_info: String
+  description: String
+}
+
+# --------------------------
+# Model Variant Data Input
+# --------------------------
+input ModelVariantData {
+  type: String!
+  gen: String!
+  fuel_types: [String!]
+  hsn_code: String!
+
+  engine_cc: Float!
+  transmission_type: [String!]
+  platform_codes: [String!]
+  placement: String!
+
+  image_1_link: String
+  image_2_link: String
+  image_3_link: String
+  image_4_link: String
+
+  make: String!
+  oem_numbers: [OEMListingInput!]
+  unicode: [String!]
+  vendors: [VendorListData!]
+
+  year_start: Int!
+  year_end: Int!
+
+  additional_info: String
+  description: String
+}

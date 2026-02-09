@@ -1,0 +1,330 @@
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\create.go
+package vendor
+
+import (
+	"context"
+
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/shared"
+)
+
+func (s *Service) Create(
+	ctx context.Context,
+	input CreateVendorInput,
+) (*Vendor, error) {
+
+	tx, qtx, err := s.DB.BeginTx(ctx)
+	if err != nil {
+		return nil, ErrInternal
+	}
+	defer tx.Rollback()
+
+	id := shared.NewID().String()
+
+	row, err := qtx.CreateVendor(ctx, CreateVendorParams{
+		ID:          id,
+		CompanyName: input.CompanyName,
+	})
+	if err != nil {
+		return nil, ErrVendorExists
+	}
+
+	for _, c := range input.VendorContacts {
+		contactID := shared.NewID().String()
+
+		if err := qtx.CreateVendorContact(ctx, CreateVendorContactParams{
+			ID:            contactID,
+			VendorID:      id,
+			ContactPerson: c.VendorContactPerson,
+			MobileNumber:  c.MobileNumber,
+			EmailID:       c.EmailID,
+		}); err != nil {
+			return nil, ErrInternal
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, ErrInternal
+	}
+
+	v := mapRowToModel(row)
+	for _, c := range input.VendorContacts {
+		v.VendorContacts = append(v.VendorContacts, VendorContact{
+			ContactPerson: c.VendorContactPerson,
+			MobileNumber:  c.MobileNumber,
+			EmailID:       c.EmailID,
+		})
+	}
+
+	return v, nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\db_models.go
+package vendor
+
+type VendorRow struct {
+	ID          string
+	CompanyName string
+}
+
+type VendorContactRow struct {
+	VendorID      string
+	ContactPerson string
+	MobileNumber  string
+	EmailID       string
+}
+
+// Used for LEFT JOIN list
+type VendorWithContactRow struct {
+	VendorID      string
+	CompanyName   string
+	ContactPerson *string
+	MobileNumber  *string
+	EmailID       *string
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\db_params.go
+package vendor
+
+type CreateVendorParams struct {
+	ID          string
+	CompanyName string
+}
+
+type CreateVendorContactParams struct {
+	ID            string
+	VendorID      string
+	ContactPerson string
+	MobileNumber  string
+	EmailID       string
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\delete.go
+package vendor
+
+import (
+	"context"
+
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/shared"
+)
+
+func (s *Service) Delete(ctx context.Context, id string) error {
+
+	if err := s.DB.Queries().DeleteVendor(ctx, shared.ID(id)); err != nil {
+		return ErrVendorNotFound
+	}
+
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\errors.go
+package vendor
+
+import "errors"
+
+var (
+	ErrVendorNotFound = errors.New("vendor not found")
+	ErrVendorExists   = errors.New("vendor already exists")
+	ErrInternal       = errors.New("internal error")
+)
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\inputs.go
+package vendor
+
+type CreateVendorInput struct {
+	CompanyName    string
+	VendorContacts []VendorContactInput
+}
+
+type UpdateVendorInput struct {
+	CompanyName    string
+	VendorContacts []VendorContactInput
+}
+
+type VendorContactInput struct {
+	VendorContactPerson string
+	MobileNumber        string
+	EmailID             string
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\interfaces.go
+package vendor
+
+import (
+	"context"
+
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/shared"
+)
+
+type Queries interface {
+	// Reads
+	GetVendorByCompanyName(ctx context.Context, companyName string) (*VendorRow, error)
+	GetVendorsWithContacts(ctx context.Context, companyName string) ([]VendorWithContactRow, error)
+
+	// Writes
+	CreateVendor(ctx context.Context, p CreateVendorParams) (*VendorRow, error)
+	DeleteVendor(ctx context.Context, id shared.ID) error
+
+	DeleteVendorContacts(ctx context.Context, vendorID shared.ID) error
+	CreateVendorContact(ctx context.Context, p CreateVendorContactParams) error
+}
+
+type DB = shared.DB[Queries]
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\mapper.go
+package vendor
+
+func mapRowToModel(v *VendorRow) *Vendor {
+	return &Vendor{
+		ID:          v.ID,
+		CompanyName: v.CompanyName,
+	}
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\models.go
+package vendor
+
+type Vendor struct {
+	ID             string
+	CompanyName    string
+	VendorContacts []VendorContact
+}
+
+type VendorContact struct {
+	ContactPerson string
+	MobileNumber  string
+	EmailID       string
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\queries.go
+package vendor
+
+import (
+	"context"
+	"sort"
+	"strings"
+
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/shared"
+)
+
+func (s *Service) List(
+	ctx context.Context,
+	name *string,
+) ([]Vendor, error) {
+
+	rows, err := s.DB.Queries().GetVendorsWithContacts(
+		ctx,
+		shared.ValueOrEmpty(name),
+	)
+	if err != nil {
+		return nil, ErrInternal
+	}
+
+	grouped := make(map[string]*Vendor)
+
+	for _, r := range rows {
+		v, ok := grouped[r.VendorID]
+		if !ok {
+			v = &Vendor{
+				ID:             r.VendorID,
+				CompanyName:    r.CompanyName,
+				VendorContacts: []VendorContact{},
+			}
+			grouped[r.VendorID] = v
+		}
+
+		// LEFT JOIN safety
+		if r.ContactPerson == nil {
+			continue
+		}
+
+		v.VendorContacts = append(v.VendorContacts, VendorContact{
+			ContactPerson: *r.ContactPerson,
+			MobileNumber:  shared.Deref(r.MobileNumber),
+			EmailID:       shared.Deref(r.EmailID),
+		})
+	}
+
+	out := make([]Vendor, 0, len(grouped))
+	for _, v := range grouped {
+		out = append(out, *v)
+	}
+
+	// Deterministic ordering
+	sort.Slice(out, func(i, j int) bool {
+		return strings.ToLower(out[i].CompanyName) <
+			strings.ToLower(out[j].CompanyName)
+	})
+
+	return out, nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\service.go
+package vendor
+
+type Service struct {
+	DB DB
+}
+
+func NewService(db DB) *Service {
+	return &Service{DB: db}
+}
+
+D:\Local\coolaid-backend-model\internal\domain\master\vendors\update.go
+package vendor
+
+import (
+	"context"
+
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/shared"
+)
+
+func (s *Service) Update(
+	ctx context.Context,
+	input UpdateVendorInput,
+) (*Vendor, error) {
+
+	tx, qtx, err := s.DB.BeginTx(ctx)
+	if err != nil {
+		return nil, ErrInternal
+	}
+	defer tx.Rollback()
+
+	row, err := qtx.GetVendorByCompanyName(ctx, input.CompanyName)
+	if err != nil {
+		return nil, ErrVendorNotFound
+	}
+
+	if err := qtx.DeleteVendorContacts(ctx, shared.ID(row.ID)); err != nil {
+		return nil, ErrInternal
+	}
+
+	for _, c := range input.VendorContacts {
+		id := shared.NewID().String()
+
+		if err := qtx.CreateVendorContact(ctx, CreateVendorContactParams{
+			ID:            id,
+			VendorID:      row.ID,
+			ContactPerson: c.VendorContactPerson,
+			MobileNumber:  c.MobileNumber,
+			EmailID:       c.EmailID,
+		}); err != nil {
+			return nil, ErrInternal
+		}
+	}
+
+	if err := tx.Commit(); err != nil {
+		return nil, ErrInternal
+	}
+
+	v := mapRowToModel(row)
+	for _, c := range input.VendorContacts {
+		v.VendorContacts = append(v.VendorContacts, VendorContact{
+			ContactPerson: c.VendorContactPerson,
+			MobileNumber:  c.MobileNumber,
+			EmailID:       c.EmailID,
+		})
+	}
+
+	return v, nil
+}
+

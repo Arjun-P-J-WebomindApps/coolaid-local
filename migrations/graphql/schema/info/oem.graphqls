@@ -1,0 +1,16 @@
+# --------------------------
+# OEM Listing Type
+# --------------------------
+type OEMListing {
+  id: UUID!
+  oem_number:String!
+  price:Float!
+}
+
+# --------------------------
+# Product Offer Data Input
+# --------------------------
+input OEMListingInput {
+  oem_number:String!
+  price:Float!
+}

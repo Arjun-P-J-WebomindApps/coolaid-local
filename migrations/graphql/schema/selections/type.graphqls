@@ -1,0 +1,8 @@
+
+input TypeSelectionInput {
+  Company:String!
+  Model:String!
+  Category:String!
+  Type:String!
+}
+

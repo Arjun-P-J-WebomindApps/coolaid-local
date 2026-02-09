@@ -1,0 +1,23 @@
+type Company {
+  id: UUID!
+  name: String!
+  status: Boolean!
+  image:String!
+}
+
+input CreateCompanyInput {
+  name: String!
+  status: Boolean!
+  image:String!
+}
+
+input UpdateCompanyInput {
+  id: UUID!
+  name: String!
+  status: Boolean!
+  image:String!
+}
+
+type CompanyDeleteInfo {
+  isDeleted: Boolean!
+}

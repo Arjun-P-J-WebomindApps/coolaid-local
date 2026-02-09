@@ -1,0 +1,161 @@
+#---------------------------------
+# User
+#---------------------------------
+
+type User {
+  id: UUID!
+  name: String!
+  username: String!
+  email: String!
+  mobile: String!
+  role: String!
+  isActive: Boolean!
+  createdAt: Time!
+  updatedAt: Time!
+  deletedAt: Time
+}
+
+type CreateUserPayload {
+  user: User!
+  secret:String!
+  otpauthUrl: String!
+}
+
+input CreateUserInput {
+  name: String!
+  username: String!
+  email: String!
+  password: String!
+  mobile: String!
+  role: String!
+  isActive: Boolean!
+}
+
+type UserLogin{
+  userId:UUID!
+}
+
+#---------------------------------------------------------------
+#TOTP
+#--------------------------------------------------------------
+
+type UserOTP {
+  id: UUID!
+  userId: UUID!
+  otpCode: String!
+  expiresAt: Time!
+  isUsed: Boolean!
+  createdAt: Time!
+}
+
+input VerifyUserTOTPInput {
+  twoFactorToken:String!
+  otpCode:String!
+}
+
+#---------------------------------------------------------------
+#OTP
+#--------------------------------------------------------------
+
+
+input CreateUserOTPInput {
+  userId: UUID!
+  otpCode: String!
+  expiresAt: Time!
+}
+
+#-------------------------------------------------------------
+#Session
+#------------------------------------------------------------
+
+type UserSession {
+  sessionId: UUID!
+  userId: UUID!
+  ipAddress: String!
+  userAgent: String!
+  createdAt: Time!
+  expiresAt: Time!
+  revokedAt: Time
+}
+
+input CreateUserSessionInput {
+  userId: UUID!
+  ipAddress: String!
+  userAgent: String!
+  expiresAt: Time!
+}
+
+# -------------------------------
+# Refresh Token
+# -------------------------------
+
+type RefreshToken {
+  id: UUID!
+  userId: UUID!
+  sessionId: UUID
+  tokenHash: String!
+  ipAddress: String
+  userAgent: String
+  createdAt: Time!
+  expiresAt: Time!
+  revokedAt: Time
+  replacedBy: UUID
+}
+
+input CreateRefreshTokenInput {
+  id: UUID!
+  userId: UUID!
+  sessionId: UUID
+  tokenHash: String!
+  ipAddress: String!
+  userAgent: String!
+  expiresAt: Time!
+  revokedAt: Time
+  replacedBy: UUID
+}
+
+type AuthPayload {
+  userName:String!
+}
+
+#--Login---------------------------------------
+
+input LoginInput {
+  email: String!
+  password: String!
+}
+
+#--OTP------------------------------------------
+
+input VerifyOTPInput {
+  userId: UUID!
+  otpCode: String!
+}
+
+input ResendOTPInput{
+  userId:UUID!
+}
+
+#--Refresh Token----------------------------------
+
+input RefreshTokenInput {
+  sessionId: String!
+}
+
+type SessionStatus {
+  valid: Boolean!
+  user: User
+}
+
+#----------------------------------
+
+input ForgotPasswordInput {
+  email: String!
+}
+
+
+input ResetPasswordInput{
+  email:String!
+  token: String!
+  newPassword: String!
+}

@@ -1,0 +1,219 @@
+# -------------------------------------------------------------
+# Types for 21 Product Categories
+# -------------------------------------------------------------
+
+type Actuator {
+  id: UUID!
+  part_no: String!
+  connector_type: String
+  mounting: String
+  voltage: String
+  rotation_angle: String
+  notes: String
+}
+
+type BlowerMotor {
+  id: UUID!
+  part_no: String!
+  mounting: String
+  connector_type: String
+  impeller: String
+  resistance: String
+  motor_mounting: String
+  motor_type: String
+  voltage: String
+  notes: String
+}
+
+type CabinFilter {
+  id: UUID!
+  part_no: String!
+  type: String
+  dimensions: String
+  material: String
+  notes: String
+}
+
+type ChillerUnit {
+  id: UUID!
+  part_no: String!
+  type: String
+  voltage: String
+  notes: String
+}
+
+type ClutchAssy {
+  id: UUID!
+  part_no: String!
+  pulley_ribs: String
+  pulley_size: String
+  compressor_details: String
+  connector_type: String
+  voltage: String
+  shaft_type: String
+  notes: String
+}
+
+type CompressorValve {
+  id: UUID!
+  part_no: String!
+  type: String
+  voltage: String
+  connector_type: String
+  compressor_details: String
+  notes: String
+}
+
+type CondFanAssy {
+  id: UUID!
+  part_no: String!
+  voltage: String
+  motor_type: String
+  resistance: String
+  fan_blade_diameter: String
+  number_of_blades: Int
+  shroud: String
+  connector_type: String
+  notes: String
+}
+
+type Condenser {
+  id: UUID!
+  part_no: String!
+  size: String
+  pipe_connector: String
+  drier: String
+  pressure_switch: String
+  notes: String
+}
+
+type Evaporator {
+  id: UUID!
+  part_no: String!
+  mounting: String
+  exp_valve: String
+  additional_info: String
+  dimensions: String
+  pipe_connector: String
+  notes: String
+}
+
+type ExpansionValve {
+  id: UUID!
+  part_no: String!
+  type: String
+  material: String
+  refrigerant: String
+  notes: String
+}
+
+type FilterDrier {
+  id: UUID!
+  part_no: String!
+  pipe_connector: String
+  size: String
+  pressure_switch: String
+  notes: String
+}
+
+type HeaterCore {
+  id: UUID!
+  part_no: String!
+  size: String
+  pipe: String
+  type: String
+  notes: String
+}
+
+type Intercooler {
+  id: UUID!
+  part_no: String!
+  size: String
+  temp_sensor: String
+  notes: String
+}
+
+type PressureSwitch {
+  id: UUID!
+  part_no: String!
+  connector_type: String
+  thread_type: String
+  notes: String
+}
+
+type Radiator {
+  id: UUID!
+  part_no: String!
+  size: String
+  transmission: String
+  temp_sensor: String
+  tank: String
+  notes: String
+}
+
+type RadFanAssy {
+  id: UUID!
+  part_no: String!
+  voltage: String
+  motor_type: String
+  resistance: String
+  number_of_sockets: Int
+  shroud: String
+  connector_type: String
+  fan_blade_diameter: String
+  number_of_blades: Int
+  notes: String
+}
+
+type RadFanMotor {
+  id: UUID!
+  part_no: String!
+  fan_blade_diameter: String
+  number_of_blades: Int
+  voltage: String
+  number_of_sockets: Int
+  connector_type: String
+  notes: String
+}
+
+type Resistor {
+  id: UUID!
+  part_no: String!
+  type: String
+  connector_type: String
+  voltage: String
+  notes: String
+}
+
+type Rotor {
+  id: UUID!
+  part_no: String!
+  pulley_ribs: String
+  pulley_size: String
+  compressor_details: String
+  notes: String
+}
+
+type Stator {
+  id: UUID!
+  part_no: String!
+  voltage: String
+  compressor_details: String
+  notes: String
+}
+
+type Compressor {
+  id: UUID!
+  part_no: String!
+  compressor_id: String
+  oil: String
+  refrigerant: String
+  voltage: String
+  pulley_ribs: String
+  pulley_size: String
+  pipe_connector: String
+  comp_type: String
+  comp_mounting: String
+  connector_type: String
+  notes: String
+}
