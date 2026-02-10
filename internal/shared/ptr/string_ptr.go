@@ -14,3 +14,10 @@ func StringPtr(p *string) *string {
 	v := *p
 	return &v
 }
+
+func StringOrNil(s string) *string {
+	if s == "" {
+		return nil
+	}
+	return &s
+}
