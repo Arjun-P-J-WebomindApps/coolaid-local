@@ -95,6 +95,23 @@ func (c *categoryQueries) GetCategoriesByName(
 	return out, nil
 }
 
+func (c *categoryQueries) GetCategoryByName(
+	ctx context.Context,
+	name string,
+) (*category.CategoryRow, error) {
+
+	row, err := c.q.GetCategoryByName(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &category.CategoryRow{
+		ID:    row.ID.String(),
+		Name:  row.Name,
+		Image: sqlnull.StringPtr(row.Image),
+	}, nil
+}
+
 func (c *categoryQueries) CreateCategory(
 	ctx context.Context,
 	p category.CreateCategoryParams,

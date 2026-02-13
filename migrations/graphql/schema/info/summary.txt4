@@ -1,0 +1,304 @@
+D:\Local\coolaid-backend-model\migrations\graphql\schema\info\category.graphqls
+# -------------------------------------------------------------
+# Unified Product Category Data Input
+# -------------------------------------------------------------
+input ProductCategoryData {
+  # Mandatory category type selector
+  type: String!
+
+  # Optional category-specific data blocks (send one based on type)
+  actuator: ActuatorData
+  blower_motor: BlowerMotorData
+  cabin_filter: CabinFilterData
+  chiller_unit: ChillerUnitData
+  clutch_assy: ClutchAssyData
+  compressor_valve: CompressorValveData
+  cond_fan_assy: CondFanAssyData
+  condenser: CondenserData
+  evaporator: EvaporatorData
+  expansion_valve: ExpansionValveData
+  filter_drier: FilterDrierData
+  heater_core: HeaterCoreData
+  intercooler: IntercoolerData
+  pressure_switch: PressureSwitchData
+  radiator: RadiatorData
+  rad_fan_assy: RadFanAssyData
+  rad_fan_motor: RadFanMotorData
+  resistor: ResistorData
+  rotor: RotorData
+  stator: StatorData
+  compressor: CompressorData
+}
+
+D:\Local\coolaid-backend-model\migrations\graphql\schema\info\inventory.graphqls
+# --------------------------
+# Inventory Type
+# --------------------------
+type ProductInventory {
+  id: UUID!
+  part_no: String!
+  minimum_order_level: Int!
+  maximum_order_level: Int!
+  qty_in_stock: Int!
+  location: String!
+  is_flash: Boolean!
+  is_requested_for_supply: Boolean!
+  vendor_id: UUID
+}
+
+# --------------------------
+# Inventory Data Input
+# --------------------------
+input ProductInventoryData {
+  part_no: String!
+  minimum_order_level: Int!
+  maximum_order_level: Int!
+  qty_in_stock: Int!
+  location: String!
+  is_flash: Boolean!
+  vendor_name:String!
+}
+
+D:\Local\coolaid-backend-model\migrations\graphql\schema\info\model_variant.graphqls
+# --------------------------
+# Model Variant Object (final version)
+# --------------------------
+type ModelVariant {
+  # Main Identifiers
+  type: String!
+  gen: String!
+  fuel_types: [String!]          # optional, can be []
+  hsn_code: String!
+
+  # Optional Identifiers
+  engine_cc: Float!              # always required
+  transmission_type: [String!]
+  platform_codes: [String!]
+  placement: String!
+
+  # Image Links
+  image_1_link: String
+  image_2_link: String
+  image_3_link: String
+  image_4_link: String
+
+  # Identifiers
+  make: String!
+  oem_numbers: [OEMListing!]
+  unicode: [String!]
+  vendor: [VendorList!]          # optional list, non-null items
+
+  # Year range
+  year_start: Int!
+  year_end: Int!
+
+  # Extra
+  additional_info: String
+  description: String
+}
+
+# --------------------------
+# Model Variant Data Input
+# --------------------------
+input ModelVariantData {
+  type: String!
+  gen: String!
+  fuel_types: [String!]
+  hsn_code: String!
+
+  engine_cc: Float!
+  transmission_type: [String!]
+  platform_codes: [String!]
+  placement: String!
+
+  image_1_link: String
+  image_2_link: String
+  image_3_link: String
+  image_4_link: String
+
+  make: String!
+  oem_numbers: [OEMListingInput!]
+  unicode: [String!]
+  vendors: [VendorListData!]
+
+  year_start: Int!
+  year_end: Int!
+
+  additional_info: String
+  description: String
+}
+
+D:\Local\coolaid-backend-model\migrations\graphql\schema\info\oem.graphqls
+# --------------------------
+# OEM Listing Type
+# --------------------------
+type OEMListing {
+  id: UUID!
+  oem_number:String!
+  price:Float!
+}
+
+# --------------------------
+# Product Offer Data Input
+# --------------------------
+input OEMListingInput {
+  oem_number:String!
+  price:Float!
+}
+
+D:\Local\coolaid-backend-model\migrations\graphql\schema\info\offers.graphqls
+# --------------------------
+# Product Offer Type
+# --------------------------
+type ProductOffer {
+  id: UUID!
+  product_part_id: UUID!
+  is_offer_active: Boolean!
+  start_date: String!
+  end_date: String!
+  ac_trader: [String!]          # optional, can be []
+  multi_brand: [String!]        # optional, can be []
+  autotrader: [String!]         # optional, can be []
+  ac_workshop: [String!]        # optional, can be []
+  created_at: String
+  updated_at: String
+}
+
+# --------------------------
+# Product Offer Data Input
+# --------------------------
+input ProductOfferData {
+  is_offer_active: Boolean!
+  start_date: String!
+  end_date: String!
+  ac_trader: [String!]
+  multi_brand: [String!]
+  autotrader: [String!]
+  ac_workshop: [String!]
+}
+
+D:\Local\coolaid-backend-model\migrations\graphql\schema\info\pricing.graphqls
+# --------------------------
+# Product Pricing Type
+# --------------------------
+type ProductPricing {
+  basic_price: Float!
+  freight: Float!
+  gst: Float!
+
+  tax: Float!
+
+  ac_workshop: Float!
+  ac_workshop_per: Float!
+  ac_workshop_amt: Float!
+
+  multibrand_workshop: Float!
+  multibrand_workshop_per: Float!
+  multibrand_workshop_amt: Float!
+
+  auto_trader: Float!
+  auto_trader_per: Float!
+  auto_trader_amt: Float!
+
+  ac_trader: Float!
+  ac_trader_per: Float!
+  ac_trader_amt: Float!
+
+  outstation_class_a: Float!
+  outstation_note: String!
+
+  oem_mrp: Float!
+  unit_measure: String!
+  minimum_purchase_quantity:Int!
+
+  created_at: String!
+  updated_at: String!
+}
+
+# --------------------------
+# Product Pricing Data Input
+# --------------------------
+input ProductPricingData {
+  basic_price: Float!
+  freight: Float!
+  gst: Float!
+
+  ac_workshop: Float!
+  ac_workshop_per: Float!
+  ac_workshop_amt: Float!
+
+  multibrand_workshop: Float!
+  multibrand_workshop_per: Float!
+  multibrand_workshop_amt: Float!
+
+  auto_trader: Float!
+  auto_trader_per: Float!
+  auto_trader_amt: Float!
+
+  ac_trader: Float!
+  ac_trader_per: Float!
+  ac_trader_amt: Float!
+
+  outstation_class_a: Float!
+  outstation_note: String!
+
+  oem_mrp: Float!
+  unit_measure: String!
+  minimum_purchase_quantity:Int!
+}
+
+D:\Local\coolaid-backend-model\migrations\graphql\schema\info\vendor.graphqls
+# -----------------------------------------------------------------------------------------------------------------------------
+# Vendor
+#------------------------------------------------------------------------------------------------------------------------------
+
+type Vendor {
+  Id: UUID!
+  CompanyName: String!
+  VendorContacts: [VendorContact!]
+}
+
+type VendorContact{
+  Id: String!
+  ContactPerson: String!
+  MobileNumber: String!
+  EmailId: String!
+}
+
+input CreateVendorInput {
+  CompanyName: String!
+  VendorContacts:[CreateVendorContactInput!]
+}
+
+input CreateVendorContactInput {
+  VendorContactPerson: String!
+  MobileNumber: String!
+  EmailId: String!
+}
+
+input UpdateVendorInput {
+  Id: UUID!
+  CompanyName: String!
+  VendorContacts:[CreateVendorContactInput!]
+}
+
+type VendorDeleteInfo {
+  Id: UUID!
+}
+
+# ------------------------------------------------------------------------------------------------------------------------
+#  Vendor Lisitng
+# -------------------------------------------------------------------------------------------------------------------------
+
+type VendorList {
+  VendorName: String!
+  VendorPartNo: String!
+  VendorPrice: Float!
+}
+
+input VendorListData {
+  VendorName: String!
+  VendorPartNo: String!
+  VendorPrice: Float!
+}
+

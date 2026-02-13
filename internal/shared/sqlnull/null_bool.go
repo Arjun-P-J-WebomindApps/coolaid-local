@@ -11,3 +11,10 @@ func Bool(b *bool) sql.NullBool {
 		Valid: true,
 	}
 }
+
+func BoolValue(nb sql.NullBool) bool {
+	if !nb.Valid {
+		return false
+	}
+	return nb.Bool
+}

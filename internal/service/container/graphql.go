@@ -9,6 +9,7 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/customer"
 	models "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/model"
 	vendor "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/vendors"
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/techspec"
 	repository "github.com/webomindapps-dev/coolaid-backend/internal/repository/auth"
 	brand_repo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/brand"
 	categoryrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/category"
@@ -16,6 +17,7 @@ import (
 	customerrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/customer"
 	modelrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/model"
 	vendorrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/vendor"
+	techspecrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/techspec"
 	"github.com/webomindapps-dev/coolaid-backend/internal/service/crypto"
 	"github.com/webomindapps-dev/coolaid-backend/internal/service/mailer"
 	"github.com/webomindapps-dev/coolaid-backend/typesense"
@@ -36,6 +38,9 @@ type Container struct {
 	Brand    *brand.Service
 	Customer *customer.Service
 	Vendor   *vendor.Service
+
+	//TechSpecs
+	TechSpec *techspec.Service
 }
 
 func NewContainer(
@@ -58,6 +63,9 @@ func NewContainer(
 	customerRepo := customerrepo.NewCustomerRepository(dbCtx)
 	vendorRepo := vendorrepo.NewVendorRepository(dbCtx)
 
+	//TechRepo
+	techRepo := techspecrepo.NewTechSpecRepository(dbCtx)
+
 	// Auth Service
 	authSvc := auth.NewService(
 		authRepo,
@@ -73,6 +81,9 @@ func NewContainer(
 	customerSvc := customer.NewService(customerRepo)
 	vendorSvc := vendor.NewService(vendorRepo)
 
+	//TechRepo
+	techSvc := techspec.NewService(techRepo)
+
 	return &Container{
 		DB:        dbCtx,
 		Typesense: ts,
@@ -87,5 +98,8 @@ func NewContainer(
 		Brand:    brandSvc,
 		Customer: customerSvc,
 		Vendor:   vendorSvc,
+
+		//TechSpec
+		TechSpec: techSvc,
 	}
 }

@@ -10,6 +10,7 @@ type Queries interface {
 	// Reads
 	GetCategoriesByName(ctx context.Context, name string) ([]CategoryRow, error)
 	GetCategoryByID(ctx context.Context, id shared.ID) (*CategoryRow, error)
+	GetCategoryByName(ctx context.Context, name string) (*CategoryRow, error)
 
 	// Writes
 	CreateCategory(ctx context.Context, p CreateCategoryParams) (*CategoryRow, error)

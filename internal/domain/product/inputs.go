@@ -1,209 +1,259 @@
-package techspec
+package product
 
-// =======================================================
-// ROOT TECH SPECS INPUT
-// =======================================================
+import techspec "github.com/webomindapps-dev/coolaid-backend/internal/domain/techspec"
 
-type TechnicalSpecsInput struct {
-	Type string `json:"type"`
+//
+// ============================================================
+// 🔹 CREATE PRODUCT (Aggregate Input)
+// ============================================================
+//
 
-	Actuator        *ActuatorInput
-	BlowerMotor     *BlowerMotorInput
-	CabinFilter     *CabinFilterInput
-	ChillerUnit     *ChillerUnitInput
-	ClutchAssy      *ClutchAssyInput
-	CompressorValve *CompressorValveInput
-	CondFanAssy     *CondFanAssyInput
-	Condenser       *CondenserInput
-	Evaporator      *EvaporatorInput
-	ExpansionValve  *ExpansionValveInput
-	FilterDrier     *FilterDrierInput
-	HeaterCore      *HeaterCoreInput
-	Intercooler     *IntercoolerInput
-	PressureSwitch  *PressureSwitchInput
-	Radiator        *RadiatorInput
-	RadFanAssy      *RadFanAssyInput
-	RadFanMotor     *RadFanMotorInput
-	Resistor        *ResistorInput
-	Rotor           *RotorInput
-	Stator          *StatorInput
-	Compressor      *CompressorInput
+type CreateProductInput struct {
+	Main      CreateProductMainInput
+	Pricing   CreateProductPricingInput
+	Inventory CreateProductInventoryInput
+	Offer     CreateProductOfferInput
+	TechSpec  techspec.TechnicalSpecsInput
+
+	OemNumbers []CreateOEMInput
+	Vendors    []CreateVendorListingInput
 }
 
-// =======================================================
-// INPUT STRUCTS (flat, no overthinking)
-// =======================================================
+type UpdateProductInput struct {
+	Main      UpdateProductMainInput
+	Pricing   UpdateProductPricingInput
+	Inventory UpdateProductInventoryInput
+	Offer     UpdateProductOfferInput
+	TechSpec  techspec.TechnicalSpecsInput
 
-type ActuatorInput struct {
-	ConnectorType string
-	Mounting      string
-	Voltage       string
-	RotationAngle string
-	Notes         string
+	OemNumbers []CreateOEMInput
+	Vendors    []CreateVendorListingInput
 }
 
-type BlowerMotorInput struct {
-	Mounting      string
-	ConnectorType string
-	Impeller      string
-	Resistance    string
-	MotorMounting string
-	MotorType     string
-	Voltage       string
-	Notes         string
+type DeleteProductInput struct {
+	PartNo string
 }
 
-type CabinFilterInput struct {
-	Type       string
-	Dimensions string
-	Material   string
-	Notes      string
+//
+// ------------------------------------------------------------
+// 🔹 MAIN PRODUCT
+// ------------------------------------------------------------
+//
+
+type CreateProductMainInput struct {
+	PartNo       string
+	CompanyName  string
+	ModelName    string
+	BrandName    string
+	CategoryName string
+
+	BaseData CreateModelVariantInput
 }
 
-type ChillerUnitInput struct {
-	Type    string
-	Voltage string
-	Notes   string
+type UpdateProductMainInput struct {
+	PartNo string // required to identify product
+
+	CompanyName  *string
+	ModelName    *string
+	BrandName    *string
+	CategoryName *string
+
+	BaseData *UpdateModelVariantInput
 }
 
-type ClutchAssyInput struct {
-	PulleyRibs        string
-	PulleySize        string
-	CompressorDetails string
-	ConnectorType     string
-	Voltage           string
-	ShaftType         string
-	Notes             string
-}
+//
+// ------------------------------------------------------------
+// 🔹 MODEL VARIANT INPUT
+// ------------------------------------------------------------
+//
 
-type CompressorValveInput struct {
-	Type              string
-	Voltage           string
-	ConnectorType     string
-	CompressorDetails string
-	Notes             string
-}
+type CreateModelVariantInput struct {
+	Type             string
+	Gen              string
+	FuelTypes        []string
+	HsnCode          string
+	EngineCc         float64
+	TransmissionType []string
+	PlatformCodes    []string
+	Placement        string
 
-type CondFanAssyInput struct {
-	Voltage          string
-	MotorType        string
-	Resistance       string
-	FanBladeDiameter string
-	NumberOfBlades   *int32
-	Shroud           string
-	ConnectorType    string
-	Notes            string
-}
+	Image1Link string
+	Image2Link string
+	Image3Link string
+	Image4Link string
 
-type CondenserInput struct {
-	Size           string
-	PipeConnector  string
-	Drier          string
-	PressureSwitch string
-	Notes          string
-}
-
-type EvaporatorInput struct {
-	Mounting       string
-	ExpValve       string
+	Make           string
+	Unicode        []string
+	YearStart      int32
+	YearEnd        int32
+	Description    string
 	AdditionalInfo string
-	Dimensions     string
-	PipeConnector  string
-	Notes          string
+
+	OemNumbers []string
+	Vendors    []string
 }
 
-type ExpansionValveInput struct {
-	Type        string
-	Material    string
-	Refrigerant string
-	Notes       string
+type UpdateModelVariantInput struct {
+	Type             *string
+	Gen              *string
+	FuelTypes        *[]string
+	HsnCode          *string
+	EngineCc         *float64
+	TransmissionType *[]string
+	PlatformCodes    *[]string
+	Placement        *string
+
+	Image1Link *string
+	Image2Link *string
+	Image3Link *string
+	Image4Link *string
+
+	Make           *string
+	Unicode        *[]string
+	YearStart      *int32
+	YearEnd        *int32
+	Description    *string
+	AdditionalInfo *string
+
+	OemNumbers *[]CreateOEMInput
+	Vendors    *[]CreateVendorListingInput
 }
 
-type FilterDrierInput struct {
-	PipeConnector  string
-	Size           string
-	PressureSwitch string
-	Notes          string
+//
+// ------------------------------------------------------------
+// 🔹 OEM INPUT
+// ------------------------------------------------------------
+//
+
+type CreateOEMInput struct {
+	OemNumber string
+	Price     float64
 }
 
-type HeaterCoreInput struct {
-	Size  string
-	Pipe  string
-	Type  string
-	Notes string
+//
+// ------------------------------------------------------------
+// 🔹 Vendor Listing Input (not master vendor)
+// ------------------------------------------------------------
+//
+
+type CreateVendorListingInput struct {
+	VendorName   string
+	VendorPartNo string
+	VendorPrice  float64
 }
 
-type IntercoolerInput struct {
-	Size       string
-	TempSensor string
-	Notes      string
+//
+// ------------------------------------------------------------
+// 🔹 PRICING INPUT
+// ------------------------------------------------------------
+//
+
+type CreateProductPricingInput struct {
+	BasicPrice float64
+	Freight    float64
+	Gst        float64
+
+	AcWorkshop    float64
+	AcWorkshopPer float64
+	AcWorkshopAmt float64
+
+	MultibrandWorkshop    float64
+	MultibrandWorkshopPer float64
+	MultibrandWorkshopAmt float64
+
+	AutoTrader    float64
+	AutoTraderPer float64
+	AutoTraderAmt float64
+
+	AcTrader    float64
+	AcTraderPer float64
+	AcTraderAmt float64
+
+	OutstationClassA float64
+	OutstationNote   string
+
+	OemMrp                  float64
+	UnitMeasure             string
+	MinimumPurchaseQuantity int32
 }
 
-type PressureSwitchInput struct {
-	ConnectorType string
-	ThreadType    string
-	Notes         string
+type UpdateProductPricingInput struct {
+	BasicPrice *float64
+	Freight    *float64
+	Gst        *float64
+
+	AcWorkshop    *float64
+	AcWorkshopPer *float64
+	AcWorkshopAmt *float64
+
+	MultibrandWorkshop    *float64
+	MultibrandWorkshopPer *float64
+	MultibrandWorkshopAmt *float64
+
+	AutoTrader    *float64
+	AutoTraderPer *float64
+	AutoTraderAmt *float64
+
+	AcTrader    *float64
+	AcTraderPer *float64
+	AcTraderAmt *float64
+
+	OutstationClassA *float64
+	OutstationNote   *string
+
+	OemMrp                  *float64
+	UnitMeasure             *string
+	MinimumPurchaseQuantity *int32
 }
 
-type RadiatorInput struct {
-	Size         string
-	Transmission string
-	TempSensor   string
-	Tank         string
-	Notes        string
+//
+// ------------------------------------------------------------
+// 🔹 INVENTORY INPUT
+// ------------------------------------------------------------
+//
+
+type CreateProductInventoryInput struct {
+	MinimumOrderLevel int32
+	MaximumOrderLevel int32
+	QtyInStock        int32
+	Location          string
+	IsFlash           bool
+	VendorName        string
 }
 
-type RadFanAssyInput struct {
-	Voltage          string
-	MotorType        string
-	Resistance       string
-	NumberOfSockets  *int32
-	Shroud           string
-	ConnectorType    string
-	FanBladeDiameter string
-	NumberOfBlades   *int32
-	Notes            string
+type UpdateProductInventoryInput struct {
+	MinimumOrderLevel *int32
+	MaximumOrderLevel *int32
+	QtyInStock        *int32
+	Location          *string
+	IsFlash           *bool
+	VendorName        *string
 }
 
-type RadFanMotorInput struct {
-	FanBladeDiameter string
-	NumberOfBlades   *int32
-	Voltage          string
-	NumberOfSockets  *int32
-	ConnectorType    string
-	Notes            string
+//
+// ------------------------------------------------------------
+// 🔹 OFFER INPUT
+// ------------------------------------------------------------
+//
+
+type CreateProductOfferInput struct {
+	IsOfferActive bool
+	StartDate     string // parsed in service
+	EndDate       string
+
+	AcTrader   []string
+	MultiBrand []string
+	Autotrader []string
+	AcWorkshop []string
 }
 
-type ResistorInput struct {
-	Type          string
-	ConnectorType string
-	Voltage       string
-	Notes         string
-}
+type UpdateProductOfferInput struct {
+	IsOfferActive *bool
+	StartDate     *string
+	EndDate       *string
 
-type RotorInput struct {
-	PulleyRibs        string
-	PulleySize        string
-	CompressorDetails string
-	Notes             string
-}
-
-type StatorInput struct {
-	Voltage           string
-	CompressorDetails string
-	Notes             string
-}
-
-type CompressorInput struct {
-	CompressorID  string
-	Oil           string
-	Refrigerant   string
-	Voltage       string
-	PulleyRibs    string
-	PulleySize    string
-	PipeConnector string
-	CompType      string
-	CompMounting  string
-	ConnectorType string
-	Notes         string
+	AcTrader   *[]string
+	MultiBrand *[]string
+	Autotrader *[]string
+	AcWorkshop *[]string
 }

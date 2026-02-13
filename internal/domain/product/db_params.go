@@ -1,496 +1,282 @@
-package techspec
+package product
 
-// =======================================================
-// ACTUATOR
-// =======================================================
+import "time"
 
-type CreateActuatorParams struct {
-	ID            string
-	PartNo        string
-	ConnectorType *string
-	Mounting      *string
-	Voltage       *string
-	RotationAngle *string
-	Notes         *string
-}
+//
+// ============================================================
+// 🔹 CREATE PRODUCT PARAMS
+// ============================================================
+//
 
-type UpdateActuatorParams struct {
-	PartNo        string
-	ConnectorType *string
-	Mounting      *string
-	Voltage       *string
-	RotationAngle *string
-	Notes         *string
-}
-
-// =======================================================
-// BLOWER MOTOR
-// =======================================================
-
-type CreateBlowerMotorParams struct {
-	ID            string
-	PartNo        string
-	Mounting      *string
-	ConnectorType *string
-	Impeller      *string
-	Resistance    *string
-	MotorMounting *string
-	MotorType     *string
-	Voltage       *string
-	Notes         *string
-}
-
-type UpdateBlowerMotorParams struct {
-	PartNo        string
-	Mounting      *string
-	ConnectorType *string
-	Impeller      *string
-	Resistance    *string
-	MotorMounting *string
-	MotorType     *string
-	Voltage       *string
-	Notes         *string
-}
-
-// =======================================================
-// CABIN FILTER
-// =======================================================
-
-type CreateCabinFilterParams struct {
+type CreateProductParams struct {
 	ID         string
+	CompanyID  string
+	ModelID    string
+	BrandID    string
+	CategoryID string
 	PartNo     string
-	Type       *string
-	Dimensions *string
-	Material   *string
-	Notes      *string
+	IsActive   bool
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
-type UpdateCabinFilterParams struct {
-	PartNo     string
-	Type       *string
-	Dimensions *string
-	Material   *string
-	Notes      *string
-}
+//
+// ============================================================
+// 🔹 UPDATE PRODUCT PARAMS
+// ============================================================
+//
 
-// =======================================================
-// CHILLER UNIT
-// =======================================================
-
-type CreateChillerUnitParams struct {
-	ID      string
-	PartNo  string
-	Type    *string
-	Voltage *string
-	Notes   *string
-}
-
-type UpdateChillerUnitParams struct {
-	PartNo  string
-	Type    *string
-	Voltage *string
-	Notes   *string
-}
-
-// =======================================================
-// CLUTCH ASSY
-// =======================================================
-
-type CreateClutchAssyParams struct {
-	ID                string
-	PartNo            string
-	PulleyRibs        *string
-	PulleySize        *string
-	CompressorDetails *string
-	ConnectorType     *string
-	Voltage           *string
-	ShaftType         *string
-	Notes             *string
-}
-
-type UpdateClutchAssyParams struct {
-	PartNo            string
-	PulleyRibs        *string
-	PulleySize        *string
-	CompressorDetails *string
-	ConnectorType     *string
-	Voltage           *string
-	ShaftType         *string
-	Notes             *string
-}
-
-// =======================================================
-// COMPRESSOR VALVE
-// =======================================================
-
-type CreateCompressorValveParams struct {
-	ID                string
-	PartNo            string
-	Type              *string
-	Voltage           *string
-	ConnectorType     *string
-	CompressorDetails *string
-	Notes             *string
-}
-
-type UpdateCompressorValveParams struct {
-	PartNo            string
-	Type              *string
-	Voltage           *string
-	ConnectorType     *string
-	CompressorDetails *string
-	Notes             *string
-}
-
-// =======================================================
-// COND FAN ASSY
-// =======================================================
-
-type CreateCondFanAssyParams struct {
-	ID               string
-	PartNo           string
-	Voltage          *string
-	MotorType        *string
-	Resistance       *string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Shroud           *string
-	ConnectorType    *string
-	Notes            *string
-}
-
-type UpdateCondFanAssyParams struct {
-	PartNo           string
-	Voltage          *string
-	MotorType        *string
-	Resistance       *string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Shroud           *string
-	ConnectorType    *string
-	Notes            *string
-}
-
-// =======================================================
-// CONDENSER
-// =======================================================
-
-type CreateCondenserParams struct {
-	ID             string
-	PartNo         string
-	Size           *string
-	PipeConnector  *string
-	Drier          *string
-	PressureSwitch *string
-	Notes          *string
-}
-
-type UpdateCondenserParams struct {
-	PartNo         string
-	Size           *string
-	PipeConnector  *string
-	Drier          *string
-	PressureSwitch *string
-	Notes          *string
-}
-
-// =======================================================
-// EVAPORATOR
-// =======================================================
-
-type CreateEvaporatorParams struct {
-	ID             string
-	PartNo         string
-	Mounting       *string
-	ExpValve       *string
-	AdditionalInfo *string
-	Dimensions     *string
-	PipeConnector  *string
-	Notes          *string
-}
-
-type UpdateEvaporatorParams struct {
-	PartNo         string
-	Mounting       *string
-	ExpValve       *string
-	AdditionalInfo *string
-	Dimensions     *string
-	PipeConnector  *string
-	Notes          *string
-}
-
-// =======================================================
-// EXPANSION VALVE
-// =======================================================
-
-type CreateExpansionValveParams struct {
-	ID          string
-	PartNo      string
-	Type        *string
-	Material    *string
-	Refrigerant *string
-	Notes       *string
-}
-
-type UpdateExpansionValveParams struct {
-	PartNo      string
-	Type        *string
-	Material    *string
-	Refrigerant *string
-	Notes       *string
-}
-
-// =======================================================
-// FILTER DRIER
-// =======================================================
-
-type CreateFilterDrierParams struct {
-	ID             string
-	PartNo         string
-	PipeConnector  *string
-	Size           *string
-	PressureSwitch *string
-	Notes          *string
-}
-
-type UpdateFilterDrierParams struct {
-	PartNo         string
-	PipeConnector  *string
-	Size           *string
-	PressureSwitch *string
-	Notes          *string
-}
-
-// =======================================================
-// HEATER CORE
-// =======================================================
-
-type CreateHeaterCoreParams struct {
-	ID     string
-	PartNo string
-	Size   *string
-	Pipe   *string
-	Type   *string
-	Notes  *string
-}
-
-type UpdateHeaterCoreParams struct {
-	PartNo string
-	Size   *string
-	Pipe   *string
-	Type   *string
-	Notes  *string
-}
-
-// =======================================================
-// INTERCOOLER
-// =======================================================
-
-type CreateIntercoolerParams struct {
+type UpdateProductParams struct {
 	ID         string
-	PartNo     string
-	Size       *string
-	TempSensor *string
-	Notes      *string
+	CompanyID  *string
+	ModelID    *string
+	BrandID    *string
+	CategoryID *string
+	PartNo     *string
+	IsActive   *bool
+	UpdatedAt  *string
 }
 
-type UpdateIntercoolerParams struct {
-	PartNo     string
-	Size       *string
-	TempSensor *string
-	Notes      *string
-}
+//
+// ============================================================
+// 🔹 CREATE MODEL VARIANT PARAMS
+// ============================================================
+//
 
-// =======================================================
-// PRESSURE SWITCH
-// =======================================================
-
-type CreatePressureSwitchParams struct {
-	ID            string
-	PartNo        string
-	ConnectorType *string
-	ThreadType    *string
-	Notes         *string
-}
-
-type UpdatePressureSwitchParams struct {
-	PartNo        string
-	ConnectorType *string
-	ThreadType    *string
-	Notes         *string
-}
-
-// =======================================================
-// RADIATOR
-// =======================================================
-
-type CreateRadiatorParams struct {
-	ID           string
-	PartNo       string
-	Size         *string
-	Transmission *string
-	TempSensor   *string
-	Tank         *string
-	Notes        *string
-}
-
-type UpdateRadiatorParams struct {
-	PartNo       string
-	Size         *string
-	Transmission *string
-	TempSensor   *string
-	Tank         *string
-	Notes        *string
-}
-
-// =======================================================
-// RAD FAN ASSY
-// =======================================================
-
-type CreateRadFanAssyParams struct {
+type CreateModelVariantParams struct {
 	ID               string
 	PartNo           string
-	Voltage          *string
-	MotorType        *string
-	Resistance       *string
-	NumberOfSockets  *int32
-	Shroud           *string
-	ConnectorType    *string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Notes            *string
+	FuelTypes        []string
+	Gen              *string
+	EngineCc         *float64
+	TransmissionType []string
+	PlatformCodes    []string
+	Placement        string
+	Image1Link       *string
+	Image2Link       *string
+	Image3Link       *string
+	Image4Link       *string
+	HsnCode          *string
+	Unicode          []string
+	Description      *string
+	Make             string
+	OemIds           []string
+	Type             string
+	YearStart        *int32
+	YearEnd          *int32
+	VendorID         []string
+	AdditionalInfo   *string
 }
 
-type UpdateRadFanAssyParams struct {
-	PartNo           string
-	Voltage          *string
-	MotorType        *string
-	Resistance       *string
-	NumberOfSockets  *int32
-	Shroud           *string
-	ConnectorType    *string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Notes            *string
-}
+//
+// ============================================================
+// 🔹 UPDATE MODEL VARIANT PARAMS
+// ============================================================
+//
 
-// =======================================================
-// RAD FAN MOTOR
-// =======================================================
-
-type CreateRadFanMotorParams struct {
+type UpdateModelVariantParams struct {
 	ID               string
-	PartNo           string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Voltage          *string
-	NumberOfSockets  *int32
-	ConnectorType    *string
-	Notes            *string
+	PartNo           *string
+	FuelTypes        *[]string
+	Gen              *string
+	EngineCc         *float64
+	TransmissionType *[]string
+	PlatformCodes    *[]string
+	Placement        *string
+	Image1Link       *string
+	Image2Link       *string
+	Image3Link       *string
+	Image4Link       *string
+	HsnCode          *string
+	Unicode          *[]string
+	Description      *string
+	Make             *string
+	OemIds           *[]string
+	Type             *string
+	YearStart        *int32
+	YearEnd          *int32
+	VendorID         *[]string
+	AdditionalInfo   *string
 }
 
-type UpdateRadFanMotorParams struct {
-	PartNo           string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Voltage          *string
-	NumberOfSockets  *int32
-	ConnectorType    *string
-	Notes            *string
+//
+// ============================================================
+// 🔹 CREATE PRODUCT PRICING PARAMS
+// ============================================================
+//
+
+type CreateProductPricingParams struct {
+	ID            string
+	ProductPartID string
+	BasicPrice    float64
+	Freight       float64
+	Gst           float64
+
+	AcWorkshop    float64
+	AcWorkshopPer float64
+	AcWorkshopAmt float64
+
+	MultibrandWorkshop    float64
+	MultibrandWorkshopPer float64
+	MultibrandWorkshopAmt float64
+
+	AutoTrader    float64
+	AutoTraderPer float64
+	AutoTraderAmt float64
+
+	AcTrader    float64
+	AcTraderPer float64
+	AcTraderAmt float64
+
+	OutstationClassA float64
+	OutstationNote   *string
+
+	OemMrp      float64
+	UnitMeasure *string
+
+	MinimumPurchaseQuantity int32
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-// =======================================================
-// RESISTOR
-// =======================================================
+//
+// ============================================================
+// 🔹 UPDATE PRODUCT PRICING PARAMS
+// ============================================================
+//
 
-type CreateResistorParams struct {
+type UpdateProductPricingParams struct {
+	partNo string
+
+	BasicPrice *float64
+	Freight    *float64
+	Gst        *float64
+
+	AcWorkshop    *float64
+	AcWorkshopPer *float64
+	AcWorkshopAmt *float64
+
+	MultibrandWorkshop    *float64
+	MultibrandWorkshopPer *float64
+	MultibrandWorkshopAmt *float64
+
+	AutoTrader    *float64
+	AutoTraderPer *float64
+	AutoTraderAmt *float64
+
+	AcTrader    *float64
+	AcTraderPer *float64
+	AcTraderAmt *float64
+
+	OutstationClassA *float64
+	OutstationNote   *string
+
+	OemMrp      *float64
+	UnitMeasure *string
+
+	MinimumPurchaseQuantity *int32
+
+	UpdatedAt *time.Time
+}
+
+//
+// ============================================================
+// 🔹 CREATE PRODUCT INVENTORY PARAMS
+// ============================================================
+//
+
+type CreateProductInventoryParams struct {
+	ID                   string
+	PartNo               string
+	MinimumOrderLevel    int32
+	MaximumOrderLevel    int32
+	QtyInStock           int32
+	Location             string
+	IsFlash              bool
+	IsRequestedForSupply bool
+	VendorID             *string
+}
+
+//
+// ============================================================
+// 🔹 UPDATE PRODUCT INVENTORY PARAMS
+// ============================================================
+//
+
+type UpdateProductInventoryParams struct {
+	PartNo               string
+	MinimumOrderLevel    *int32
+	MaximumOrderLevel    *int32
+	QtyInStock           *int32
+	Location             *string
+	IsFlash              *bool
+	IsRequestedForSupply *bool
+	VendorID             *string
+	UpdatedAt            *string
+}
+
+//
+// ============================================================
+// 🔹 CREATE PRODUCT OFFER PARAMS
+// ============================================================
+//
+
+type CreateProductOfferParams struct {
 	ID            string
 	PartNo        string
-	Type          *string
-	ConnectorType *string
-	Voltage       *string
-	Notes         *string
+	IsOfferActive bool
+	StartDate     string
+	EndDate       string
+	AcTrader      []string
+	MultiBrand    []string
+	Autotrader    []string
+	AcWorkshop    []string
+	CreatedAt     time.Time
+	UpdatedAt     time.Time
 }
 
-type UpdateResistorParams struct {
-	PartNo        string
-	Type          *string
-	ConnectorType *string
-	Voltage       *string
-	Notes         *string
-}
+//
+// ============================================================
+// 🔹 UPDATE PRODUCT OFFER PARAMS
+// ============================================================
+//
 
-// =======================================================
-// ROTOR
-// =======================================================
-
-type CreateRotorParams struct {
-	ID                string
-	PartNo            string
-	PulleyRibs        *string
-	PulleySize        *string
-	CompressorDetails *string
-	Notes             *string
-}
-
-type UpdateRotorParams struct {
-	PartNo            string
-	PulleyRibs        *string
-	PulleySize        *string
-	CompressorDetails *string
-	Notes             *string
-}
-
-// =======================================================
-// STATOR
-// =======================================================
-
-type CreateStatorParams struct {
-	ID                string
-	PartNo            string
-	Voltage           *string
-	CompressorDetails *string
-	Notes             *string
-}
-
-type UpdateStatorParams struct {
-	PartNo            string
-	Voltage           *string
-	CompressorDetails *string
-	Notes             *string
-}
-
-// =======================================================
-// COMPRESSOR
-// =======================================================
-
-type CreateCompressorParams struct {
+type UpdateProductOfferParams struct {
 	ID            string
 	PartNo        string
-	CompressorID  *string
-	Oil           *string
-	Refrigerant   *string
-	Voltage       *string
-	PulleyRibs    *string
-	PulleySize    *string
-	PipeConnector *string
-	CompType      *string
-	CompMounting  *string
-	ConnectorType *string
-	Notes         *string
+	IsOfferActive *bool
+	StartDate     *string
+	EndDate       *string
+	AcTrader      *[]string
+	MultiBrand    *[]string
+	Autotrader    *[]string
+	AcWorkshop    *[]string
+	UpdatedAt     *time.Time
 }
 
-type UpdateCompressorParams struct {
-	PartNo        string
-	CompressorID  *string
-	Oil           *string
-	Refrigerant   *string
-	Voltage       *string
-	PulleyRibs    *string
-	PulleySize    *string
-	PipeConnector *string
-	CompType      *string
-	CompMounting  *string
-	ConnectorType *string
-	Notes         *string
+//
+// ============================================================
+// 🔹 CREATE PRODUCT OEM PARAMS
+// ============================================================
+//
+
+type CreateOEMParams struct {
+	ID        string
+	PartNo    string
+	OemNumber string
+	Price     float64
+}
+
+//
+// ============================================================
+// 🔹 CREATE PRODUCT VENDOR LISTING PARAMS
+// ============================================================
+//
+type CreateVendorListingParams struct {
+	ID            string
+	ProductPartNo string
+	VendorName    string
+	VendorPartNo  string
+	VendorPrice   float64
 }

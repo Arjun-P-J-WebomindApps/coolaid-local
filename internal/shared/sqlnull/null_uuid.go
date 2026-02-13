@@ -20,3 +20,12 @@ func UUID(id *string) uuid.NullUUID {
 		Valid: true,
 	}
 }
+
+func UUIDPtr(u uuid.NullUUID) *string {
+	if !u.Valid {
+		return nil
+	}
+
+	str := u.UUID.String()
+	return &str
+}

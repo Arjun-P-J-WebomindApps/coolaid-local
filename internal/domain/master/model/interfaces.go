@@ -11,6 +11,7 @@ type Queries interface {
 	// Reads
 	GetModelByID(ctx context.Context, id shared.ID) (*ModelRow, error)
 	GetModelsByCompanyAndModelNames(ctx context.Context, modelName string, companyName string) ([]ModelWithCompanyRow, error)
+	GetModelByName(ctx context.Context, name string) (*ModelRow, error)
 
 	// Writes
 	CreateModel(ctx context.Context, p CreateModelParams) (*ModelRow, error)

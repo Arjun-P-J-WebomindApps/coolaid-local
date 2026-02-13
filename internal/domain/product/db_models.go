@@ -1,223 +1,224 @@
-package techspec
+package product
 
-/*
-Domain-level representations of DB rows.
-These are NOT sqlc / ORM models.
-The repository layer adapts DB rows into these.
-*/
+import "time"
 
-type ActuatorRow struct {
-	ID            string
-	PartNo        string
-	ConnectorType *string
-	Mounting      *string
-	Voltage       *string
-	RotationAngle *string
-	Notes         *string
-}
+//
+// ============================================================
+// 🔹 PRODUCT (Main Table)
+// ============================================================
+//
 
-type BlowerMotorRow struct {
-	ID            string
-	PartNo        string
-	Mounting      *string
-	ConnectorType *string
-	Impeller      *string
-	Resistance    *string
-	MotorMounting *string
-	MotorType     *string
-	Voltage       *string
-	Notes         *string
-}
-
-type CabinFilterRow struct {
+type ProductRow struct {
 	ID         string
 	PartNo     string
-	Type       *string
-	Dimensions *string
-	Material   *string
-	Notes      *string
+	CompanyID  string
+	ModelID    string
+	BrandID    string
+	CategoryID string
+	IsActive   bool
+	CreatedAt  time.Time
+	UpdatedAt  time.Time
 }
 
-type ChillerUnitRow struct {
-	ID      string
-	PartNo  string
-	Type    *string
-	Voltage *string
-	Notes   *string
-}
+//
+// ============================================================
+// 🔹 MODEL VARIANT
+// ============================================================
+//
 
-type ClutchAssyRow struct {
-	ID                string
-	PartNo            string
-	PulleyRibs        *string
-	PulleySize        *string
-	CompressorDetails *string
-	ConnectorType     *string
-	Voltage           *string
-	ShaftType         *string
-	Notes             *string
-}
-
-type CompressorValveRow struct {
-	ID                string
-	PartNo            string
-	Type              *string
-	Voltage           *string
-	ConnectorType     *string
-	CompressorDetails *string
-	Notes             *string
-}
-
-type CondFanAssyRow struct {
+type ModelVariantRow struct {
 	ID               string
 	PartNo           string
-	Voltage          *string
-	MotorType        *string
-	Resistance       *string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Shroud           *string
-	ConnectorType    *string
-	Notes            *string
-}
+	Type             string
+	Gen              *string
+	FuelTypes        []string
+	HsnCode          *string
+	EngineCc         *float64
+	TransmissionType []string
+	PlatformCodes    []string
+	Placement        *string
 
-type CondenserRow struct {
-	ID             string
-	PartNo         string
-	Size           *string
-	PipeConnector  *string
-	Drier          *string
-	PressureSwitch *string
-	Notes          *string
-}
+	Image1Link *string
+	Image2Link *string
+	Image3Link *string
+	Image4Link *string
 
-type EvaporatorRow struct {
-	ID             string
-	PartNo         string
-	Mounting       *string
-	ExpValve       *string
+	Make           *string
+	Unicode        []string
+	YearStart      *int32
+	YearEnd        *int32
+	Description    *string
 	AdditionalInfo *string
-	Dimensions     *string
-	PipeConnector  *string
-	Notes          *string
+
+	OemIDs    []string
+	VendorIDs []string
 }
 
-type ExpansionValveRow struct {
-	ID          string
-	PartNo      string
-	Type        *string
-	Material    *string
-	Refrigerant *string
-	Notes       *string
+//
+// ============================================================
+// 🔹 OEM LISTING
+// ============================================================
+//
+
+type OEMListingRow struct {
+	ID        string
+	PartNo    string
+	OemNumber string
+	Price     float64
 }
 
-type FilterDrierRow struct {
-	ID             string
-	PartNo         string
-	PipeConnector  *string
-	Size           *string
-	PressureSwitch *string
-	Notes          *string
+//
+// ============================================================
+// 🔹 VENDOR LISTING (NOT master vendor)
+// ============================================================
+//
+
+type VendorListingRow struct {
+	ID            string
+	ProductPartNo string
+	VendorName    string
+	VendorPartNo  string
+	VendorPrice   float64
 }
 
-type HeaterCoreRow struct {
-	ID     string
-	PartNo string
-	Size   *string
-	Pipe   *string
-	Type   *string
-	Notes  *string
+//
+// ============================================================
+// 🔹 PRICING
+// ============================================================
+//
+
+type PricingRow struct {
+	ID            string
+	ProductPartID string
+
+	BasicPrice float64
+	Freight    float64
+	Gst        float64
+	Tax        float64
+
+	AcWorkshop    float64
+	AcWorkshopPer float64
+	AcWorkshopAmt float64
+
+	MultibrandWorkshop    float64
+	MultibrandWorkshopPer float64
+	MultibrandWorkshopAmt float64
+
+	AutoTrader    float64
+	AutoTraderPer float64
+	AutoTraderAmt float64
+
+	AcTrader    float64
+	AcTraderPer float64
+	AcTraderAmt float64
+
+	OutstationClassA float64
+	OutstationNote   *string
+
+	OemMrp                  float64
+	UnitMeasure             *string
+	MinimumPurchaseQuantity int32
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-type IntercoolerRow struct {
-	ID         string
-	PartNo     string
-	Size       *string
-	TempSensor *string
-	Notes      *string
+//
+// ============================================================
+// 🔹 INVENTORY
+// ============================================================
+//
+
+type InventoryRow struct {
+	ID                   string
+	PartNo               string
+	MinimumOrderLevel    int32
+	MaximumOrderLevel    int32
+	QtyInStock           int32
+	Location             *string
+	IsFlash              bool
+	IsRequestedForSupply bool
+	VendorID             *string
+	UpdatedAt            time.Time
 }
 
-type PressureSwitchRow struct {
+//
+// ============================================================
+// 🔹 OFFER
+// ============================================================
+//
+
+type OfferRow struct {
 	ID            string
 	PartNo        string
-	ConnectorType *string
-	ThreadType    *string
-	Notes         *string
+	IsOfferActive bool
+	StartDate     time.Time
+	EndDate       time.Time
+
+	AcTrader   []string
+	MultiBrand []string
+	Autotrader []string
+	AcWorkshop []string
+
+	CreatedAt time.Time
+	UpdatedAt time.Time
 }
 
-type RadiatorRow struct {
-	ID           string
-	PartNo       string
-	Size         *string
-	Transmission *string
-	TempSensor   *string
-	Tank         *string
-	Notes        *string
+//
+// ============================================================
+// 🔹 AGGREGATE READ MODEL (JOINED QUERY)
+// Used for GetFilteredProducts / GetProductDetails
+// ============================================================
+//
+
+type ProductAggregateRow struct {
+	// Product
+	ProductRow
+
+	// Variant
+	ModelVariantRow
+
+	// Pricing
+	PricingRow
+
+	// Inventory
+	InventoryRow
+
+	// Offer
+	OfferRow
 }
 
-type RadFanAssyRow struct {
-	ID               string
-	PartNo           string
-	Voltage          *string
-	MotorType        *string
-	Resistance       *string
-	NumberOfSockets  *int32
-	Shroud           *string
-	ConnectorType    *string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Notes            *string
-}
+//
+// ============================================================
+// 🔹 SIMILAR PRICING ROW
+// ============================================================
+//
 
-type RadFanMotorRow struct {
-	ID               string
-	PartNo           string
-	FanBladeDiameter *string
-	NumberOfBlades   *int32
-	Voltage          *string
-	NumberOfSockets  *int32
-	ConnectorType    *string
-	Notes            *string
-}
+type SimilarPricingRow struct {
+	BrandName string
 
-type ResistorRow struct {
-	ID            string
-	PartNo        string
-	Type          *string
-	ConnectorType *string
-	Voltage       *string
-	Notes         *string
-}
+	BasicPrice float64
+	Freight    float64
+	Gst        float64
+	Tax        float64
 
-type RotorRow struct {
-	ID                string
-	PartNo            string
-	PulleyRibs        *string
-	PulleySize        *string
-	CompressorDetails *string
-	Notes             *string
-}
+	AcWorkshop    float64
+	AcWorkshopPer float64
+	AcWorkshopAmt float64
 
-type StatorRow struct {
-	ID                string
-	PartNo            string
-	Voltage           *string
-	CompressorDetails *string
-	Notes             *string
-}
+	MultibrandWorkshop    float64
+	MultibrandWorkshopPer float64
+	MultibrandWorkshopAmt float64
 
-type CompressorRow struct {
-	ID            string
-	PartNo        string
-	CompressorID  *string
-	Oil           *string
-	Refrigerant   *string
-	Voltage       *string
-	PulleyRibs    *string
-	PulleySize    *string
-	PipeConnector *string
-	CompType      *string
-	CompMounting  *string
-	ConnectorType *string
-	Notes         *string
+	AutoTrader    float64
+	AutoTraderPer float64
+	AutoTraderAmt float64
+
+	AcTrader    float64
+	AcTraderPer float64
+	AcTraderAmt float64
+
+	OemMrp                  float64
+	UnitMeasure             *string
+	MinimumPurchaseQuantity int32
 }

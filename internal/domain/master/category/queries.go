@@ -1,6 +1,10 @@
 package category
 
-import "context"
+import (
+	"context"
+
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/shared"
+)
 
 func (s *Service) ListByName(
 	ctx context.Context,
@@ -18,4 +22,38 @@ func (s *Service) ListByName(
 	}
 
 	return out, nil
+}
+
+func (s *Service) GetByID(
+	ctx context.Context,
+	id string,
+) (*Category, error) {
+
+	if id == "" {
+		return nil, ErrInvalidInput
+	}
+
+	row, err := s.DB.Queries().GetCategoryByID(ctx, shared.ID(id))
+	if err != nil {
+		return nil, ErrCategoryNotFound
+	}
+
+	return mapRowToModel(row), nil
+}
+
+func (s *Service) GetByName(
+	ctx context.Context,
+	name string,
+) (*Category, error) {
+
+	if name == "" {
+		return nil, ErrInvalidInput
+	}
+
+	row, err := s.DB.Queries().GetCategoryByName(ctx, name)
+	if err != nil {
+		return nil, ErrCategoryNotFound
+	}
+
+	return mapRowToModel(row), nil
 }

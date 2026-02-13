@@ -101,6 +101,24 @@ func (m *modelQueries) GetModelsByCompanyAndModelNames(
 	return out, nil
 }
 
+func (m *modelQueries) GetModelByName(
+	ctx context.Context,
+	name string,
+) (*domainmodel.ModelRow, error) {
+
+	row, err := m.q.GetModelByName(ctx, name)
+	if err != nil {
+		return nil, err
+	}
+
+	return &domainmodel.ModelRow{
+		ID:        row.ID.String(),
+		CompanyID: row.CompanyID.String(),
+		Name:      row.Name,
+		ImageURL:  row.ImageUrl,
+	}, nil
+}
+
 func (m *modelQueries) CreateModel(
 	ctx context.Context,
 	p domainmodel.CreateModelParams,

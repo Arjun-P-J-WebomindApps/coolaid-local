@@ -31,3 +31,20 @@ func (s *Service) ListByName(ctx context.Context, modelName *string, companyName
 
 	return out, nil
 }
+
+func (s *Service) GetByName(
+	ctx context.Context,
+	name string,
+) (*Model, error) {
+
+	if name == "" {
+		return nil, ErrInvalidInput
+	}
+
+	row, err := s.DB.Queries().GetModelByName(ctx, name)
+	if err != nil {
+		return nil, ErrModelNotFound
+	}
+
+	return mapRowToModel(row), nil
+}
