@@ -40,9 +40,9 @@ type Queries interface {
 	// ============================
 
 	GetProductByPartNo(ctx context.Context, partNo string) (*ProductRow, error)
-	CreateProduct(ctx context.Context, p CreateProductParams) (*ProductRow, error)
-	UpdateProduct(ctx context.Context, p UpdateProductParams) (*ProductRow, error)
-	DeleteProduct(ctx context.Context, partNo string) error
+	CreateProductPart(ctx context.Context, p CreateProductParams) (*ProductRow, error)
+	UpdateProductPart(ctx context.Context, p UpdateProductParams) (*ProductRow, error)
+	DeleteProductPart(ctx context.Context, partNo string) error
 
 	// ============================
 	// MODEL VARIANT
@@ -85,6 +85,7 @@ type Queries interface {
 	// ============================
 
 	GetOEMByPartNo(ctx context.Context, partNo string) ([]OEMListingRow, error)
+	GetOemListingsByIds(ctx context.Context, ids []string) ([]OEMListingRow, error)
 	CreateOemListingWithID(ctx context.Context, p CreateOEMParams) (*OEMListingRow, error)
 	DeleteOEMByPartNo(ctx context.Context, partNo string) error
 
@@ -93,15 +94,17 @@ type Queries interface {
 	// ============================
 
 	GetVendorsByPartNo(ctx context.Context, partNo string) ([]VendorListingRow, error)
+	GetVendorListingsByIds(ctx context.Context, ids []string) ([]VendorListingRow, error)
 	CreateVendorListingWithID(ctx context.Context, p CreateVendorListingParams) (*VendorListingRow, error)
 	DeleteVendorsByPartNo(ctx context.Context, partNo string) error
 
 	// ============================
 	// FILTER / READ AGGREGATES
 	// ============================
-
-	GetFilteredProducts(ctx context.Context, p FilterParams) ([]ProductAggregateRow, error)
+	GetProductDetailsList(ctx context.Context, params ProductsFilterParams) ([]*ProductAggregateRow, error)
+	GetFilteredProducts(ctx context.Context, p FilterSelectionParams) ([]FilteredRow, error)
 	GetSimilarPricing(ctx context.Context, p SimilarPricingParams) ([]SimilarPricingRow, error)
+	GetProductPartNos(ctx context.Context, search string) ([]string, error)
 }
 
 // ------------------------------------------------------------

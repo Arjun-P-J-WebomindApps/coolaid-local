@@ -1,6 +1,8 @@
 package product
 
-import "time"
+import (
+	"time"
+)
 
 //
 // ============================================================
@@ -18,6 +20,18 @@ type ProductRow struct {
 	IsActive   bool
 	CreatedAt  time.Time
 	UpdatedAt  time.Time
+}
+
+type ProductResolvedRow struct {
+	ID           string
+	PartNo       string
+	CompanyName  string
+	ModelName    string
+	BrandName    string
+	CategoryName string
+	IsActive     bool
+	CreatedAt    time.Time
+	UpdatedAt    time.Time
 }
 
 //
@@ -173,19 +187,19 @@ type OfferRow struct {
 
 type ProductAggregateRow struct {
 	// Product
-	ProductRow
+	Product ProductResolvedRow
 
 	// Variant
-	ModelVariantRow
+	ModelVariant ModelVariantRow
 
 	// Pricing
-	PricingRow
+	Pricing PricingRow
 
 	// Inventory
-	InventoryRow
+	Inventory InventoryRow
 
 	// Offer
-	OfferRow
+	Offer OfferRow
 }
 
 //
@@ -194,9 +208,7 @@ type ProductAggregateRow struct {
 // ============================================================
 //
 
-type SimilarPricingRow struct {
-	BrandName string
-
+type Pricing struct {
 	BasicPrice float64
 	Freight    float64
 	Gst        float64
@@ -219,6 +231,52 @@ type SimilarPricingRow struct {
 	AcTraderAmt float64
 
 	OemMrp                  float64
-	UnitMeasure             *string
+	UnitMeasure             string
 	MinimumPurchaseQuantity int32
+
+	OutstationClassA float64
+	OutstationNote   string
+}
+
+type SimilarPricingRow struct {
+	BrandName string
+	Pricing   Pricing
+}
+
+//
+// ============================================================
+// 🔹 Filter Page ROW
+// ============================================================
+//
+
+type FilterItem struct {
+	CompanyName   string
+	CompanyImage  string
+	ModelName     string
+	ModelImage    string
+	BrandName     string
+	BrandImage    string
+	CategoryName  string
+	CategoryImage string
+	PartNo        string
+}
+
+// FilterSelection represents grouped filter results.
+// Self: rows matching Unicode filter (or all rows if no filter)
+// Unicode: rows not matching Unicode filter
+type FilterSelection struct {
+	Self    []FilterItem `json:"self"`
+	Unicode []FilterItem `json:"unicode"`
+}
+
+type FilteredRow struct {
+	PartNo        string
+	CompanyName   string
+	CompanyImage  string
+	ModelName     string
+	ModelImage    string
+	BrandName     string
+	BrandImage    string
+	CategoryName  string
+	CategoryImage string
 }

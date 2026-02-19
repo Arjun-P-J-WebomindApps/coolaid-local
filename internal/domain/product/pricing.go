@@ -31,6 +31,46 @@ func (s *Service) getPricingByPartNo(
 	return mapPricingRowToModel(row), nil
 }
 
+func (s *Service) GetSimilarPricing(
+	ctx context.Context,
+	params SimilarPricingParams,
+) ([]SimilarPricingRow, error) {
+
+	if params.Company == "" {
+		return nil, ErrInvalidInput
+	}
+
+	if params.Model == "" {
+		return nil, ErrInvalidInput
+	}
+
+	if params.Category == "" {
+		return nil, ErrInvalidInput
+	}
+
+	if params.Type == "" {
+		return nil, ErrInvalidInput
+	}
+
+	rows, err := s.DB.Queries().GetSimilarPricing(ctx, SimilarPricingParams{
+		Company:  params.Company,
+		Model:    params.Model,
+		Category: params.Category,
+		Type:     params.Type,
+	})
+	if err != nil {
+		return nil, ErrInternal
+	}
+
+	return rows, nil
+}
+
+//
+// ============================================================
+// 🔹 PRICING ( MUTATIONS )
+// ============================================================
+//
+
 func (s *Service) createPricing(
 	ctx context.Context,
 	Q Queries,
@@ -91,7 +131,7 @@ func (s *Service) updatePricing(
 	now := time.Now()
 
 	row, err := Q.UpdatePricing(ctx, UpdateProductPricingParams{
-		partNo: partNo,
+		PartNo: partNo,
 
 		BasicPrice: input.BasicPrice,
 		Freight:    input.Freight,

@@ -147,7 +147,7 @@ type CreateProductPricingParams struct {
 //
 
 type UpdateProductPricingParams struct {
-	partNo string
+	PartNo string
 
 	BasicPrice *float64
 	Freight    *float64
@@ -279,4 +279,32 @@ type CreateVendorListingParams struct {
 	VendorName    string
 	VendorPartNo  string
 	VendorPrice   float64
+}
+
+type FilterSelectionParams struct {
+	Company  *string
+	Model    *string
+	Brand    *string
+	Category *string
+	Unicode  *string
+}
+
+type SimilarPricingParams struct {
+	Company  string
+	Model    string
+	Category string
+	Type     string
+}
+
+type ProductsFilterParams struct {
+	Company *string `json:"company,omitempty"`
+	Model   *string `json:"model,omitempty"`
+	PartNo  *string `json:"part_no,omitempty"`
+
+	Categories        []string `json:"categories,omitempty"`
+	Brands            []string `json:"brands,omitempty"`
+	Gen               []string `json:"gen,omitempty"`
+	FuelType          []string `json:"fuel_type,omitempty"`
+	Mark              []string `json:"mark,omitempty"`
+	UnicodeCategories []string `json:"unicode_categories,omitempty"`
 }

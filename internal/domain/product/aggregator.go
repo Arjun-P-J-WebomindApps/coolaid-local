@@ -7,115 +7,6 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/oplog"
 )
 
-func (s *Service) validateCreateProduct(input CreateProductInput) error {
-
-	// -------------------------------------------------
-	// 1️⃣ Main Required Fields
-	// -------------------------------------------------
-
-	if input.Main.PartNo == "" {
-		return ErrInvalidPartNo
-	}
-
-	if input.Main.CompanyName == "" {
-		return ErrInvalidCompany
-	}
-
-	if input.Main.ModelName == "" {
-		return ErrInvalidModel
-	}
-
-	if input.Main.BrandName == "" {
-		return ErrInvalidBrand
-	}
-
-	if input.Main.CategoryName == "" {
-		return ErrInvalidCategory
-	}
-
-	// -------------------------------------------------
-	// 2️⃣ Offer Validation
-	// -------------------------------------------------
-
-	if input.Offer.IsOfferActive {
-
-		if input.Offer.StartDate == "" || input.Offer.EndDate == "" {
-			return ErrInvalidOfferData
-		}
-
-		start, err := parseDate(input.Offer.StartDate)
-		if err != nil {
-			return ErrInvalidOfferData
-		}
-
-		end, err := parseDate(input.Offer.EndDate)
-		if err != nil {
-			return ErrInvalidOfferData
-		}
-
-		if end.Before(start) {
-			return ErrInvalidOfferDateRange
-		}
-	}
-
-	// -------------------------------------------------
-	// 3️⃣ Pricing Validation
-	// -------------------------------------------------
-
-	if input.Pricing.BasicPrice < 0 ||
-		input.Pricing.Gst < 0 ||
-		input.Pricing.MinimumPurchaseQuantity < 0 ||
-		input.Pricing.OemMrp < 0 {
-		return ErrInvalidPricingData
-	}
-
-	// -------------------------------------------------
-	// 4️⃣ Inventory Validation
-	// -------------------------------------------------
-
-	if input.Inventory.QtyInStock < 0 ||
-		input.Inventory.MinimumOrderLevel < 0 ||
-		input.Inventory.MaximumOrderLevel < input.Inventory.MinimumOrderLevel {
-		return ErrInvalidInventory
-	}
-
-	// -------------------------------------------------
-	// 5️⃣ Vendor Validation
-	// -------------------------------------------------
-
-	for _, vendor := range input.Vendors {
-
-		if vendor.VendorName == "" {
-			return ErrInvalidVendor
-		}
-
-		if vendor.VendorPartNo == "" {
-			return ErrInvalidVendor
-		}
-
-		if vendor.VendorPrice < 0 {
-			return ErrInvalidVendor
-		}
-	}
-
-	// -------------------------------------------------
-	// 6️⃣ OEM Validation
-	// -------------------------------------------------
-
-	for _, oem := range input.OemNumbers {
-
-		if oem.OemNumber == "" {
-			return ErrInvalidOEM
-		}
-
-		if oem.Price < 0 {
-			return ErrInvalidOEM
-		}
-	}
-
-	return nil
-}
-
 func (s *Service) CreateProduct(
 	ctx context.Context,
 	input CreateProductInput,
@@ -305,21 +196,29 @@ func (s *Service) UpdateProduct(
 	// --------------------------------------------------
 	// 1️⃣ Ensure Product Exists
 	// --------------------------------------------------
+	oplog.Info(ctx, "update product started", "partNo", input.Main.PartNo)
 
-	exists, err := s.DB.Queries().GetProductByPartNo(ctx, input.Main.PartNo)
+	current, err := s.DB.Queries().GetProductByPartNo(ctx, input.Main.PartNo)
 	if err != nil {
+		oplog.Error(ctx, "load failed", "partNo", input.Main.PartNo, "error", err)
 		return nil, ErrInternal
 	}
-	if exists == nil {
+	if current == nil {
 		return nil, ErrProductNotFound
+	}
+
+	if err := s.validateUpdateProduct(ctx, input, current); err != nil {
+		oplog.Error(ctx, "update validation failed", "partNo", input.Main.PartNo, "error", err)
+		return nil, err
 	}
 
 	// --------------------------------------------------
 	// 2️⃣ Begin Transaction
 	// --------------------------------------------------
 
-	tx, q, err := s.DB.BeginTx(ctx)
+	tx, _, err := s.DB.BeginTx(ctx)
 	if err != nil {
+		oplog.Error(ctx, "transaction begin failed", "partNo", input.Main.PartNo, "error", err)
 		return nil, ErrInternal
 	}
 	defer tx.Rollback()
@@ -328,7 +227,7 @@ func (s *Service) UpdateProduct(
 	defer func() {
 		if !committed {
 			tx.Rollback()
-			oplog.Warn(ctx, "transaction rolled back", "partNo=", input.Main.PartNo)
+			oplog.Warn(ctx, "transaction rolled back on update", "partNo", input.Main.PartNo)
 		}
 	}()
 
@@ -341,27 +240,54 @@ func (s *Service) UpdateProduct(
 	// 3️⃣ Replace Vendors
 	// --------------------------------------------------
 
-	if err := q.DeleteVendorsByPartNo(ctx, partNo); err != nil {
+	if err := s.deleteVendors(ctx, productQ, partNo); err != nil {
+		oplog.Error(ctx, "failed to delete existing vendors during update",
+			"partNo", partNo,
+			"error", err,
+		)
 		return nil, ErrInternal
 	}
 
 	vendorIDs, err := s.createVendors(ctx, productQ, partNo, input.Vendors)
 	if err != nil {
+		oplog.Error(ctx, "failed to create/replace vendors during update",
+			"partNo", partNo,
+			"incoming_count", len(input.Vendors),
+			"error", err,
+		)
 		return nil, err
 	}
+	oplog.Info(ctx, "vendors replaced successfully",
+		"partNo", partNo,
+		"new_count", len(vendorIDs),
+	)
 
 	// --------------------------------------------------
 	// 4️⃣ Replace OEM
 	// --------------------------------------------------
 
-	if err := q.DeleteOEMByPartNo(ctx, partNo); err != nil {
+	if err := s.deleteOEMByPartNo(ctx, productQ, partNo); err != nil {
+		oplog.Error(ctx, "failed to delete existing OEMs during update",
+			"partNo", partNo,
+			"error", err,
+		)
 		return nil, ErrInternal
 	}
 
 	oemIDs, err := s.createOEMs(ctx, productQ, partNo, input.OemNumbers)
 	if err != nil {
+		oplog.Error(ctx, "failed to create/replace OEMs during update",
+			"partNo", partNo,
+			"incoming_count", len(input.OemNumbers),
+			"error", err,
+		)
 		return nil, err
 	}
+
+	oplog.Info(ctx, "OEMs replaced successfully",
+		"partNo", partNo,
+		"new_count", len(oemIDs),
+	)
 
 	// --------------------------------------------------
 	// 5️⃣ Update Model Variant
@@ -395,6 +321,10 @@ func (s *Service) UpdateProduct(
 			AdditionalInfo:   input.Main.BaseData.AdditionalInfo,
 		},
 	); err != nil {
+		oplog.Error(ctx, "failed to update model variant",
+			"partNo", partNo,
+			"error", err,
+		)
 		return nil, err
 	}
 
@@ -403,6 +333,10 @@ func (s *Service) UpdateProduct(
 	// --------------------------------------------------
 
 	if _, err := s.updatePricing(ctx, productQ, partNo, input.Pricing); err != nil {
+		oplog.Error(ctx, "failed to update pricing",
+			"partNo", partNo,
+			"error", err,
+		)
 		return nil, err
 	}
 
@@ -411,6 +345,10 @@ func (s *Service) UpdateProduct(
 	// --------------------------------------------------
 
 	if _, err := s.updateInventory(ctx, productQ, partNo, input.Inventory); err != nil {
+		oplog.Error(ctx, "failed to update inventory",
+			"partNo", partNo,
+			"error", err,
+		)
 		return nil, err
 	}
 
@@ -419,6 +357,10 @@ func (s *Service) UpdateProduct(
 	// --------------------------------------------------
 
 	if _, err := s.updateOffer(ctx, productQ, partNo, input.Offer); err != nil {
+		oplog.Error(ctx, "failed to update offer",
+			"partNo", partNo,
+			"error", err,
+		)
 		return nil, err
 	}
 
@@ -427,6 +369,10 @@ func (s *Service) UpdateProduct(
 	// --------------------------------------------------
 
 	if err := s.TechnicalService.UpdateTechSpec(ctx, techQ, partNo, &input.TechSpec); err != nil {
+		oplog.Error(ctx, "failed to update tech spec",
+			"partNo", partNo,
+			"error", err,
+		)
 		return nil, err
 	}
 
@@ -435,8 +381,40 @@ func (s *Service) UpdateProduct(
 	// --------------------------------------------------
 
 	if err := tx.Commit(); err != nil {
+		oplog.Error(ctx, "transaction commit failed",
+			"partNo", partNo,
+			"error", err,
+		)
 		return nil, ErrInternal
 	}
+
+	//TODO: Update Typesense only if required
+
+	if s.SearchService != nil {
+		err := s.SearchService.Update(ctx, search.IndexRequest{
+			Collection: "products",
+			ID:         partNo,
+			Payload: search.ProductSearchDocument{
+				ID:       string(current.ID),
+				Company:  *input.Main.CompanyName, // note: better to resolve again if changed
+				Model:    *input.Main.ModelName,
+				PartNo:   partNo,
+				Brand:    *input.Main.BrandName,
+				Category: *input.Main.CategoryName,
+			},
+		})
+		if err != nil {
+			oplog.Error(ctx, "typesense reindex failed after update",
+				"partNo", partNo,
+				"error", err,
+			)
+			// do NOT return error — search is non-critical
+		} else {
+			oplog.Info(ctx, "typesense reindex success after update", "partNo", partNo)
+		}
+	}
+
+	oplog.Info(ctx, "product update completed successfully", "partNo", partNo)
 
 	return &Product{
 		PartNo: partNo,
@@ -448,51 +426,69 @@ func (s *Service) DeleteProduct(
 	partNo string,
 ) error {
 
+	oplog.Info(ctx, "delete product started", "partNo", partNo)
+
 	// --------------------------------------------------
 	// 1️⃣ Ensure Exists
 	// --------------------------------------------------
 
 	product, err := s.DB.Queries().GetProductByPartNo(ctx, partNo)
 	if err != nil {
+		oplog.Error(ctx, "failed to load product for delete", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 	if product == nil {
+		oplog.Warn(ctx, "product not found for delete", "partNo", partNo)
 		return ErrProductNotFound
 	}
 
-	tx, q, err := s.DB.BeginTx(ctx)
+	tx, _, err := s.DB.BeginTx(ctx)
 	if err != nil {
+		oplog.Error(ctx, "transaction begin failed for delete", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 	defer tx.Rollback()
 
-	categroy, err := s.CategoryService.GetByID(ctx, product.CategoryID)
+	category, err := s.CategoryService.GetByID(ctx, product.CategoryID)
+	if err != nil {
+		oplog.Error(ctx, "failed to load category for delete", "partNo", partNo, "categoryID", product.CategoryID, "error", err)
+		return ErrCategoryNotFound
+	}
+
+	productQ := s.DB.NewQueriesFromTx(tx)
+	techQ := s.TechnicalService.DB.NewQueriesFromTx(tx)
 
 	// --------------------------------------------------
 	// 2️⃣ Delete Related Data
 	// --------------------------------------------------
 
-	if err := q.DeleteVendorsByPartNo(ctx, partNo); err != nil {
+	if err := s.deleteVendors(ctx, productQ, partNo); err != nil {
+		oplog.Error(ctx, "failed to delete vendors", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 
-	if err := q.DeleteOEMByPartNo(ctx, partNo); err != nil {
+	if err := s.deleteOEMByPartNo(ctx, productQ, partNo); err != nil {
+		oplog.Error(ctx, "failed to delete OEMs", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 
-	if err := q.DeleteInventory(ctx, partNo); err != nil {
+	if err := s.deleteInventory(ctx, productQ, partNo); err != nil {
+		oplog.Error(ctx, "failed to delete inventory", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 
-	if err := q.DeleteOffer(ctx, partNo); err != nil {
+	if err := s.deleteOffer(ctx, productQ, partNo); err != nil {
+		oplog.Error(ctx, "failed to delete offer", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 
-	if err := q.DeleteModelVariant(ctx, partNo); err != nil {
+	if err := s.deleteVariant(ctx, productQ, partNo); err != nil {
+		oplog.Error(ctx, "failed to delete model variant", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 
-	if err := q.DeleteProduct(ctx, partNo); err != nil {
+	if err := s.deleteProduct(ctx, productQ, partNo); err != nil {
+		oplog.Error(ctx, "failed to delete main product", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 
@@ -500,7 +496,8 @@ func (s *Service) DeleteProduct(
 	// 3️⃣ Delete TechSpec
 	// --------------------------------------------------
 
-	if err := s.TechnicalService.DeleteTechSpec(ctx, q, product.PartNo); err != nil {
+	if err := s.TechnicalService.DeleteTechSpec(ctx, techQ, product.PartNo, category.Name); err != nil {
+		oplog.Error(ctx, "failed to delete tech spec", "partNo", partNo, "error", err)
 		return err
 	}
 
@@ -509,6 +506,7 @@ func (s *Service) DeleteProduct(
 	// --------------------------------------------------
 
 	if err := tx.Commit(); err != nil {
+		oplog.Error(ctx, "transaction commit failed during delete", "partNo", partNo, "error", err)
 		return ErrInternal
 	}
 
@@ -516,7 +514,19 @@ func (s *Service) DeleteProduct(
 	// 5️⃣ Async Search Removal (after commit)
 	// --------------------------------------------------
 
-	go s.SearchService.Delete(partNo)
+	if s.SearchService != nil {
+		if err := s.SearchService.Delete(ctx, "products", partNo); err != nil {
+			oplog.Error(ctx, "typesense delete failed after product removal",
+				"partNo", partNo,
+				"error", err,
+			)
+			// do NOT fail the delete for search error
+		} else {
+			oplog.Info(ctx, "typesense delete success", "partNo", partNo)
+		}
+	}
+
+	oplog.Info(ctx, "product deleted successfully", "partNo", partNo)
 
 	return nil
 }

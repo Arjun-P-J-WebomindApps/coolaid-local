@@ -58,7 +58,7 @@ func (s *Service) createProduct(
 
 	now := time.Now()
 
-	row, err := Q.CreateProduct(ctx, CreateProductParams{
+	row, err := Q.CreateProductPart(ctx, CreateProductParams{
 		ID:         uuid.NewString(),
 		PartNo:     partNo,
 		CompanyID:  companyID,
@@ -92,7 +92,7 @@ func (s *Service) updateProduct(
 
 	input.UpdatedAt = &now
 
-	row, err := Q.UpdateProduct(ctx, input)
+	row, err := Q.UpdateProductPart(ctx, input)
 	if err != nil {
 		return nil, err
 	}
@@ -115,5 +115,5 @@ func (s *Service) deleteProduct(
 		return ErrProductNotFound
 	}
 
-	return Q.DeleteProduct(ctx, partNo)
+	return Q.DeleteProductPart(ctx, partNo)
 }
