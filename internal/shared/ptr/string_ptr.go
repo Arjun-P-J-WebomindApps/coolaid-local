@@ -21,3 +21,12 @@ func StringOrNil(s string) *string {
 	}
 	return &s
 }
+
+// StringSliceValue returns the dereferenced slice.
+// If the pointer is nil, it returns an empty slice.
+func StringSliceValue(v *[]string) []string {
+	if v == nil {
+		return []string{}
+	}
+	return *v
+}

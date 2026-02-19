@@ -18,3 +18,10 @@ func Float64Ptr(v sql.NullFloat64) *float64 {
 	}
 	return &v.Float64
 }
+
+func Float64Value(v sql.NullFloat64) float64 {
+	if !v.Valid {
+		return 0.0
+	}
+	return v.Float64
+}

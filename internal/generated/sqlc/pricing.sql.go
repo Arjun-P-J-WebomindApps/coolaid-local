@@ -324,6 +324,18 @@ func (q *Queries) DeleteProductPriceByID(ctx context.Context, id uuid.UUID) erro
 	return err
 }
 
+const deleteProductPriceByPartNo = `-- name: DeleteProductPriceByPartNo :exec
+DELETE FROM product_part_pricing p
+USING product_parts pp
+WHERE pp.part_no = $1
+  AND p.product_part_id = pp.id
+`
+
+func (q *Queries) DeleteProductPriceByPartNo(ctx context.Context, partNo string) error {
+	_, err := q.db.ExecContext(ctx, deleteProductPriceByPartNo, partNo)
+	return err
+}
+
 const deleteProductPriceByProductPartID = `-- name: DeleteProductPriceByProductPartID :exec
 DELETE FROM product_part_pricing
 WHERE product_part_id = $1
@@ -451,6 +463,47 @@ func (q *Queries) GetProductPricingDownloadDetails(ctx context.Context) ([]GetPr
 		return nil, err
 	}
 	return items, nil
+}
+
+const getProductPricingFromPartNo = `-- name: GetProductPricingFromPartNo :one
+SELECT pp.id, pp.product_part_id, pp.basic_price, pp.freight, pp.gst, pp.tax, pp.ac_workshop, pp.ac_workshop_per, pp.ac_workshop_amt, pp.multibrand_workshop, pp.multibrand_workshop_per, pp.multibrand_workshop_amt, pp.auto_trader, pp.auto_trader_per, pp.auto_trader_amt, pp.ac_trader, pp.ac_trader_per, pp.ac_trader_amt, pp.outstation_class_a, pp.outstation_note, pp.minimum_purchase_quantity, pp.mrp_temp, pp.oem_mrp, pp.unit_measure, pp.created_at, pp.updated_at
+FROM product_part_pricing pp
+LEFT JOIN product_parts p on pp.product_part_id=p.id 
+WHERE p.part_no=$1
+`
+
+func (q *Queries) GetProductPricingFromPartNo(ctx context.Context, partNo string) (ProductPartPricing, error) {
+	row := q.db.QueryRowContext(ctx, getProductPricingFromPartNo, partNo)
+	var i ProductPartPricing
+	err := row.Scan(
+		&i.ID,
+		&i.ProductPartID,
+		&i.BasicPrice,
+		&i.Freight,
+		&i.Gst,
+		&i.Tax,
+		&i.AcWorkshop,
+		&i.AcWorkshopPer,
+		&i.AcWorkshopAmt,
+		&i.MultibrandWorkshop,
+		&i.MultibrandWorkshopPer,
+		&i.MultibrandWorkshopAmt,
+		&i.AutoTrader,
+		&i.AutoTraderPer,
+		&i.AutoTraderAmt,
+		&i.AcTrader,
+		&i.AcTraderPer,
+		&i.AcTraderAmt,
+		&i.OutstationClassA,
+		&i.OutstationNote,
+		&i.MinimumPurchaseQuantity,
+		&i.MrpTemp,
+		&i.OemMrp,
+		&i.UnitMeasure,
+		&i.CreatedAt,
+		&i.UpdatedAt,
+	)
+	return i, err
 }
 
 const getProductPricingFromProductId = `-- name: GetProductPricingFromProductId :one

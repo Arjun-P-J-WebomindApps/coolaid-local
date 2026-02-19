@@ -7,6 +7,12 @@ SELECT *
 FROM product_part_pricing
 WHERE product_part_id=$1;
 
+-- name: GetProductPricingFromPartNo :one
+SELECT pp.*
+FROM product_part_pricing pp
+LEFT JOIN product_parts p on pp.product_part_id=p.id 
+WHERE p.part_no=$1;
+
 
 -- name: GetProductPricingDownloadDetails :many
 SELECT 
@@ -285,6 +291,11 @@ DELETE FROM product_part_pricing
 WHERE product_part_id = $1;
 
 
+-- name: DeleteProductPriceByPartNo :exec
+DELETE FROM product_part_pricing p
+USING product_parts pp
+WHERE pp.part_no = sqlc.arg(part_no)
+  AND p.product_part_id = pp.id;
 
 
 

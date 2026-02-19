@@ -18,3 +18,10 @@ func Int32Ptr(v sql.NullInt32) *int32 {
 	}
 	return &v.Int32
 }
+
+func Int32OrZero(v sql.NullInt32) int32 {
+	if !v.Valid {
+		return 0
+	}
+	return v.Int32
+}
