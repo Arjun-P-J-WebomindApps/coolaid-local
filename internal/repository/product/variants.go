@@ -2,6 +2,7 @@ package productrepo
 
 import (
 	"context"
+	"errors"
 
 	"github.com/google/uuid"
 	domain "github.com/webomindapps-dev/coolaid-backend/internal/domain/product"
@@ -62,6 +63,53 @@ func (p *productQueries) CreateModelVariant(
 	}
 
 	return mapVariant(row), nil
+}
+
+func (p *productQueries) UpdateModelVariant(
+	ctx context.Context,
+	params domain.UpdateModelVariantParams,
+) (*domain.ModelVariantRow, error) {
+
+	if ptr.String(params.PartNo) == "" {
+		return nil, errors.New("PartNo cannot be empty")
+	}
+
+	row, err := p.q.UpdateModelVariant(ctx, sqlc.UpdateModelVariantParams{
+		PartNo:           ptr.String(params.PartNo),
+		FuelTypes:        ptr.StringSliceValue(params.FuelTypes),
+		Gen:              sqlnull.String(params.Gen),
+		EngineCc:         sqlnull.Float64(params.EngineCc),
+		TransmissionType: ptr.StringSliceValue(params.TransmissionType),
+		PlatformCodes:    ptr.StringSliceValue(params.PlatformCodes),
+		Placement:        ptr.String(params.Placement),
+		Image1Link:       sqlnull.String(params.Image1Link),
+		Image2Link:       sqlnull.String(params.Image2Link),
+		Image3Link:       sqlnull.String(params.Image3Link),
+		Image4Link:       sqlnull.String(params.Image4Link),
+		HsnCode:          sqlnull.String(params.HsnCode),
+		Unicode:          ptr.StringSliceValue(params.Unicode),
+		Description:      sqlnull.String(params.Description),
+		Make:             ptr.String(params.Make),
+		OemIds:           ptr.StringSliceValue(params.OemIds),
+		Type:             ptr.String(params.Type),
+		YearStart:        sqlnull.Int32(params.YearStart),
+		YearEnd:          sqlnull.Int32(params.YearEnd),
+		VendorID:         ptr.StringSliceValue(params.VendorID),
+		AdditionalInfo:   sqlnull.String(params.AdditionalInfo),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mapVariant(row), nil
+}
+
+func (p *productQueries) DeleteModelVariant(
+	ctx context.Context,
+	partNo string,
+) error {
+	_, err := p.q.DeleteModelVariantByPartNo(ctx, partNo)
+	return err
 }
 
 func mapVariant(row sqlc.ModelVariant) *domain.ModelVariantRow {

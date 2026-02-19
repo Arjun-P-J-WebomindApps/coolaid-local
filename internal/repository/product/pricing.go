@@ -14,12 +14,61 @@ func (p *productQueries) GetPricingByPartNo(
 	partNo string,
 ) (*domain.PricingRow, error) {
 
-	row, err := p.q.GetPricingByPartNo(ctx, partNo)
+	row, err := p.q.GetProductPricingFromPartNo(ctx, partNo)
 	if err != nil {
 		return nil, err
 	}
 
 	return mapPricing(row), nil
+}
+
+func (p *productQueries) GetSimilarPricing(
+	ctx context.Context,
+	params domain.SimilarPricingParams,
+) ([]domain.SimilarPricingRow, error) {
+
+	rows, err := p.q.GetSimilarPricingByPartNo(ctx, sqlc.GetSimilarPricingByPartNoParams{
+		Name:   params.Company,
+		Name_2: params.Model,
+		Name_3: params.Category,
+		Type:   params.Type,
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]domain.SimilarPricingRow, 0, len(rows))
+
+	for _, r := range rows {
+		result = append(result, domain.SimilarPricingRow{
+			BrandName: r.BrandName,
+			Pricing: domain.Pricing{
+				BasicPrice:              r.BasicPrice,
+				Freight:                 r.Freight,
+				Gst:                     r.Gst,
+				Tax:                     r.Tax,
+				AcWorkshop:              r.AcWorkshop,
+				AcWorkshopPer:           r.AcWorkshopPer,
+				AcWorkshopAmt:           r.AcWorkshopAmt,
+				MultibrandWorkshop:      r.MultibrandWorkshop,
+				MultibrandWorkshopPer:   r.MultibrandWorkshopPer,
+				MultibrandWorkshopAmt:   r.MultibrandWorkshopAmt,
+				AutoTrader:              r.AutoTrader,
+				AutoTraderPer:           r.AutoTraderPer,
+				AutoTraderAmt:           r.AutoTraderAmt,
+				AcTrader:                r.AcTrader,
+				AcTraderPer:             r.AcTraderPer,
+				AcTraderAmt:             r.AcTraderAmt,
+				OutstationClassA:        0,
+				OutstationNote:          "",
+				OemMrp:                  r.OemMrp,
+				UnitMeasure:             r.UnitMeasure.String,
+				MinimumPurchaseQuantity: r.MinimumPurchaseQuantity,
+			},
+		})
+	}
+
+	return result, nil
 }
 
 func (p *productQueries) CreatePricing(
@@ -32,9 +81,14 @@ func (p *productQueries) CreatePricing(
 		return nil, err
 	}
 
-	row, err := p.q.CreatePricing(ctx, sqlc.CreatePricingParams{
+	pID, err := uuid.Parse(params.ProductPartID)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := p.q.CreateProductPrice(ctx, sqlc.CreateProductPriceParams{
 		ID:            id,
-		ProductPartID: params.ProductPartID,
+		ProductPartID: pID,
 		BasicPrice:    params.BasicPrice,
 		Freight:       params.Freight,
 		Gst:           params.Gst,
@@ -77,65 +131,93 @@ func (p *productQueries) UpdatePricing(
 	params domain.UpdateProductPricingParams,
 ) (*domain.PricingRow, error) {
 
-	id, err := uuid.Parse(params.ID)
-	if err != nil {
-		return nil, err
-	}
+	row, err := p.q.UpdateProductPriceByPartNo(ctx, sqlc.UpdateProductPriceByPartNoParams{
+		PartNo: params.PartNo,
 
-	row, err := p.q.UpdatePricing(ctx, sqlc.UpdatePricingParams{
-		ID: id,
+		NewBasicPrice: sqlnull.Float64(params.BasicPrice),
+		NewFreight:    sqlnull.Float64(params.Freight),
+		NewGst:        sqlnull.Float64(params.Gst),
 
-		BasicPrice: sqlnull.Float64(params.BasicPrice),
-		Freight:    sqlnull.Float64(params.Freight),
-		Gst:        sqlnull.Float64(params.Gst),
+		NewAcWorkshop:    sqlnull.Float64(params.AcWorkshop),
+		NewAcWorkshopPer: sqlnull.Float64(params.AcWorkshopPer),
+		NewAcWorkshopAmt: sqlnull.Float64(params.AcWorkshopAmt),
 
-		AcWorkshop:    sqlnull.Float64(params.AcWorkshop),
-		AcWorkshopPer: sqlnull.Float64(params.AcWorkshopPer),
-		AcWorkshopAmt: sqlnull.Float64(params.AcWorkshopAmt),
+		NewMultibrandWorkshop:    sqlnull.Float64(params.MultibrandWorkshop),
+		NewMultibrandWorkshopPer: sqlnull.Float64(params.MultibrandWorkshopPer),
+		NewMultibrandWorkshopAmt: sqlnull.Float64(params.MultibrandWorkshopAmt),
 
-		MultibrandWorkshop:    sqlnull.Float64(params.MultibrandWorkshop),
-		MultibrandWorkshopPer: sqlnull.Float64(params.MultibrandWorkshopPer),
-		MultibrandWorkshopAmt: sqlnull.Float64(params.MultibrandWorkshopAmt),
+		NewAutoTrader:    sqlnull.Float64(params.AutoTrader),
+		NewAutoTraderPer: sqlnull.Float64(params.AutoTraderPer),
+		NewAutoTraderAmt: sqlnull.Float64(params.AutoTraderAmt),
 
-		AutoTrader:    sqlnull.Float64(params.AutoTrader),
-		AutoTraderPer: sqlnull.Float64(params.AutoTraderPer),
-		AutoTraderAmt: sqlnull.Float64(params.AutoTraderAmt),
+		NewAcTrader:    sqlnull.Float64(params.AcTrader),
+		NewAcTraderPer: sqlnull.Float64(params.AcTraderPer),
+		NewAcTraderAmt: sqlnull.Float64(params.AcTraderAmt),
 
-		AcTrader:    sqlnull.Float64(params.AcTrader),
-		AcTraderPer: sqlnull.Float64(params.AcTraderPer),
-		AcTraderAmt: sqlnull.Float64(params.AcTraderAmt),
+		NewOutstationClassA: sqlnull.Float64(params.OutstationClassA),
+		NewOutstationNote:   sqlnull.String(params.OutstationNote),
 
-		OutstationClassA: sqlnull.Float64(params.OutstationClassA),
-		OutstationNote:   sqlnull.String(params.OutstationNote),
-
-		OemMrp:                  sqlnull.Float64(params.OemMrp),
-		UnitMeasure:             sqlnull.String(params.UnitMeasure),
-		MinimumPurchaseQuantity: sqlnull.Int32(params.MinimumPurchaseQuantity),
-
-		UpdatedAt: params.UpdatedAt,
+		NewOemMrp:                  sqlnull.Float64(params.OemMrp),
+		NewUnitMeasure:             sqlnull.String(params.UnitMeasure),
+		NewMinimumPurchaseQuantity: sqlnull.Int32(params.MinimumPurchaseQuantity),
 	})
 	if err != nil {
 		return nil, err
 	}
 
-	return mapPricing(row), nil
+	return mapPricing(sqlc.ProductPartPricing{
+		ID:            row.ID,
+		ProductPartID: row.ProductPartID,
+		BasicPrice:    row.BasicPrice,
+		Freight:       row.Freight,
+		Gst:           row.Gst,
+		Tax:           row.Tax,
+
+		AcWorkshop:    row.AcWorkshop,
+		AcWorkshopPer: row.AcWorkshopPer,
+		AcWorkshopAmt: row.AcWorkshopAmt,
+
+		MultibrandWorkshop:    row.MultibrandWorkshop,
+		MultibrandWorkshopPer: row.MultibrandWorkshopPer,
+		MultibrandWorkshopAmt: row.MultibrandWorkshopAmt,
+
+		AutoTrader:    row.AutoTrader,
+		AutoTraderPer: row.AutoTraderPer,
+		AutoTraderAmt: row.AutoTraderAmt,
+
+		AcTrader:    row.AcTrader,
+		AcTraderPer: row.AcTraderPer,
+		AcTraderAmt: row.AcTraderAmt,
+
+		OutstationClassA: row.OutstationClassA,
+		OutstationNote:   row.OutstationNote,
+
+		MinimumPurchaseQuantity: row.MinimumPurchaseQuantity,
+		MrpTemp:                 row.MrpTemp,
+		OemMrp:                  row.OemMrp,
+
+		UnitMeasure: row.UnitMeasure,
+
+		CreatedAt: row.CreatedAt,
+		UpdatedAt: row.UpdatedAt,
+	}), nil
+
 }
 
 func (p *productQueries) DeletePricing(
 	ctx context.Context,
 	partNo string,
 ) error {
-	return p.q.DeletePricing(ctx, partNo)
+	return p.q.DeleteProductPriceByPartNo(ctx, partNo)
 }
 
-func mapPricing(row sqlc.ProductPricing) *domain.PricingRow {
+func mapPricing(row sqlc.ProductPartPricing) *domain.PricingRow {
 	return &domain.PricingRow{
-		ID:            row.ID.String(),
-		ProductPartID: row.ProductPartID,
-		BasicPrice:    row.BasicPrice,
-		Freight:       row.Freight,
-		Gst:           row.Gst,
-		Tax:           row.Tax,
+		ID:         row.ID.String(),
+		BasicPrice: row.BasicPrice,
+		Freight:    row.Freight,
+		Gst:        row.Gst,
+		Tax:        row.Tax,
 
 		AcWorkshop:    row.AcWorkshop,
 		AcWorkshopPer: row.AcWorkshopPer,

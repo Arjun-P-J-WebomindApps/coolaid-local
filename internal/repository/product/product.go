@@ -7,7 +7,27 @@ import (
 	"github.com/google/uuid"
 	domain "github.com/webomindapps-dev/coolaid-backend/internal/domain/product"
 	"github.com/webomindapps-dev/coolaid-backend/internal/generated/sqlc"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/sqlnull"
 )
+
+func (p *productQueries) GetProductPartNos(
+	ctx context.Context,
+	search string,
+) ([]string, error) {
+
+	rows, err := p.q.GetProductPartNos(ctx, sqlnull.String(&search))
+	if err != nil {
+		return nil, err
+	}
+
+	result := make([]string, 0, len(rows))
+
+	for _, r := range rows {
+		result = append(result, r)
+	}
+
+	return result, nil
+}
 
 func (p *productQueries) GetProductByPartNo(
 	ctx context.Context,
@@ -22,7 +42,7 @@ func (p *productQueries) GetProductByPartNo(
 	return mapProduct(row), nil
 }
 
-func (p *productQueries) CreateProduct(
+func (p *productQueries) CreateProductPart(
 	ctx context.Context,
 	params domain.CreateProductParams,
 ) (*domain.ProductRow, error) {
@@ -45,7 +65,32 @@ func (p *productQueries) CreateProduct(
 	return mapProduct(row), nil
 }
 
-func (p *productQueries) DeleteProduct(
+func (p *productQueries) UpdateProductPart(
+	ctx context.Context,
+	params domain.UpdateProductParams,
+) (*domain.ProductRow, error) {
+
+	id, err := uuid.Parse(params.ID)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := p.q.UpdateProductPartByID(ctx, sqlc.UpdateProductPartByIDParams{
+		ID:            id,
+		NewCompanyID:  sqlnull.UUID(params.CompanyID),
+		NewModelID:    sqlnull.UUID(params.ModelID),
+		NewBrandID:    sqlnull.UUID(params.BrandID),
+		NewCategoryID: sqlnull.UUID(params.CategoryID),
+		NewPartNo:     sqlnull.String(params.PartNo),
+	})
+	if err != nil {
+		return nil, err
+	}
+
+	return mapProduct(row), nil
+}
+
+func (p *productQueries) DeleteProductPart(
 	ctx context.Context,
 	partNo string,
 ) error {
