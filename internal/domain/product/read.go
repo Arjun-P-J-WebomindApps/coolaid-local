@@ -216,7 +216,7 @@ func (s *Service) ListProducts(
 			continue
 		}
 
-		product := mapProductRowToModel(&r.Product)
+		product := mapResolvedProductRowToModel(&r.Product)
 		variant := mapModelVariantRowToModel(&r.ModelVariant)
 		pricing := mapPricingRowToModel(&r.Pricing)
 		inventory := mapInventoryRowToModel(&r.Inventory)

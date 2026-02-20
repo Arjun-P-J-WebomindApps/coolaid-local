@@ -67,11 +67,21 @@ func (p *productQueries) UpdateOffer(
 	params domain.UpdateProductOfferParams,
 ) (*domain.OfferRow, error) {
 
+	start, err := time.Parse("2006-01-02", ptr.String(params.StartDate))
+	if err != nil {
+		return nil, err
+	}
+
+	end, err := time.Parse("2006-01-02", ptr.String(params.EndDate))
+	if err != nil {
+		return nil, err
+	}
+
 	row, err := p.q.UpdateOfferByPartNo(ctx, sqlc.UpdateOfferByPartNoParams{
 		PartNo:        params.PartNo,
 		IsOfferActive: sqlnull.Bool(params.IsOfferActive),
-		StartDate:     params.StartDate,
-		EndDate:       params.EndDate,
+		StartDate:     start,
+		EndDate:       end,
 		AcTrader:      ptr.StringSliceValue(params.AcTrader),
 		MultiBrand:    ptr.StringSliceValue(params.MultiBrand),
 		Autotrader:    ptr.StringSliceValue(params.Autotrader),

@@ -167,7 +167,10 @@ func (s *Service) CreateProduct(
 	oplog.Info(ctx, "product created successfully", "partNo=", product.PartNo)
 
 	if s.SearchService != nil {
-		if err := s.SearchService.Index(ctx, search.IndexRequest{
+
+		searchSvc := *s.SearchService
+
+		if err := searchSvc.Index(ctx, search.IndexRequest{
 			Collection: "products",
 			ID:         product.PartNo,
 			Payload: search.ProductSearchDocument{
@@ -391,7 +394,8 @@ func (s *Service) UpdateProduct(
 	//TODO: Update Typesense only if required
 
 	if s.SearchService != nil {
-		err := s.SearchService.Update(ctx, search.IndexRequest{
+		searchSvc := *s.SearchService
+		err := searchSvc.Update(ctx, search.IndexRequest{
 			Collection: "products",
 			ID:         partNo,
 			Payload: search.ProductSearchDocument{
@@ -515,7 +519,8 @@ func (s *Service) DeleteProduct(
 	// --------------------------------------------------
 
 	if s.SearchService != nil {
-		if err := s.SearchService.Delete(ctx, "products", partNo); err != nil {
+		searchSvc := *s.SearchService
+		if err := searchSvc.Delete(ctx, "products", partNo); err != nil {
 			oplog.Error(ctx, "typesense delete failed after product removal",
 				"partNo", partNo,
 				"error", err,

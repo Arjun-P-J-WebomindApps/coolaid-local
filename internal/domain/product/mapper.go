@@ -24,6 +24,24 @@ func mapProductRowToModel(r *ProductRow) *Product {
 	}
 }
 
+func mapResolvedProductRowToModel(r *ProductResolvedRow) *Product {
+	if r == nil {
+		return nil
+	}
+
+	return &Product{
+		ID:         ID(r.ID),
+		PartNo:     r.PartNo,
+		CompanyID:  r.CompanyName,
+		ModelID:    r.ModelName,
+		BrandID:    r.BrandName,
+		CategoryID: r.CategoryName,
+		IsActive:   r.IsActive,
+		CreatedAt:  r.CreatedAt,
+		UpdatedAt:  r.UpdatedAt,
+	}
+}
+
 // ------------------------------------------------------------
 // 🔹 MODEL VARIANT
 // ------------------------------------------------------------

@@ -19,13 +19,34 @@ type Service struct {
 	VendorService   *vendor.Service
 
 	//Typesense
-	SearchService search.Service
+	SearchService *search.Service
 
 	//Technical Specs
 	TechnicalService *techspec.Service
 }
 
-func NewService(db DB) *Service {
-	return &Service{DB: db}
+func NewService(
+	db DB,
+	company *company.Service,
+	model *models.Service,
+	brand *brand.Service,
+	category *category.Service,
+	vendor *vendor.Service,
+
+	search *search.Service,
+
+	technicalSpecs *techspec.Service,
+
+) *Service {
+	return &Service{
+		DB:               db,
+		CompanyService:   company,
+		ModelService:     model,
+		BrandService:     brand,
+		CategoryService:  category,
+		VendorService:    vendor,
+		SearchService:    search,
+		TechnicalService: technicalSpecs,
+	}
 
 }

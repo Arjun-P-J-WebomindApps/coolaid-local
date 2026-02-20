@@ -7,7 +7,7 @@ import (
 )
 
 // HealthZ checks if the API process is running
-func HealthZ(ctx *gin.Context) {
+func (h RouteHandler) HealthZ(ctx *gin.Context) {
 	ctx.JSON(http.StatusOK, gin.H{
 		"status":  "ok",
 		"service": "coolaid-backend",

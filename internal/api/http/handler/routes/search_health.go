@@ -6,12 +6,13 @@ import (
 	"time"
 
 	"github.com/gin-gonic/gin"
-	"github.com/webomindapps-dev/coolaid-backend/typesense"
 )
 
 // SearchHealthZ checks if search engine is reachable
-func SearchHealthZ(c *gin.Context) {
-	if typesense.TS == nil || typesense.TS.Client == nil {
+func (h RouteHandler) SearchHealthZ(c *gin.Context) {
+
+	typesense := h.Services.TS
+	if typesense == nil || typesense.Client == nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"status":  "down",
 			"service": "search",
@@ -23,7 +24,7 @@ func SearchHealthZ(c *gin.Context) {
 	ctx, cancel := context.WithTimeout(c.Request.Context(), 3*time.Second)
 	defer cancel()
 
-	if _, err := typesense.TS.Client.Health(ctx, 3*time.Second); err != nil {
+	if _, err := typesense.Client.Health(ctx, 3*time.Second); err != nil {
 		c.JSON(http.StatusServiceUnavailable, gin.H{
 			"status":  "down",
 			"service": "search",

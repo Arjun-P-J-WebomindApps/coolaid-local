@@ -15,11 +15,13 @@ import (
 	cronjob "github.com/webomindapps-dev/coolaid-backend/cron_job"
 	"github.com/webomindapps-dev/coolaid-backend/db"
 	"github.com/webomindapps-dev/coolaid-backend/internal/api/graphql"
+
+	httpH "github.com/webomindapps-dev/coolaid-backend/internal/api/http"
+
 	ticketservice "github.com/webomindapps-dev/coolaid-backend/internal/domain/ticket"
 	service "github.com/webomindapps-dev/coolaid-backend/internal/service/container"
 	"github.com/webomindapps-dev/coolaid-backend/middleware"
 	"github.com/webomindapps-dev/coolaid-backend/oplog"
-	"github.com/webomindapps-dev/coolaid-backend/typesense"
 )
 
 var router *gin.Engine
@@ -56,11 +58,14 @@ func StartApplication() {
 			log.Fatalf("Error connecting db %s", err.Error())
 		}
 
-		typesense.Connect(appCtx)
-		graphqlServer := connectGraphql()
+		//Initialize Services
+		services := service.NewContainer(db.DB, appCtx)
+
+		graphqlServer := connectGraphql(services)
+		httpServer := connectHttp(services)
 		connectCronJobs()
 
-		mapUrls(graphqlServer)
+		mapUrls(graphqlServer, httpServer)
 
 		fmt.Printf("server started and listening at port: %d \n", config.App.Port)
 
@@ -105,10 +110,13 @@ func registerMiddleware() {
 }
 
 // Connect Graphql
-func connectGraphql() *graphql.Server {
-	services := service.NewContainer(db.DB, typesense.TS)
+func connectGraphql(services *service.Container) *graphql.Server {
 
 	return graphql.NewServer(services)
+}
+
+func connectHttp(services *service.Container) *httpH.Server {
+	return httpH.NewHttpServer(services)
 }
 
 // Cron Job Handler

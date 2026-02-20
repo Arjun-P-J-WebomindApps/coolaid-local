@@ -4,12 +4,12 @@ import (
 	"github.com/gin-gonic/gin"
 	config "github.com/webomindapps-dev/coolaid-backend/config"
 	"github.com/webomindapps-dev/coolaid-backend/internal/api/graphql"
-	"github.com/webomindapps-dev/coolaid-backend/internal/api/http/handler/routes"
+	routeH "github.com/webomindapps-dev/coolaid-backend/internal/api/http"
 )
 
-func mapUrls(graphqlServer *graphql.Server) {
-	router.GET("/healthz", routes.HealthZ)
-	router.GET("/search/healthz", routes.SearchHealthZ)
+func mapUrls(graphqlServer *graphql.Server, httpServer *routeH.Server) {
+	router.GET("/healthz", httpServer.Handler.RouteHandler.HealthZ)
+	router.GET("/search/healthz", httpServer.Handler.RouteHandler.SearchHealthZ)
 
 	cldV1API := router.Group("/api/v1")
 	mapPublicApiRoutes(cldV1API, graphqlServer)

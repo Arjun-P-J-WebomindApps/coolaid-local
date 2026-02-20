@@ -1,6 +1,8 @@
 package service
 
 import (
+	"context"
+
 	"github.com/webomindapps-dev/coolaid-backend/db"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/auth"
 	brand "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/brands"
@@ -9,6 +11,7 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/customer"
 	models "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/model"
 	vendor "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/vendors"
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/product"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/techspec"
 	repository "github.com/webomindapps-dev/coolaid-backend/internal/repository/auth"
 	brand_repo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/brand"
@@ -17,16 +20,18 @@ import (
 	customerrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/customer"
 	modelrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/model"
 	vendorrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/vendor"
+	productrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/product"
 	techspecrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/techspec"
 	"github.com/webomindapps-dev/coolaid-backend/internal/service/crypto"
 	"github.com/webomindapps-dev/coolaid-backend/internal/service/mailer"
-	"github.com/webomindapps-dev/coolaid-backend/typesense"
+	typesense "github.com/webomindapps-dev/coolaid-backend/internal/service/typesense"
+	"github.com/webomindapps-dev/coolaid-backend/oplog"
 )
 
 type Container struct {
 	// Infra
-	DB        *db.DBContext
-	Typesense *typesense.TypesenseContext
+	DB  *db.DBContext
+	ctx context.Context
 
 	// Domain services
 	Auth *auth.Service
@@ -41,16 +46,27 @@ type Container struct {
 
 	//TechSpecs
 	TechSpec *techspec.Service
+
+	//Product
+	Product *product.Service
+
+	//External Services
+	TS *typesense.Context
 }
 
 func NewContainer(
 	dbCtx *db.DBContext,
-	ts *typesense.TypesenseContext,
+	ctx context.Context,
 ) *Container {
 
 	// 1️⃣ Build infra adapters
 	cryptoSvc := crypto.NewService() // implements auth.Crypto
 	mailerSvc := mailer.NewService() // implements auth.Mailer
+	typesenseClient, err := typesense.Connect(ctx)
+
+	if err != nil {
+		oplog.Error(ctx, "Failed to connect to typesense")
+	}
 
 	//Auth
 	authRepo := repository.NewAuthRepository(dbCtx) // implements auth.DB + auth.Queries
@@ -65,6 +81,8 @@ func NewContainer(
 
 	//TechRepo
 	techRepo := techspecrepo.NewTechSpecRepository(dbCtx)
+
+	productRepo := productrepo.NewProductRepository(dbCtx)
 
 	// Auth Service
 	authSvc := auth.NewService(
@@ -84,9 +102,12 @@ func NewContainer(
 	//TechRepo
 	techSvc := techspec.NewService(techRepo)
 
+	//Product
+	searchSvc := typesense.NewService(typesenseClient)
+	productSvc := product.NewService(productRepo, companySvc, modelSvc, brandSvc, categorySvc, vendorSvc, &searchSvc, techSvc)
+
 	return &Container{
-		DB:        dbCtx,
-		Typesense: ts,
+		DB: dbCtx,
 
 		//Auth
 		Auth: authSvc,
@@ -101,5 +122,8 @@ func NewContainer(
 
 		//TechSpec
 		TechSpec: techSvc,
+
+		//Product
+		Product: productSvc,
 	}
 }
