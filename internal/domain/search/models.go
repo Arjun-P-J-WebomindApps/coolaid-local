@@ -1,13 +1,12 @@
 package search
 
-//========================================================================
-// Store
-//=======================================================================
-
+//==================================================
+//       INDEXING MODELS
+//==================================================
 type IndexRequest struct {
 	Collection string
 	ID         string
-	Payload    any
+	Payload    interface{}
 }
 
 type ProductSearchDocument struct {
@@ -19,20 +18,17 @@ type ProductSearchDocument struct {
 	Category string `json:"category"`
 }
 
-//=====================================================================
-//     Search
-//====================================================================
-
-// Raw request to search engine
+//==================================================
+//			SEARCH MODELS
+//==================================================
 type SearchRequest struct {
 	Collection string
 	Query      string
 	QueryBy    string
-	PerPage    int
 	Page       int
+	PerPage    int
 }
 
-// Raw response from search engine
 type SearchResponse struct {
 	Found int
 	Page  int
@@ -40,41 +36,26 @@ type SearchResponse struct {
 }
 
 type SearchHit struct {
-	Document   map[string]any
+	Document   interface{}
 	Highlights []Highlight
 }
 
 type Highlight struct {
-	Field         string   `json:"field"`
-	Snippet       string   `json:"snippet"`
-	MatchedTokens []string `json:"matched_tokens,omitempty"`
+	Field         string
+	Snippet       string
+	MatchedTokens []string
 }
 
-type Results struct {
-	Hits []Hit `json:"hits"`
+//========================================================
+//          SUGGEST MODELS
+//==========================================================
+
+type SuggestRequest struct {
+	Collection string
+	Query      string
+	QueryBy    string
 }
 
-type Hit struct {
-	Document   Document    `json:"document"`
-	Highlights []Highlight `json:"highlight,omitempty"`
-	Score      float64     `json:"score,omitempty"` // optional internal usage
-}
-
-type Document struct {
-	ID        string `json:"id"`
-	Company   string `json:"company,omitempty"`
-	Model     string `json:"model,omitempty"`
-	ModelType string `json:"model_type,omitempty"`
-	Category  string `json:"category,omitempty"`
-	Brand     string `json:"brand,omitempty"`
-	PartNo    string `json:"part_no,omitempty"`
-	FuelType  string `json:"fuel_type,omitempty"`
-	Gen       string `json:"gen,omitempty"`
-}
-
-type PartData struct {
-	ID       string `json:"id"`
-	PartNo   string `json:"part_no,omitempty"`
-	OemNo    string `json:"oem_no,omitempty"`
-	VendorNo string `json:"vendor_no,omitempty"`
+type SuggestResponse struct {
+	Hits []SearchHit
 }
