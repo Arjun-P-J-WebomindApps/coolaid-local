@@ -6,7 +6,6 @@ import (
 	"time"
 
 	"github.com/typesense/typesense-go/typesense"
-	"github.com/webomindapps-dev/coolaid-backend/config"
 	"github.com/webomindapps-dev/coolaid-backend/oplog"
 )
 
@@ -14,17 +13,17 @@ type Context struct {
 	Client *typesense.Client
 }
 
-func Connect(ctx context.Context) (*Context, error) {
+func Connect(ctx context.Context, endpoint, apiKey string) (*Context, error) {
 
-	if config.SearchEngine.TypesenseAPIEndpoint == "" {
+	if endpoint == "" {
 		return nil, errors.New("typesense endpoint not configured")
 	}
 
 	oplog.Info(ctx, "connecting to typesense")
 
 	client := typesense.NewClient(
-		typesense.WithServer(config.SearchEngine.TypesenseAPIEndpoint),
-		typesense.WithAPIKey(config.SearchEngine.TypesenseAPIKey),
+		typesense.WithServer(endpoint),
+		typesense.WithAPIKey(apiKey),
 	)
 
 	// Health check

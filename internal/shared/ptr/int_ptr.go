@@ -16,3 +16,12 @@ func Int32Value(v *int32) int32 {
 	}
 	return *v
 }
+
+// Int32Value returns the dereferenced value.
+// If the pointer is nil, it returns 0.
+func IntValue(v *int) int {
+	if v == nil {
+		return 0
+	}
+	return *v
+}

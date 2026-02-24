@@ -11,11 +11,7 @@ func (s *Service) Delete(
 	id string,
 ) error {
 
-	if id == "" {
-		return fmt.Errorf("typesense: missing document ID")
-	}
-
-	_, err := s.ctx.Client.
+	_, err := s.client.
 		Collection(collection).
 		Document(id).
 		Delete(ctx)

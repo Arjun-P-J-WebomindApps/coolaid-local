@@ -3,6 +3,7 @@ package service
 import (
 	"context"
 
+	"github.com/webomindapps-dev/coolaid-backend/config"
 	"github.com/webomindapps-dev/coolaid-backend/db"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/auth"
 	brand "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/brands"
@@ -12,6 +13,7 @@ import (
 	models "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/model"
 	vendor "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/vendors"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/product"
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/search"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/techspec"
 	repository "github.com/webomindapps-dev/coolaid-backend/internal/repository/auth"
 	brand_repo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/brand"
@@ -51,7 +53,8 @@ type Container struct {
 	Product *product.Service
 
 	//External Services
-	TS *typesense.Context
+	Search search.Port
+	TS     *typesense.Context
 }
 
 func NewContainer(
@@ -62,7 +65,7 @@ func NewContainer(
 	// 1️⃣ Build infra adapters
 	cryptoSvc := crypto.NewService() // implements auth.Crypto
 	mailerSvc := mailer.NewService() // implements auth.Mailer
-	typesenseClient, err := typesense.Connect(ctx)
+	tsCtx, err := typesense.Connect(ctx, config.SearchEngine.TypesenseAPIEndpoint, config.SearchEngine.TypesenseAPIKey)
 
 	if err != nil {
 		oplog.Error(ctx, "Failed to connect to typesense")
@@ -103,8 +106,8 @@ func NewContainer(
 	techSvc := techspec.NewService(techRepo)
 
 	//Product
-	searchSvc := typesense.NewService(typesenseClient)
-	productSvc := product.NewService(productRepo, companySvc, modelSvc, brandSvc, categorySvc, vendorSvc, &searchSvc, techSvc)
+	tsSvc := typesense.NewService(tsCtx.Client)
+	productSvc := product.NewService(productRepo, companySvc, modelSvc, brandSvc, categorySvc, vendorSvc, tsSvc, techSvc)
 
 	return &Container{
 		DB: dbCtx,
@@ -125,5 +128,8 @@ func NewContainer(
 
 		//Product
 		Product: productSvc,
+
+		Search: tsSvc,
+		TS:     tsCtx,
 	}
 }
