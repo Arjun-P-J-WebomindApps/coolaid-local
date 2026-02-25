@@ -254,6 +254,44 @@ func (q *Queries) GetVendorListingsByVendorName(ctx context.Context, dollar_1 sq
 	return items, nil
 }
 
+const searchVendorListingsByPartialMatch = `-- name: SearchVendorListingsByPartialMatch :many
+select id, product_part_no, vendor_name, vendor_part_no, vendor_mrp, created_at, updated_at from vendor_listing o WHERE
+o.vendor_part_no  ILIKE '%' || $1 || '%'
+ORDER BY o.vendor_part_no   
+LIMIT 15
+`
+
+func (q *Queries) SearchVendorListingsByPartialMatch(ctx context.Context, dollar_1 sql.NullString) ([]VendorListing, error) {
+	rows, err := q.db.QueryContext(ctx, searchVendorListingsByPartialMatch, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []VendorListing
+	for rows.Next() {
+		var i VendorListing
+		if err := rows.Scan(
+			&i.ID,
+			&i.ProductPartNo,
+			&i.VendorName,
+			&i.VendorPartNo,
+			&i.VendorMrp,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateVendorListingByID = `-- name: UpdateVendorListingByID :one
 UPDATE vendor_listing AS v
 SET

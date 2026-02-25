@@ -12,7 +12,7 @@ func mapUrls(graphqlServer *graphql.Server, httpServer *routeH.Server) {
 	router.GET("/search/healthz", httpServer.Handler.RouteHandler.SearchHealthZ)
 
 	cldV1API := router.Group("/api/v1")
-	mapPublicApiRoutes(cldV1API, graphqlServer)
+	mapPublicApiRoutes(cldV1API, graphqlServer, httpServer)
 
 	// Playground (dev only)
 	if config.App.Name != "production" {
@@ -23,13 +23,15 @@ func mapUrls(graphqlServer *graphql.Server, httpServer *routeH.Server) {
 
 // Public Facing API
 // PRODUCTION
-func mapPublicApiRoutes(apiRoute *gin.RouterGroup, graphqlServer *graphql.Server) {
+func mapPublicApiRoutes(apiRoute *gin.RouterGroup, graphqlServer *graphql.Server, httpServer *routeH.Server) {
 
 	//Graphql Endpoint
 	apiRoute.POST("/query",
 		// controllers.AuthContextMiddleware(),
 		graphql.GinHandler(graphqlServer),
 	)
+
+	apiRoute.GET("/search", httpServer.Handler.SearchHandler.Suggestions)
 
 	// apiRoute.GET("/download/csv", csv.DownloadHandler)      // DB-backed download
 	// apiRoute.GET("/download/csv/sample", csv.SampleHandler) // Schema-only sample

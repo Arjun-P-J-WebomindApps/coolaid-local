@@ -1,23 +1,8 @@
 package search
 
-import "context"
-
-// --------------------------------------------------
-// Validation
-// --------------------------------------------------
-
-func validateSuggestRequest(req SuggestRequest) error {
-	if req.Collection == "" {
-		return ErrMissingCollection
-	}
-	if req.Query == "" {
-		return ErrInvalidQuery
-	}
-	if req.QueryBy == "" {
-		return ErrMissingQueryBy
-	}
-	return nil
-}
+import (
+	"context"
+)
 
 // --------------------------------------------------
 // Decision: Should we do part search?
@@ -25,55 +10,13 @@ func validateSuggestRequest(req SuggestRequest) error {
 
 func (s *Service) shouldDoPartSearch(ctx context.Context, token string) bool {
 
-	models, err := s.suggestions.GetSimilarModels(ctx, token)
+	models, err := s.DB.Queries().GetSimilarModels(ctx, token)
 	if err != nil {
 		// Safe fallback: assume part search if DB fails
 		return true
 	}
 
 	return len(models) == 0
-}
-
-// --------------------------------------------------
-// Build Part Suggestions
-// --------------------------------------------------
-
-func (s *Service) buildPartSuggestions(ctx context.Context, token string) (*SuggestResponse, error) {
-
-	parts, _ := s.suggestions.GetPartSuggestions(ctx, token)
-	oems, _ := s.suggestions.GetOemSuggestions(ctx, token)
-	vendors, _ := s.suggestions.GetVendorSuggestions(ctx, token)
-
-	suggestions := interleaveSuggestions(parts, oems, vendors, 15)
-
-	hits := buildHitsFromSuggestions(suggestions)
-
-	return &SuggestResponse{
-		Hits: hits,
-	}, nil
-}
-
-// --------------------------------------------------
-// Fallback to Typesense Search
-// --------------------------------------------------
-
-func (s *Service) fallbackSuggestSearch(ctx context.Context, req SuggestRequest) (*SuggestResponse, error) {
-
-	searchResp, err := s.port.Search(ctx, SearchRequest{
-		Collection: req.Collection,
-		Query:      req.Query,
-		QueryBy:    req.QueryBy,
-		Page:       1,
-		PerPage:    15,
-	})
-
-	if err != nil {
-		return nil, err
-	}
-
-	return &SuggestResponse{
-		Hits: searchResp.Hits,
-	}, nil
 }
 
 // --------------------------------------------------
@@ -96,11 +39,19 @@ func buildHitsFromSuggestions(values []string) []SearchHit {
 	return hits
 }
 
+func buildSuggestionToken(s PartSuggestionResponse) string {
+	if s.MatchedValue == "" || s.MatchedValue == s.PartNo {
+		return s.PartNo
+	}
+
+	return s.MatchedValue + ":" + s.PartNo
+}
+
 // --------------------------------------------------
 // Interleave Logic
 // --------------------------------------------------
 
-func interleaveSuggestions(parts, oems, vendors []string, max int) []string {
+func interleaveSuggestions(parts, oems, vendors []PartSuggestionResponse, max int) []string {
 
 	result := make([]string, 0, max)
 
@@ -110,7 +61,7 @@ func interleaveSuggestions(parts, oems, vendors []string, max int) []string {
 		added := false
 
 		if i < len(parts) {
-			result = append(result, parts[i])
+			result = append(result, buildSuggestionToken(parts[i]))
 			i++
 			added = true
 		}
@@ -119,7 +70,7 @@ func interleaveSuggestions(parts, oems, vendors []string, max int) []string {
 		}
 
 		if j < len(oems) {
-			result = append(result, oems[j])
+			result = append(result, buildSuggestionToken(oems[j]))
 			j++
 			added = true
 		}
@@ -128,7 +79,7 @@ func interleaveSuggestions(parts, oems, vendors []string, max int) []string {
 		}
 
 		if k < len(vendors) {
-			result = append(result, vendors[k])
+			result = append(result, buildSuggestionToken(vendors[k]))
 			k++
 			added = true
 		}

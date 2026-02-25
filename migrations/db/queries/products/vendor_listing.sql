@@ -38,6 +38,12 @@ WHERE product_part_no = $1
   AND vendor_name = $2
   AND vendor_part_no = $3;
 
+-- name: SearchVendorListingsByPartialMatch :many
+select * from vendor_listing o WHERE
+o.vendor_part_no  ILIKE '%' || $1 || '%'
+ORDER BY o.vendor_part_no   
+LIMIT 15;
+
 -- -------------------------------------------------------------------------------------------------------------------------------
 -- MUTATION
 -- -------------------------------------------------------------------------------------------------------------------------------

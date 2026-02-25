@@ -284,6 +284,43 @@ func (q *Queries) GetOemListingsByPartNo(ctx context.Context, partNo string) ([]
 	return items, nil
 }
 
+const searchOemNumbersByPartialMatch = `-- name: SearchOemNumbersByPartialMatch :many
+select id, part_no, oem_number, price, created_at, updated_at from oem_listings o WHERE
+o.oem_number  ILIKE '%' || $1 || '%'
+ORDER BY o.oem_number 
+LIMIT 15
+`
+
+func (q *Queries) SearchOemNumbersByPartialMatch(ctx context.Context, dollar_1 sql.NullString) ([]OemListing, error) {
+	rows, err := q.db.QueryContext(ctx, searchOemNumbersByPartialMatch, dollar_1)
+	if err != nil {
+		return nil, err
+	}
+	defer rows.Close()
+	var items []OemListing
+	for rows.Next() {
+		var i OemListing
+		if err := rows.Scan(
+			&i.ID,
+			&i.PartNo,
+			&i.OemNumber,
+			&i.Price,
+			&i.CreatedAt,
+			&i.UpdatedAt,
+		); err != nil {
+			return nil, err
+		}
+		items = append(items, i)
+	}
+	if err := rows.Close(); err != nil {
+		return nil, err
+	}
+	if err := rows.Err(); err != nil {
+		return nil, err
+	}
+	return items, nil
+}
+
 const updateOemListingByID = `-- name: UpdateOemListingByID :one
 UPDATE oem_listings AS o
 SET

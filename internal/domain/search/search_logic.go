@@ -1,7 +1,6 @@
 package search
 
 import (
-	"context"
 	"sort"
 )
 
@@ -30,10 +29,6 @@ func normalizeSearchRequest(req SearchRequest) SearchRequest {
 	}
 
 	return req
-}
-
-func (s *Service) executeSearch(ctx context.Context, req SearchRequest) (*SearchResponse, error) {
-	return s.port.Search(ctx, req)
 }
 
 func (s *Service) rerankIfNeeded(resp *SearchResponse, req SearchRequest) *SearchResponse {

@@ -23,6 +23,7 @@ import (
 	modelrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/model"
 	vendorrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/master/vendor"
 	productrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/product"
+	searchrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/search"
 	techspecrepo "github.com/webomindapps-dev/coolaid-backend/internal/repository/techspec"
 	"github.com/webomindapps-dev/coolaid-backend/internal/service/crypto"
 	"github.com/webomindapps-dev/coolaid-backend/internal/service/mailer"
@@ -53,7 +54,7 @@ type Container struct {
 	Product *product.Service
 
 	//External Services
-	Search search.Port
+	Search *search.Service
 	TS     *typesense.Context
 }
 
@@ -85,6 +86,10 @@ func NewContainer(
 	//TechRepo
 	techRepo := techspecrepo.NewTechSpecRepository(dbCtx)
 
+	//SearchRepo
+	searchRepo := searchrepo.NewSearchRepository(dbCtx)
+
+	//ProductRepo
 	productRepo := productrepo.NewProductRepository(dbCtx)
 
 	// Auth Service
@@ -105,8 +110,11 @@ func NewContainer(
 	//TechRepo
 	techSvc := techspec.NewService(techRepo)
 
-	//Product
+	//Search
 	tsSvc := typesense.NewService(tsCtx.Client)
+	search := search.NewService(tsSvc, searchRepo)
+
+	//Product
 	productSvc := product.NewService(productRepo, companySvc, modelSvc, brandSvc, categorySvc, vendorSvc, tsSvc, techSvc)
 
 	return &Container{
@@ -129,7 +137,7 @@ func NewContainer(
 		//Product
 		Product: productSvc,
 
-		Search: tsSvc,
+		Search: search,
 		TS:     tsCtx,
 	}
 }

@@ -1,31 +1,62 @@
 package search
 
-import "context"
+import (
+	"context"
+	"fmt"
+)
 
 type Service struct {
-	port        Port
-	suggestions SuggestionRepository
+	port Port
+	DB   DB
 }
 
-func NewService(port Port, repo SuggestionRepository) *Service {
+func NewService(port Port, db DB) *Service {
 	return &Service{
-		port:        port,
-		suggestions: repo,
+		port: port,
+		DB:   db,
 	}
 }
 
-func (s *Service) Search(ctx context.Context, req SearchRequest) (*SearchResponse, error) {
-
+func (s *Service) SearchProducts(ctx context.Context, req SearchRequest) (*SearchResponse, error) {
+	// Validate
 	if err := validateSearchRequest(req); err != nil {
 		return nil, err
 	}
 
 	req = normalizeSearchRequest(req)
 
-	resp, err := s.executeSearch(ctx, req)
+	// Detect numeric-driven token
+	token, isPriority := firstNumericDrivenToken(req.Query)
+
+	if isPriority && s.shouldDoPartSearch(ctx, token) {
+
+		// Build DB-driven part suggestions
+		parts, _ := s.DB.Queries().GetPartSuggestions(ctx, token)
+		oems, _ := s.DB.Queries().GetOemSuggestions(ctx, token)
+		vendors, _ := s.DB.Queries().GetVendorSuggestions(ctx, token)
+
+		values := interleaveSuggestions(parts, oems, vendors, req.PerPage)
+
+		fmt.Printf("parts %s \n oems %s \n vendors %s \n", parts, oems, vendors)
+
+		hits := buildHitsFromSuggestions(values)
+
+		return &SearchResponse{
+			Found: len(hits),
+			Page:  1,
+			Hits:  hits,
+		}, nil
+	}
+
+	// Normal Typesense Search
+	resp, err := s.port.Search(ctx, req)
 	if err != nil {
 		return nil, err
 	}
 
-	return s.rerankIfNeeded(resp, req), nil
+	//  Rerank
+	resp = s.rerankIfNeeded(resp, req)
+
+	return resp, nil
+
 }

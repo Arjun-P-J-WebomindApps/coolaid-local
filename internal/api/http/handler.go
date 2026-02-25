@@ -3,17 +3,21 @@ package handler
 import (
 	"github.com/gin-gonic/gin"
 	routeHandler "github.com/webomindapps-dev/coolaid-backend/internal/api/http/handler/routes"
+	search_handler "github.com/webomindapps-dev/coolaid-backend/internal/api/http/handler/search"
 )
 
 type HttpHandler struct {
-	RouteHandler *routeHandler.RouteHandler
+	RouteHandler  *routeHandler.RouteHandler
+	SearchHandler *search_handler.SearchHandler
 }
 
 func NewHttpHandler(
 	routeHandler *routeHandler.RouteHandler,
+	searchHandler *search_handler.SearchHandler,
 ) *HttpHandler {
 	return &HttpHandler{
-		RouteHandler: routeHandler,
+		RouteHandler:  routeHandler,
+		SearchHandler: searchHandler,
 	}
 }
 

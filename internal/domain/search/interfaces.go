@@ -12,9 +12,13 @@ type Indexer interface {
 	Delete(ctx context.Context, collection string, id string) error
 }
 
-type SuggestionRepository interface {
+type Queries interface {
 	GetSimilarModels(ctx context.Context, token string) ([]string, error)
-	GetPartSuggestions(ctx context.Context, token string) ([]string, error)
-	GetOemSuggestions(ctx context.Context, token string) ([]string, error)
-	GetVendorSuggestions(ctx context.Context, token string) ([]string, error)
+	GetPartSuggestions(ctx context.Context, token string) ([]PartSuggestionResponse, error)
+	GetOemSuggestions(ctx context.Context, token string) ([]PartSuggestionResponse, error)
+	GetVendorSuggestions(ctx context.Context, token string) ([]PartSuggestionResponse, error)
+}
+
+type DB interface {
+	Queries() Queries
 }

@@ -46,7 +46,7 @@ type Highlight struct {
 	MatchedTokens []string
 }
 
-//========================================================
+//=========================================================
 //          SUGGEST MODELS
 //==========================================================
 
@@ -58,4 +58,13 @@ type SuggestRequest struct {
 
 type SuggestResponse struct {
 	Hits []SearchHit
+}
+
+//====================================================================
+// PART BASED SUGGESTION
+//=====================================================================
+
+type PartSuggestionResponse struct {
+	PartNo       string `json:"part_no"`
+	MatchedValue string `json:"matched_value"`
 }

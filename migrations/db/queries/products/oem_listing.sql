@@ -36,6 +36,12 @@ FROM oem_listings
 WHERE part_no = $1
   AND oem_number = $2;
 
+-- name: SearchOemNumbersByPartialMatch :many
+select * from oem_listings o WHERE
+o.oem_number  ILIKE '%' || $1 || '%'
+ORDER BY o.oem_number 
+LIMIT 15;
+
 -- -------------------------------------------------------------------------------------------------------------------------------
 -- MUTATION
 -- -------------------------------------------------------------------------------------------------------------------------------
