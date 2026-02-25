@@ -2,7 +2,6 @@ package search
 
 import (
 	"context"
-	"fmt"
 )
 
 type Service struct {
@@ -36,8 +35,6 @@ func (s *Service) SearchProducts(ctx context.Context, req SearchRequest) (*Searc
 		vendors, _ := s.DB.Queries().GetVendorSuggestions(ctx, token)
 
 		values := interleaveSuggestions(parts, oems, vendors, req.PerPage)
-
-		fmt.Printf("parts %s \n oems %s \n vendors %s \n", parts, oems, vendors)
 
 		hits := buildHitsFromSuggestions(values)
 

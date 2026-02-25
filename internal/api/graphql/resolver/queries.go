@@ -10,8 +10,11 @@ import (
 
 	"github.com/google/uuid"
 	"github.com/vektah/gqlparser/v2/gqlerror"
+	"github.com/webomindapps-dev/coolaid-backend/internal/api/graphql/helpers"
 	mapping "github.com/webomindapps-dev/coolaid-backend/internal/api/graphql/mappers/master"
+	product_mapper "github.com/webomindapps-dev/coolaid-backend/internal/api/graphql/mappers/product"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/auth"
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/product"
 	graphql1 "github.com/webomindapps-dev/coolaid-backend/internal/generated/graphql"
 	"github.com/webomindapps-dev/coolaid-backend/internal/generated/graphql/model"
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
@@ -477,13 +480,64 @@ func (r *queryResolver) GetVendors(ctx context.Context, name *string) ([]*model.
 }
 
 // GetFilteredPartNo is the resolver for the getFilteredPartNo field.
-func (r *queryResolver) GetFilteredPartNo(ctx context.Context, partNo *string) ([]string, error) {
-	panic(fmt.Errorf("not implemented: GetFilteredPartNo - getFilteredPartNo"))
+// GetFilteredPartNo resolves the getFilteredPartNo query.
+func (r *queryResolver) GetFilteredPartNo(
+	ctx context.Context,
+	partNo *string,
+) ([]string, error) {
+
+	if partNo == nil || *partNo == "" {
+		return nil, gqlerror.Errorf("part number is required")
+	}
+
+	rows, err := r.Services.Product.GetProductPartNos(ctx, *partNo)
+	if err != nil {
+		return nil, mapProductError(err)
+	}
+
+	return rows, nil
 }
 
 // GetFilteredParts is the resolver for the getFilteredParts field.
-func (r *queryResolver) GetFilteredParts(ctx context.Context, filter model.FilterInput) (*model.FilteredResponse, error) {
-	panic(fmt.Errorf("not implemented: GetFilteredParts - getFilteredParts"))
+// GetFilteredParts resolves the getFilteredParts query.
+func (r *queryResolver) GetFilteredParts(
+	ctx context.Context,
+	filter model.FilterInput,
+) (*model.FilteredResponse, error) {
+
+	selfSubFields := helpers.GetRequestedSubFields(ctx, "self")
+	unicodeSubFields := helpers.GetRequestedSubFields(ctx, "unicode")
+
+	filteredResp, err := r.Services.Product.GetFilterPageDetails(
+		ctx,
+		product.FilterSelectionParams{
+			Company:  filter.CompanyName,
+			Model:    filter.ModelName,
+			Category: filter.CategoryName,
+			Brand:    filter.BrandName,
+			Unicode:  filter.Unicode,
+		},
+		selfSubFields,
+		unicodeSubFields,
+	)
+	if err != nil {
+		return nil, mapProductError(err)
+	}
+
+	self := make([]*model.FilterOrigin, 0, len(filteredResp.Self))
+	for _, item := range filteredResp.Self {
+		self = append(self, product_mapper.ToFilterOrigin(item))
+	}
+
+	unicode := make([]*model.FilterOrigin, 0, len(filteredResp.Unicode))
+	for _, item := range filteredResp.Unicode {
+		unicode = append(unicode, product_mapper.ToFilterOrigin(item))
+	}
+
+	return &model.FilteredResponse{
+		Self:    self,
+		Unicode: unicode,
+	}, nil
 }
 
 // GetProductPartNo is the resolver for the getProductPartNo field.

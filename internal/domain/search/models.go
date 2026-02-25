@@ -30,20 +30,20 @@ type SearchRequest struct {
 }
 
 type SearchResponse struct {
-	Found int
-	Page  int
-	Hits  []SearchHit
+	Found int         `json:"found"`
+	Page  int         `json:"page"`
+	Hits  []SearchHit `json:"hits"`
 }
 
 type SearchHit struct {
-	Document   interface{}
-	Highlights []Highlight
+	Document   ProductSearchDocument `json:"document"`
+	Highlights []Highlight           `json:"highlights"`
 }
 
 type Highlight struct {
-	Field         string
-	Snippet       string
-	MatchedTokens []string
+	Field         string   `json:"field"`
+	Snippet       string   `json:"snippet"`
+	MatchedTokens []string `json:"matched_tokens"`
 }
 
 //=========================================================

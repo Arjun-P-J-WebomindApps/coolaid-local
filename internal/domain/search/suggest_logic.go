@@ -28,10 +28,22 @@ func buildHitsFromSuggestions(values []string) []SearchHit {
 	hits := make([]SearchHit, 0, len(values))
 
 	for _, v := range values {
+
 		hits = append(hits, SearchHit{
-			Document: map[string]any{
-				"id":      "SearchByPartNo",
-				"part_no": v,
+			Document: ProductSearchDocument{
+				ID:       "SearchByPartNo",
+				Company:  "",
+				Model:    "",
+				Category: "",
+				Brand:    "",
+				PartNo:   v,
+			},
+			Highlights: []Highlight{
+				{
+					Field:         "part_no",
+					Snippet:       "",
+					MatchedTokens: []string{""},
+				},
 			},
 		})
 	}
@@ -41,7 +53,7 @@ func buildHitsFromSuggestions(values []string) []SearchHit {
 
 func buildSuggestionToken(s PartSuggestionResponse) string {
 	if s.MatchedValue == "" || s.MatchedValue == s.PartNo {
-		return s.PartNo
+		return s.PartNo + ":" + s.PartNo
 	}
 
 	return s.MatchedValue + ":" + s.PartNo

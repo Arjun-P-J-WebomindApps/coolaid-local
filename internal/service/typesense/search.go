@@ -15,7 +15,6 @@ func (s *Service) Search(
 	req search.SearchRequest,
 ) (*search.SearchResponse, error) {
 
-	//Typesense
 	params := &api.SearchCollectionParams{
 		Q:       req.Query,
 		QueryBy: req.QueryBy,
@@ -35,8 +34,7 @@ func (s *Service) Search(
 		return nil, fmt.Errorf("typesense search failed: %w", err)
 	}
 
-	hits := make([]api.SearchResultHit, 0, 0)
-
+	var hits []api.SearchResultHit
 	if resp.Hits != nil {
 		hits = *resp.Hits
 	}
@@ -48,36 +46,7 @@ func (s *Service) Search(
 	}
 
 	for _, h := range hits {
-
-		hlts := make([]api.SearchHighlight, 0, 0)
-
-		if h.Highlights != nil {
-			hlts = *h.Highlights
-		}
-
-		highlights := make([]search.Highlight, 0, len(hlts))
-
-		for _, hl := range hlts {
-
-			matchedTokens := make([]string, 0)
-			if hl.MatchedTokens != nil {
-				matchedTokens = make([]string, 0, len(*hl.MatchedTokens))
-				for _, t := range *hl.MatchedTokens {
-					matchedTokens = append(matchedTokens, fmt.Sprint(t))
-				}
-			}
-
-			highlights = append(highlights, search.Highlight{
-				Field:         ptr.String(hl.Field),
-				Snippet:       ptr.String(hl.Snippet),
-				MatchedTokens: matchedTokens,
-			})
-		}
-
-		result.Hits = append(result.Hits, search.SearchHit{
-			Document:   h.Document,
-			Highlights: highlights,
-		})
+		result.Hits = append(result.Hits, mapHit(h))
 	}
 
 	return result, nil
