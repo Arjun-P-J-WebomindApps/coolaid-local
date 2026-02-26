@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -50,6 +51,9 @@ func (s *Service) createVariant(
 	if partNo == "" || input.Type == "" {
 		return nil, ErrInvalidInput
 	}
+
+	fmt.Printf("\n OemIds %s", OemIds)
+	fmt.Printf("\n Vendors %s", VendorIDs)
 
 	params := CreateModelVariantParams{
 		ID:               uuid.NewString(),
