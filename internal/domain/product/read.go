@@ -2,7 +2,6 @@ package product
 
 import (
 	"context"
-	"fmt"
 	"strings"
 )
 
@@ -208,10 +207,7 @@ func (s *Service) ListProducts(
 	// ------------------------------------------------
 
 	grouped := make(map[string]*ProductDetails)
-	fmt.Printf("total %d \n", len(rows))
-	for i, r := range rows {
-
-		fmt.Printf("data i %d \n", i)
+	for _, r := range rows {
 
 		partNo := r.Product.PartNo
 
