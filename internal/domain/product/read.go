@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"fmt"
 	"strings"
 )
 
@@ -114,35 +115,35 @@ func (s *Service) GetFilterPageDetails(
 	}, nil
 }
 
-func (s *Service) GetProductAggregateByPartNo(
-	ctx context.Context,
-	partNo string,
-) (*ProductDetails, error) {
+// func (s *Service) GetProductAggregateByPartNo(
+// 	ctx context.Context,
+// 	partNo string,
+// ) (*ProductDetails, error) {
 
-	if partNo == "" {
-		return nil, ErrInvalidPartNo
-	}
+// 	if partNo == "" {
+// 		return nil, ErrInvalidPartNo
+// 	}
 
-	Q := s.DB.Queries()
+// 	Q := s.DB.Queries()
 
-	product, err := s.getProductByPartNo(ctx, Q, partNo)
-	if err != nil {
-		return nil, err
-	}
+// 	product, err := s.getProductByPartNo(ctx, Q, partNo)
+// 	if err != nil {
+// 		return nil, err
+// 	}
 
-	variant, _ := s.getVariantByPartNo(ctx, Q, partNo)
-	pricing, _ := s.getPricingByPartNo(ctx, Q, partNo)
-	inventory, _ := s.getInventoryByPartNo(ctx, Q, partNo)
-	offer, _ := s.getOfferByPartNo(ctx, Q, partNo)
+// 	variant, _ := s.getVariantByPartNo(ctx, Q, partNo)
+// 	pricing, _ := s.getPricingByPartNo(ctx, Q, partNo)
+// 	inventory, _ := s.getInventoryByPartNo(ctx, Q, partNo)
+// 	offer, _ := s.getOfferByPartNo(ctx, Q, partNo)
 
-	return &ProductDetails{
-		Product:      product,
-		ModelVariant: variant,
-		Pricing:      pricing,
-		Inventory:    inventory,
-		Offer:        offer,
-	}, nil
-}
+// 	return &ProductDetails{
+// 		Product:      product,
+// 		ModelVariant: variant,
+// 		Pricing:      pricing,
+// 		Inventory:    inventory,
+// 		Offer:        offer,
+// 	}, nil
+// }
 
 func (s *Service) ListProducts(
 	ctx context.Context,
@@ -207,8 +208,10 @@ func (s *Service) ListProducts(
 	// ------------------------------------------------
 
 	grouped := make(map[string]*ProductDetails)
+	fmt.Printf("total %d \n", len(rows))
+	for i, r := range rows {
 
-	for _, r := range rows {
+		fmt.Printf("data i %d \n", i)
 
 		partNo := r.Product.PartNo
 

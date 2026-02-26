@@ -18,12 +18,22 @@ type Product struct {
 	UpdatedAt  time.Time
 }
 
+type ProductResolved struct {
+	ID           ID
+	PartNo       string
+	CompanyName  string
+	ModelName    string
+	BrandName    string
+	BrandImage   string
+	CategoryName string
+}
+
 //
 // 🔹 Aggregate Product Details (Read Model)
 //
 
 type ProductDetails struct {
-	Product      *Product
+	Product      *ProductResolved
 	ModelVariant *ModelVariant
 	Pricing      *ProductPricing
 	Inventory    *ProductInventory

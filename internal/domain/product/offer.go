@@ -51,31 +51,44 @@ func (s *Service) createOffer(
 		return nil, ErrInvalidInput
 	}
 
+	now := time.Now()
+
+	var startDate, endDate string
+
 	if input.IsOfferActive {
 
 		start, err := parseDate(input.StartDate)
 		if err != nil {
-			return nil, ErrInvalidInput
+			return nil, ErrInvalidOfferData
 		}
 
 		end, err := parseDate(input.EndDate)
 		if err != nil {
-			return nil, ErrInvalidInput
+			return nil, ErrInvalidOfferData
 		}
 
 		if !start.Before(end) {
-			return nil, ErrInvalidInput
+			return nil, ErrInvalidOfferDateRange
 		}
-	}
 
-	now := time.Now()
+		startDate = input.StartDate
+		endDate = input.EndDate
+
+	} else {
+
+		// 🔥 Default fallback dates when offer inactive
+		// Use today's date for both
+		today := now.Format("2006-01-02")
+		startDate = today
+		endDate = today
+	}
 
 	row, err := Q.CreateOffer(ctx, CreateProductOfferParams{
 		ID:            uuid.NewString(),
 		PartNo:        partNo,
 		IsOfferActive: input.IsOfferActive,
-		StartDate:     input.StartDate,
-		EndDate:       input.EndDate,
+		StartDate:     startDate,
+		EndDate:       endDate,
 		AcTrader:      input.AcTrader,
 		MultiBrand:    input.MultiBrand,
 		Autotrader:    input.Autotrader,

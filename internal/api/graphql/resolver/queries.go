@@ -542,12 +542,34 @@ func (r *queryResolver) GetFilteredParts(
 
 // GetProductPartNo is the resolver for the getProductPartNo field.
 func (r *queryResolver) GetProductPartNo(ctx context.Context, partNo string) ([]string, error) {
-	panic(fmt.Errorf("not implemented: GetProductPartNo - getProductPartNo"))
+	parts, err := r.Services.Product.GetProductPartNos(ctx, partNo)
+
+	if err != nil {
+		return []string{}, mapProductError(err)
+	}
+
+	return parts, nil
 }
 
 // GetProductDetails is the resolver for the getProductDetails field.
 func (r *queryResolver) GetProductDetails(ctx context.Context, productDetails model.ProductDetailsInput) ([]*model.ProductDetails, error) {
-	panic(fmt.Errorf("not implemented: GetProductDetails - getProductDetails"))
+	parts, err := r.Services.Product.ListProducts(ctx, product.ProductsFilterParams{
+		Company:           productDetails.Company,
+		Model:             productDetails.Model,
+		Categories:        productDetails.Categories,
+		Brands:            productDetails.Brands,
+		PartNo:            productDetails.PartNo,
+		Gen:               productDetails.Gen,
+		FuelType:          productDetails.FuelType,
+		Mark:              productDetails.Mark,
+		UnicodeCategories: productDetails.UnicodeCategories,
+	})
+
+	if err != nil {
+		return []*model.ProductDetails{}, mapProductError(err)
+	}
+
+	return product_mapper.MapProductList(ctx, parts), nil
 }
 
 // GetSimilarPricing is the resolver for the getSimilarPricing field.

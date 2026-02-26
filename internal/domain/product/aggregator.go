@@ -85,6 +85,9 @@ func (s *Service) CreateProduct(
 		return nil, err
 	}
 
+	oplog.Info(ctx, "creating vendors", "count", len(input.Vendors))
+	oplog.Info(ctx, "creating oems", "count", len(input.OemNumbers))
+
 	//Create OEM Listings
 	oemIDs, err := s.createOEMs(ctx, productQ, input.Main.PartNo, input.OemNumbers)
 	if err != nil {
@@ -125,17 +128,16 @@ func (s *Service) CreateProduct(
 			YearEnd:        input.Main.BaseData.YearEnd,
 			Description:    input.Main.BaseData.Description,
 			AdditionalInfo: input.Main.BaseData.AdditionalInfo,
-
-			OemNumbers: oemIDs,
-			Vendors:    vendorIDs,
 		},
+		oemIDs,
+		vendorIDs,
 	); err != nil {
 		oplog.Error(ctx, "variant creation failed", "partNo=", product.PartNo, "error=", err)
 		return nil, err
 	}
 
 	//  Create Pricing
-	if _, err := s.createPricing(ctx, productQ, product.PartNo, input.Pricing); err != nil {
+	if _, err := s.createPricing(ctx, productQ, string(product.ID), input.Pricing); err != nil {
 		oplog.Error(ctx, "pricing creation failed", "partNo=", product.PartNo, "error=", err)
 		return nil, err
 	}
@@ -207,6 +209,7 @@ func (s *Service) UpdateProduct(
 		return nil, ErrInternal
 	}
 	if current == nil {
+		oplog.Warn(ctx, "product not found for update", "partNo", input.Main.PartNo)
 		return nil, ErrProductNotFound
 	}
 
@@ -224,7 +227,6 @@ func (s *Service) UpdateProduct(
 		oplog.Error(ctx, "transaction begin failed", "partNo", input.Main.PartNo, "error", err)
 		return nil, ErrInternal
 	}
-	defer tx.Rollback()
 
 	committed := false
 	defer func() {
@@ -392,6 +394,7 @@ func (s *Service) UpdateProduct(
 	}
 
 	//TODO: Update Typesense only if required
+	oplog.Info(ctx, "typesense update skipped", "partNo", partNo)
 
 	if s.Indexer != nil {
 		searchSvc := s.Indexer

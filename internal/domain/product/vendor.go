@@ -99,7 +99,7 @@ func (s *Service) createVendors(
 	}
 
 	if len(vendors) == 0 {
-		return nil, nil
+		return []string{}, nil
 	}
 
 	listings := make([]string, 0, len(vendors))

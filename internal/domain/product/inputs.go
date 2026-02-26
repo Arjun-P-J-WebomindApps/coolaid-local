@@ -88,9 +88,6 @@ type CreateModelVariantInput struct {
 	YearEnd        int32
 	Description    string
 	AdditionalInfo string
-
-	OemNumbers []string
-	Vendors    []string
 }
 
 type UpdateModelVariantInput struct {

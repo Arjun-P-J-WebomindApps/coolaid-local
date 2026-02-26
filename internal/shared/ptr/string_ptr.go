@@ -30,3 +30,11 @@ func StringSliceValue(v *[]string) []string {
 	}
 	return *v
 }
+
+func StringSlice(v []string) *[]string {
+	if v == nil {
+		empty := []string{}
+		return &empty
+	}
+	return &v
+}

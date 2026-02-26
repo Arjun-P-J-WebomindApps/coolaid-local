@@ -24,21 +24,18 @@ func mapProductRowToModel(r *ProductRow) *Product {
 	}
 }
 
-func mapResolvedProductRowToModel(r *ProductResolvedRow) *Product {
+func mapResolvedProductRowToModel(r *ProductResolvedRow) *ProductResolved {
 	if r == nil {
 		return nil
 	}
 
-	return &Product{
-		ID:         ID(r.ID),
-		PartNo:     r.PartNo,
-		CompanyID:  r.CompanyName,
-		ModelID:    r.ModelName,
-		BrandID:    r.BrandName,
-		CategoryID: r.CategoryName,
-		IsActive:   r.IsActive,
-		CreatedAt:  r.CreatedAt,
-		UpdatedAt:  r.UpdatedAt,
+	return &ProductResolved{
+		ID:           ID(r.ID),
+		PartNo:       r.PartNo,
+		CompanyName:  r.CompanyName,
+		ModelName:    r.ModelName,
+		BrandName:    r.BrandName,
+		CategoryName: r.CategoryName,
 	}
 }
 

@@ -121,7 +121,7 @@ func (s *Service) createOEMs(
 	}
 
 	if len(oems) == 0 {
-		return nil, nil
+		return []string{}, nil
 	}
 
 	listings := make([]string, 0, len(oems))

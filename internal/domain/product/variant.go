@@ -2,6 +2,7 @@ package product
 
 import (
 	"context"
+	"fmt"
 
 	"github.com/google/uuid"
 )
@@ -43,11 +44,16 @@ func (s *Service) createVariant(
 	Q Queries,
 	partNo string,
 	input CreateModelVariantInput,
+	OemIds []string,
+	VendorIDs []string,
 ) (*ModelVariant, error) {
 
 	if partNo == "" || input.Type == "" {
 		return nil, ErrInvalidInput
 	}
+
+	fmt.Printf("\n OemIds %s", OemIds)
+	fmt.Printf("\n Vendors %s", VendorIDs)
 
 	params := CreateModelVariantParams{
 		ID:               uuid.NewString(),
@@ -70,8 +76,8 @@ func (s *Service) createVariant(
 		HsnCode:          &input.HsnCode,
 		Description:      &input.Description,
 		AdditionalInfo:   &input.AdditionalInfo,
-		OemIds:           input.OemNumbers,
-		VendorID:         input.Vendors,
+		OemIds:           OemIds,
+		VendorID:         VendorIDs,
 	}
 
 	// Optional pointer fields — only set if not empty

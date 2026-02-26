@@ -12,6 +12,7 @@ import (
 	"github.com/google/uuid"
 	"github.com/vektah/gqlparser/v2/gqlerror"
 	"github.com/webomindapps-dev/coolaid-backend/config"
+	product_mapper "github.com/webomindapps-dev/coolaid-backend/internal/api/graphql/mappers/product"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/auth"
 	brand "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/brands"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/category"
@@ -19,6 +20,7 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/customer"
 	models "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/model"
 	vendor "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/vendors"
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/product"
 	graphql1 "github.com/webomindapps-dev/coolaid-backend/internal/generated/graphql"
 	"github.com/webomindapps-dev/coolaid-backend/internal/generated/graphql/model"
 	"github.com/webomindapps-dev/coolaid-backend/oplog"
@@ -746,17 +748,54 @@ func (r *mutationResolver) UpdateTicket(ctx context.Context, input model.UpdateO
 
 // CreateProduct is the resolver for the createProduct field.
 func (r *mutationResolver) CreateProduct(ctx context.Context, input *model.CreateProductInput) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: CreateProduct - createProduct"))
+
+	product, errProduct := r.Services.Product.CreateProduct(ctx, product.CreateProductInput{
+		Main:       product_mapper.MapCreateMainInput(input.Main),
+		Pricing:    product_mapper.MapCreatePricing(input.Pricing),
+		Inventory:  product_mapper.MapCreateInventoryInput(input.Inventory),
+		Offer:      product_mapper.MapCreateOfferInput(input.Offer),
+		TechSpec:   product_mapper.MapTechnicalSpecsInput(input.TechnicalSpecs),
+		OemNumbers: product_mapper.MapCreateOemNumberInput(input.Main.BaseData.OemNumbers),
+		Vendors:    product_mapper.MapCreateVendorInput(input.Main.BaseData.Vendors),
+	})
+
+	if errProduct != nil {
+		return nil, mapProductError(errProduct)
+	}
+
+	return product_mapper.MapProduct(ctx, product), nil
 }
 
 // UpdateProduct is the resolver for the updateProduct field.
 func (r *mutationResolver) UpdateProduct(ctx context.Context, input *model.UpdateProductInput) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: UpdateProduct - updateProduct"))
+
+	product, errProduct := r.Services.Product.UpdateProduct(ctx, product.UpdateProductInput{
+		Main:       product_mapper.MapUpdateMainInput(input.Main),
+		Pricing:    product_mapper.MapUpdatePricing(input.Pricing),
+		Inventory:  product_mapper.MapUpdateInventoryInput(input.Inventory),
+		Offer:      product_mapper.MapUpdateOfferInput(input.Offer),
+		TechSpec:   product_mapper.MapTechnicalSpecsInput(input.TechnicalSpecs),
+		OemNumbers: product_mapper.MapCreateOemNumberInput(input.Main.BaseData.OemNumbers),
+		Vendors:    product_mapper.MapCreateVendorInput(input.Main.BaseData.Vendors),
+	})
+
+	if errProduct != nil {
+		return nil, mapProductError(errProduct)
+	}
+
+	return product_mapper.MapProduct(ctx, product), nil
+
 }
 
 // DeleteProduct is the resolver for the deleteProduct field.
 func (r *mutationResolver) DeleteProduct(ctx context.Context, input *model.DeleteProductInput) (*model.Product, error) {
-	panic(fmt.Errorf("not implemented: DeleteProduct - deleteProduct"))
+	errProduct := r.Services.Product.DeleteProduct(ctx, input.PartNo)
+
+	if errProduct != nil {
+		return nil, mapProductError(errProduct)
+	}
+
+	return product_mapper.MapProduct(ctx, nil), nil
 }
 
 // CreateOutOfStockOrder is the resolver for the createOutOfStockOrder field.

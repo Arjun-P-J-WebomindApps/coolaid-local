@@ -76,6 +76,7 @@ func (s *Service) createProduct(
 	return mapProductRowToModel(row), nil
 }
 
+// Main details are not to be updated as per current configuration
 func (s *Service) updateProduct(
 	ctx context.Context,
 	Q Queries,
