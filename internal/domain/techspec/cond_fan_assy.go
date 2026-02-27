@@ -11,6 +11,13 @@ import (
 // CONDENSER FAN ASSY
 // =======================================================
 
+func (s *Service) GetCondFanAssy(ctx context.Context, partNo string) (*CondFanAssyRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetCondFanAssyByPartNo(ctx, partNo)
+}
+
 func ValidateCondFanAssyInput(in *CondFanAssyInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

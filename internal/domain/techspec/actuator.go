@@ -11,6 +11,13 @@ import (
 // ACTUATOR
 // =======================================================
 
+func (s *Service) GetActuator(ctx context.Context, partNo string) (*ActuatorRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetActuatorByPartNo(ctx, partNo)
+}
+
 // ValidateActuatorInput performs minimal domain validation.
 // Keep this intentionally light.
 func ValidateActuatorInput(in *ActuatorInput) error {

@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetRotor(ctx context.Context, partNo string) (*RotorRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetRotorByPartNo(ctx, partNo)
+}
+
 func ValidateRotorInput(in *RotorInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

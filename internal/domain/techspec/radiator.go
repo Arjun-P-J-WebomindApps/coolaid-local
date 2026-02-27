@@ -7,6 +7,12 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetRadiator(ctx context.Context, partNo string) (*RadiatorRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetRadiatorByPartNo(ctx, partNo)
+}
 func ValidateRadiatorInput(in *RadiatorInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

@@ -11,6 +11,13 @@ import (
 // BLOWER MOTOR
 // =======================================================
 
+func (s *Service) GetBlowerMotor(ctx context.Context, partNo string) (*BlowerMotorRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetBlowerMotorByPartNo(ctx, partNo)
+}
+
 func ValidateBlowerMotorInput(in *BlowerMotorInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

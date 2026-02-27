@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetEvaporator(ctx context.Context, partNo string) (*EvaporatorRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetEvaporatorByPartNo(ctx, partNo)
+}
+
 func ValidateEvaporatorInput(in *EvaporatorInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

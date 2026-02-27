@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetIntercooler(ctx context.Context, partNo string) (*IntercoolerRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetIntercoolerByPartNo(ctx, partNo)
+}
+
 func ValidateIntercoolerInput(in *IntercoolerInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

@@ -1,0 +1,3665 @@
+D:\Local\coolaid-backend-model\internal\domain\techspec\actuator.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+// =======================================================
+// ACTUATOR
+// =======================================================
+
+// ValidateActuatorInput performs minimal domain validation.
+// Keep this intentionally light.
+func ValidateActuatorInput(in *ActuatorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+// BuildCreateActuatorParams maps input → DB create params
+func BuildCreateActuatorParams(
+	partNo string,
+	in *ActuatorInput,
+) (CreateActuatorParams, error) {
+
+	if partNo == "" {
+		return CreateActuatorParams{}, ErrInvalidPartNo
+	}
+
+	if err := ValidateActuatorInput(in); err != nil {
+		return CreateActuatorParams{}, err
+	}
+
+	return CreateActuatorParams{
+		ID:            uuid.NewString(),
+		PartNo:        partNo,
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		Mounting:      ptr.StringOrNil(in.Mounting),
+		Voltage:       ptr.StringOrNil(in.Voltage),
+		RotationAngle: ptr.StringOrNil(in.RotationAngle),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+// BuildUpdateActuatorParams maps input → DB update params
+func BuildUpdateActuatorParams(
+	partNo string,
+	in *ActuatorInput,
+) (UpdateActuatorParams, error) {
+
+	if partNo == "" {
+		return UpdateActuatorParams{}, ErrInvalidPartNo
+	}
+
+	if err := ValidateActuatorInput(in); err != nil {
+		return UpdateActuatorParams{}, err
+	}
+
+	return UpdateActuatorParams{
+		PartNo:        partNo,
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		Mounting:      ptr.StringOrNil(in.Mounting),
+		Voltage:       ptr.StringOrNil(in.Voltage),
+		RotationAngle: ptr.StringOrNil(in.RotationAngle),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+// CreateActuator executes the create use-case
+func CreateActuator(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+	in *ActuatorInput,
+) (*ActuatorRow, error) {
+
+	params, err := BuildCreateActuatorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.CreateActuator(ctx, params)
+	if err != nil {
+		return nil, ErrCreateActuatorFailed
+	}
+
+	return row, nil
+}
+
+// UpdateActuator executes the update use-case
+func UpdateActuator(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+	in *ActuatorInput,
+) (*ActuatorRow, error) {
+
+	params, err := BuildUpdateActuatorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.UpdateActuatorByPartNo(ctx, params)
+	if err != nil {
+		return nil, ErrUpdateActuatorFailed
+	}
+
+	return row, nil
+}
+
+// DeleteActuator deletes an actuator by part number
+func DeleteActuator(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+) error {
+
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+
+	if err := q.DeleteActuatorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteActuatorFailed
+	}
+
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\blower_motor.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+// =======================================================
+// BLOWER MOTOR
+// =======================================================
+
+func ValidateBlowerMotorInput(in *BlowerMotorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateBlowerMotorParams(
+	partNo string,
+	in *BlowerMotorInput,
+) (CreateBlowerMotorParams, error) {
+
+	if partNo == "" {
+		return CreateBlowerMotorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateBlowerMotorInput(in); err != nil {
+		return CreateBlowerMotorParams{}, err
+	}
+
+	return CreateBlowerMotorParams{
+		ID:            uuid.NewString(),
+		PartNo:        partNo,
+		Mounting:      ptr.StringOrNil(in.Mounting),
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		Impeller:      ptr.StringOrNil(in.Impeller),
+		Resistance:    ptr.StringOrNil(in.Resistance),
+		MotorMounting: ptr.StringOrNil(in.MotorMounting),
+		MotorType:     ptr.StringOrNil(in.MotorType),
+		Voltage:       ptr.StringOrNil(in.Voltage),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateBlowerMotorParams(
+	partNo string,
+	in *BlowerMotorInput,
+) (UpdateBlowerMotorParams, error) {
+
+	if partNo == "" {
+		return UpdateBlowerMotorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateBlowerMotorInput(in); err != nil {
+		return UpdateBlowerMotorParams{}, err
+	}
+
+	return UpdateBlowerMotorParams{
+		PartNo:        partNo,
+		Mounting:      ptr.StringOrNil(in.Mounting),
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		Impeller:      ptr.StringOrNil(in.Impeller),
+		Resistance:    ptr.StringOrNil(in.Resistance),
+		MotorMounting: ptr.StringOrNil(in.MotorMounting),
+		MotorType:     ptr.StringOrNil(in.MotorType),
+		Voltage:       ptr.StringOrNil(in.Voltage),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateBlowerMotor(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+	in *BlowerMotorInput,
+) (*BlowerMotorRow, error) {
+
+	params, err := BuildCreateBlowerMotorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.CreateBlowerMotor(ctx, params)
+	if err != nil {
+		return nil, ErrCreateBlowerMotorFailed
+	}
+
+	return row, nil
+}
+
+func UpdateBlowerMotor(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+	in *BlowerMotorInput,
+) (*BlowerMotorRow, error) {
+
+	params, err := BuildUpdateBlowerMotorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.UpdateBlowerMotorByPartNo(ctx, params)
+	if err != nil {
+		return nil, ErrUpdateBlowerMotorFailed
+	}
+
+	return row, nil
+}
+
+func DeleteBlowerMotor(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+) error {
+
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+
+	if err := q.DeleteBlowerMotorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteBlowerMotorFailed
+	}
+
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\cabin_filter.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateCabinFilterInput(in *CabinFilterInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateCabinFilterParams(partNo string, in *CabinFilterInput) (CreateCabinFilterParams, error) {
+	if partNo == "" {
+		return CreateCabinFilterParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCabinFilterInput(in); err != nil {
+		return CreateCabinFilterParams{}, err
+	}
+
+	return CreateCabinFilterParams{
+		ID:         uuid.NewString(),
+		PartNo:     partNo,
+		Type:       ptr.StringOrNil(in.Type),
+		Dimensions: ptr.StringOrNil(in.Dimensions),
+		Material:   ptr.StringOrNil(in.Material),
+		Notes:      ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateCabinFilterParams(partNo string, in *CabinFilterInput) (UpdateCabinFilterParams, error) {
+	if partNo == "" {
+		return UpdateCabinFilterParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCabinFilterInput(in); err != nil {
+		return UpdateCabinFilterParams{}, err
+	}
+
+	return UpdateCabinFilterParams{
+		PartNo:     partNo,
+		Type:       ptr.StringOrNil(in.Type),
+		Dimensions: ptr.StringOrNil(in.Dimensions),
+		Material:   ptr.StringOrNil(in.Material),
+		Notes:      ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateCabinFilter(ctx context.Context, q Queries, partNo string, in *CabinFilterInput) (*CabinFilterRow, error) {
+	p, err := BuildCreateCabinFilterParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.CreateCabinFilter(ctx, p)
+	if err != nil {
+		return nil, ErrCreateCabinFilterFailed
+	}
+	return row, nil
+}
+
+func UpdateCabinFilter(ctx context.Context, q Queries, partNo string, in *CabinFilterInput) (*CabinFilterRow, error) {
+	p, err := BuildUpdateCabinFilterParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.UpdateCabinFilterByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateCabinFilterFailed
+	}
+	return row, nil
+}
+
+func DeleteCabinFilter(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteCabinFilterByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteCabinFilterFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\chiller_unit.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateChillerUnitInput(in *ChillerUnitInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateChillerUnitParams(partNo string, in *ChillerUnitInput) (CreateChillerUnitParams, error) {
+	if partNo == "" {
+		return CreateChillerUnitParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateChillerUnitInput(in); err != nil {
+		return CreateChillerUnitParams{}, err
+	}
+
+	return CreateChillerUnitParams{
+		ID:      uuid.NewString(),
+		PartNo:  partNo,
+		Type:    ptr.StringOrNil(in.Type),
+		Voltage: ptr.StringOrNil(in.Voltage),
+		Notes:   ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateChillerUnitParams(partNo string, in *ChillerUnitInput) (UpdateChillerUnitParams, error) {
+	if partNo == "" {
+		return UpdateChillerUnitParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateChillerUnitInput(in); err != nil {
+		return UpdateChillerUnitParams{}, err
+	}
+
+	return UpdateChillerUnitParams{
+		PartNo:  partNo,
+		Type:    ptr.StringOrNil(in.Type),
+		Voltage: ptr.StringOrNil(in.Voltage),
+		Notes:   ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateChillerUnit(ctx context.Context, q Queries, partNo string, in *ChillerUnitInput) (*ChillerUnitRow, error) {
+	p, err := BuildCreateChillerUnitParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateChillerUnit(ctx, p)
+	if err != nil {
+		return nil, ErrCreateChillerUnitFailed
+	}
+	return row, nil
+}
+
+func UpdateChillerUnit(ctx context.Context, q Queries, partNo string, in *ChillerUnitInput) (*ChillerUnitRow, error) {
+	p, err := BuildUpdateChillerUnitParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateChillerUnitByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateChillerUnitFailed
+	}
+	return row, nil
+}
+
+func DeleteChillerUnit(ctx context.Context, q Queries, partNo string) error {
+	if err := q.DeleteChillerUnitByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteChillerUnitFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\clutch_assy.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateClutchAssyInput(in *ClutchAssyInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateClutchAssyParams(partNo string, in *ClutchAssyInput) (CreateClutchAssyParams, error) {
+	if partNo == "" {
+		return CreateClutchAssyParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateClutchAssyInput(in); err != nil {
+		return CreateClutchAssyParams{}, err
+	}
+
+	return CreateClutchAssyParams{
+		ID:                uuid.NewString(),
+		PartNo:            partNo,
+		PulleyRibs:        ptr.StringOrNil(in.PulleyRibs),
+		PulleySize:        ptr.StringOrNil(in.PulleySize),
+		CompressorDetails: ptr.StringOrNil(in.CompressorDetails),
+		ConnectorType:     ptr.StringOrNil(in.ConnectorType),
+		Voltage:           ptr.StringOrNil(in.Voltage),
+		ShaftType:         ptr.StringOrNil(in.ShaftType),
+		Notes:             ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateClutchAssyParams(partNo string, in *ClutchAssyInput) (UpdateClutchAssyParams, error) {
+	if partNo == "" {
+		return UpdateClutchAssyParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateClutchAssyInput(in); err != nil {
+		return UpdateClutchAssyParams{}, err
+	}
+
+	return UpdateClutchAssyParams{
+		PartNo:            partNo,
+		PulleyRibs:        ptr.StringOrNil(in.PulleyRibs),
+		PulleySize:        ptr.StringOrNil(in.PulleySize),
+		CompressorDetails: ptr.StringOrNil(in.CompressorDetails),
+		ConnectorType:     ptr.StringOrNil(in.ConnectorType),
+		Voltage:           ptr.StringOrNil(in.Voltage),
+		ShaftType:         ptr.StringOrNil(in.ShaftType),
+		Notes:             ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateClutchAssy(ctx context.Context, q Queries, partNo string, in *ClutchAssyInput) (*ClutchAssyRow, error) {
+	p, err := BuildCreateClutchAssyParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateClutchAssy(ctx, p)
+	if err != nil {
+		return nil, ErrCreateClutchAssyFailed
+	}
+	return row, nil
+}
+
+func UpdateClutchAssy(ctx context.Context, q Queries, partNo string, in *ClutchAssyInput) (*ClutchAssyRow, error) {
+	p, err := BuildUpdateClutchAssyParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateClutchAssyByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateClutchAssyFailed
+	}
+	return row, nil
+}
+
+func DeleteClutchAssy(ctx context.Context, q Queries, partNo string) error {
+	if err := q.DeleteClutchAssyByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteClutchAssyFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\compressor.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateCompressorInput(in *CompressorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateCompressorParams(partNo string, in *CompressorInput) (CreateCompressorParams, error) {
+	if partNo == "" {
+		return CreateCompressorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCompressorInput(in); err != nil {
+		return CreateCompressorParams{}, err
+	}
+
+	return CreateCompressorParams{
+		ID:            uuid.NewString(),
+		PartNo:        partNo,
+		CompressorID:  ptr.StringOrNil(in.CompressorID),
+		Oil:           ptr.StringOrNil(in.Oil),
+		Refrigerant:   ptr.StringOrNil(in.Refrigerant),
+		Voltage:       ptr.StringOrNil(in.Voltage),
+		PulleyRibs:    ptr.StringOrNil(in.PulleyRibs),
+		PulleySize:    ptr.StringOrNil(in.PulleySize),
+		PipeConnector: ptr.StringOrNil(in.PipeConnector),
+		CompType:      ptr.StringOrNil(in.CompType),
+		CompMounting:  ptr.StringOrNil(in.CompMounting),
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateCompressorParams(partNo string, in *CompressorInput) (UpdateCompressorParams, error) {
+	if partNo == "" {
+		return UpdateCompressorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCompressorInput(in); err != nil {
+		return UpdateCompressorParams{}, err
+	}
+
+	return UpdateCompressorParams{
+		PartNo:        partNo,
+		CompressorID:  ptr.StringOrNil(in.CompressorID),
+		Oil:           ptr.StringOrNil(in.Oil),
+		Refrigerant:   ptr.StringOrNil(in.Refrigerant),
+		Voltage:       ptr.StringOrNil(in.Voltage),
+		PulleyRibs:    ptr.StringOrNil(in.PulleyRibs),
+		PulleySize:    ptr.StringOrNil(in.PulleySize),
+		PipeConnector: ptr.StringOrNil(in.PipeConnector),
+		CompType:      ptr.StringOrNil(in.CompType),
+		CompMounting:  ptr.StringOrNil(in.CompMounting),
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateCompressor(ctx context.Context, q Queries, partNo string, in *CompressorInput) (*CompressorRow, error) {
+	p, err := BuildCreateCompressorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateCompressor(ctx, p)
+	if err != nil {
+		return nil, ErrCreateCompressorFailed
+	}
+	return row, nil
+}
+
+func UpdateCompressor(ctx context.Context, q Queries, partNo string, in *CompressorInput) (*CompressorRow, error) {
+	p, err := BuildUpdateCompressorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateCompressorByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateCompressorFailed
+	}
+	return row, nil
+}
+
+func DeleteCompressor(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteCompressorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteCompressorFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\compressor_valve.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateCompressorValveInput(in *CompressorValveInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateCompressorValveParams(partNo string, in *CompressorValveInput) (CreateCompressorValveParams, error) {
+	if partNo == "" {
+		return CreateCompressorValveParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCompressorValveInput(in); err != nil {
+		return CreateCompressorValveParams{}, err
+	}
+
+	return CreateCompressorValveParams{
+		ID:                uuid.NewString(),
+		PartNo:            partNo,
+		Type:              ptr.StringOrNil(in.Type),
+		Voltage:           ptr.StringOrNil(in.Voltage),
+		ConnectorType:     ptr.StringOrNil(in.ConnectorType),
+		CompressorDetails: ptr.StringOrNil(in.CompressorDetails),
+		Notes:             ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateCompressorValveParams(partNo string, in *CompressorValveInput) (UpdateCompressorValveParams, error) {
+	if partNo == "" {
+		return UpdateCompressorValveParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCompressorValveInput(in); err != nil {
+		return UpdateCompressorValveParams{}, err
+	}
+
+	return UpdateCompressorValveParams{
+		PartNo:            partNo,
+		Type:              ptr.StringOrNil(in.Type),
+		Voltage:           ptr.StringOrNil(in.Voltage),
+		ConnectorType:     ptr.StringOrNil(in.ConnectorType),
+		CompressorDetails: ptr.StringOrNil(in.CompressorDetails),
+		Notes:             ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateCompressorValve(ctx context.Context, q Queries, partNo string, in *CompressorValveInput) (*CompressorValveRow, error) {
+	p, err := BuildCreateCompressorValveParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.CreateCompressorValve(ctx, p)
+	if err != nil {
+		return nil, ErrCreateCompressorValveFailed
+	}
+	return row, nil
+}
+
+func UpdateCompressorValve(ctx context.Context, q Queries, partNo string, in *CompressorValveInput) (*CompressorValveRow, error) {
+	p, err := BuildUpdateCompressorValveParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.UpdateCompressorValveByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateCompressorValveFailed
+	}
+	return row, nil
+}
+
+func DeleteCompressorValve(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteCompressorValveByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteCompressorValveFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\condenser.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateCondenserInput(in *CondenserInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateCondenserParams(partNo string, in *CondenserInput) (CreateCondenserParams, error) {
+	if partNo == "" {
+		return CreateCondenserParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCondenserInput(in); err != nil {
+		return CreateCondenserParams{}, err
+	}
+
+	return CreateCondenserParams{
+		ID:             uuid.NewString(),
+		PartNo:         partNo,
+		Size:           ptr.StringOrNil(in.Size),
+		PipeConnector:  ptr.StringOrNil(in.PipeConnector),
+		Drier:          ptr.StringOrNil(in.Drier),
+		PressureSwitch: ptr.StringOrNil(in.PressureSwitch),
+		Notes:          ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateCondenserParams(partNo string, in *CondenserInput) (UpdateCondenserParams, error) {
+	if partNo == "" {
+		return UpdateCondenserParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCondenserInput(in); err != nil {
+		return UpdateCondenserParams{}, err
+	}
+
+	return UpdateCondenserParams{
+		PartNo:         partNo,
+		Size:           ptr.StringOrNil(in.Size),
+		PipeConnector:  ptr.StringOrNil(in.PipeConnector),
+		Drier:          ptr.StringOrNil(in.Drier),
+		PressureSwitch: ptr.StringOrNil(in.PressureSwitch),
+		Notes:          ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateCondenser(ctx context.Context, q Queries, partNo string, in *CondenserInput) (*CondenserRow, error) {
+	p, err := BuildCreateCondenserParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.CreateCondenser(ctx, p)
+	if err != nil {
+		return nil, ErrCreateCondenserFailed
+	}
+	return row, nil
+}
+
+func UpdateCondenser(ctx context.Context, q Queries, partNo string, in *CondenserInput) (*CondenserRow, error) {
+	p, err := BuildUpdateCondenserParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.UpdateCondenserByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateCondenserFailed
+	}
+	return row, nil
+}
+
+func DeleteCondenser(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteCondenserByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteCondenserFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\cond_fan_assy.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+// =======================================================
+// CONDENSER FAN ASSY
+// =======================================================
+
+func ValidateCondFanAssyInput(in *CondFanAssyInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateCondFanAssyParams(
+	partNo string,
+	in *CondFanAssyInput,
+) (CreateCondFanAssyParams, error) {
+
+	if partNo == "" {
+		return CreateCondFanAssyParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCondFanAssyInput(in); err != nil {
+		return CreateCondFanAssyParams{}, err
+	}
+
+	return CreateCondFanAssyParams{
+		ID:               uuid.NewString(),
+		PartNo:           partNo,
+		Voltage:          ptr.StringOrNil(in.Voltage),
+		MotorType:        ptr.StringOrNil(in.MotorType),
+		Resistance:       ptr.StringOrNil(in.Resistance),
+		FanBladeDiameter: ptr.StringOrNil(in.FanBladeDiameter),
+		NumberOfBlades:   ptr.Int32OrNil(in.NumberOfBlades),
+		Shroud:           ptr.StringOrNil(in.Shroud),
+		ConnectorType:    ptr.StringOrNil(in.ConnectorType),
+		Notes:            ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateCondFanAssyParams(
+	partNo string,
+	in *CondFanAssyInput,
+) (UpdateCondFanAssyParams, error) {
+
+	if partNo == "" {
+		return UpdateCondFanAssyParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateCondFanAssyInput(in); err != nil {
+		return UpdateCondFanAssyParams{}, err
+	}
+
+	return UpdateCondFanAssyParams{
+		PartNo:           partNo,
+		Voltage:          ptr.StringOrNil(in.Voltage),
+		MotorType:        ptr.StringOrNil(in.MotorType),
+		Resistance:       ptr.StringOrNil(in.Resistance),
+		FanBladeDiameter: ptr.StringOrNil(in.FanBladeDiameter),
+		NumberOfBlades:   ptr.Int32OrNil(in.NumberOfBlades),
+		Shroud:           ptr.StringOrNil(in.Shroud),
+		ConnectorType:    ptr.StringOrNil(in.ConnectorType),
+		Notes:            ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateCondFanAssy(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+	in *CondFanAssyInput,
+) (*CondFanAssyRow, error) {
+
+	params, err := BuildCreateCondFanAssyParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.CreateCondFanAssy(ctx, params)
+	if err != nil {
+		return nil, ErrCreateCondFanAssyFailed
+	}
+
+	return row, nil
+}
+
+func UpdateCondFanAssy(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+	in *CondFanAssyInput,
+) (*CondFanAssyRow, error) {
+
+	params, err := BuildUpdateCondFanAssyParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+
+	row, err := q.UpdateCondFanAssyByPartNo(ctx, params)
+	if err != nil {
+		return nil, ErrUpdateCondFanAssyFailed
+	}
+
+	return row, nil
+}
+
+func DeleteCondFanAssy(
+	ctx context.Context,
+	q Queries,
+	partNo string,
+) error {
+
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+
+	if err := q.DeleteCondFanAssyByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteCondFanAssyFailed
+	}
+
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\db_models.go
+package techspec
+
+/*
+Domain-level representations of DB rows.
+These are NOT sqlc / ORM models.
+The repository layer adapts DB rows into these.
+*/
+
+type ActuatorRow struct {
+	ID            string
+	PartNo        string
+	ConnectorType *string
+	Mounting      *string
+	Voltage       *string
+	RotationAngle *string
+	Notes         *string
+}
+
+type BlowerMotorRow struct {
+	ID            string
+	PartNo        string
+	Mounting      *string
+	ConnectorType *string
+	Impeller      *string
+	Resistance    *string
+	MotorMounting *string
+	MotorType     *string
+	Voltage       *string
+	Notes         *string
+}
+
+type CabinFilterRow struct {
+	ID         string
+	PartNo     string
+	Type       *string
+	Dimensions *string
+	Material   *string
+	Notes      *string
+}
+
+type ChillerUnitRow struct {
+	ID      string
+	PartNo  string
+	Type    *string
+	Voltage *string
+	Notes   *string
+}
+
+type ClutchAssyRow struct {
+	ID                string
+	PartNo            string
+	PulleyRibs        *string
+	PulleySize        *string
+	CompressorDetails *string
+	ConnectorType     *string
+	Voltage           *string
+	ShaftType         *string
+	Notes             *string
+}
+
+type CompressorValveRow struct {
+	ID                string
+	PartNo            string
+	Type              *string
+	Voltage           *string
+	ConnectorType     *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+type CondFanAssyRow struct {
+	ID               string
+	PartNo           string
+	Voltage          *string
+	MotorType        *string
+	Resistance       *string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Shroud           *string
+	ConnectorType    *string
+	Notes            *string
+}
+
+type CondenserRow struct {
+	ID             string
+	PartNo         string
+	Size           *string
+	PipeConnector  *string
+	Drier          *string
+	PressureSwitch *string
+	Notes          *string
+}
+
+type EvaporatorRow struct {
+	ID             string
+	PartNo         string
+	Mounting       *string
+	ExpValve       *string
+	AdditionalInfo *string
+	Dimensions     *string
+	PipeConnector  *string
+	Notes          *string
+}
+
+type ExpansionValveRow struct {
+	ID          string
+	PartNo      string
+	Type        *string
+	Material    *string
+	Refrigerant *string
+	Notes       *string
+}
+
+type FilterDrierRow struct {
+	ID             string
+	PartNo         string
+	PipeConnector  *string
+	Size           *string
+	PressureSwitch *string
+	Notes          *string
+}
+
+type HeaterCoreRow struct {
+	ID     string
+	PartNo string
+	Size   *string
+	Pipe   *string
+	Type   *string
+	Notes  *string
+}
+
+type IntercoolerRow struct {
+	ID         string
+	PartNo     string
+	Size       *string
+	TempSensor *string
+	Notes      *string
+}
+
+type PressureSwitchRow struct {
+	ID            string
+	PartNo        string
+	ConnectorType *string
+	ThreadType    *string
+	Notes         *string
+}
+
+type RadiatorRow struct {
+	ID           string
+	PartNo       string
+	Size         *string
+	Transmission *string
+	TempSensor   *string
+	Tank         *string
+	Notes        *string
+}
+
+type RadFanAssyRow struct {
+	ID               string
+	PartNo           string
+	Voltage          *string
+	MotorType        *string
+	Resistance       *string
+	NumberOfSockets  *int32
+	Shroud           *string
+	ConnectorType    *string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Notes            *string
+}
+
+type RadFanMotorRow struct {
+	ID               string
+	PartNo           string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Voltage          *string
+	NumberOfSockets  *int32
+	ConnectorType    *string
+	Notes            *string
+}
+
+type ResistorRow struct {
+	ID            string
+	PartNo        string
+	Type          *string
+	ConnectorType *string
+	Voltage       *string
+	Notes         *string
+}
+
+type RotorRow struct {
+	ID                string
+	PartNo            string
+	PulleyRibs        *string
+	PulleySize        *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+type StatorRow struct {
+	ID                string
+	PartNo            string
+	Voltage           *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+type CompressorRow struct {
+	ID            string
+	PartNo        string
+	CompressorID  *string
+	Oil           *string
+	Refrigerant   *string
+	Voltage       *string
+	PulleyRibs    *string
+	PulleySize    *string
+	PipeConnector *string
+	CompType      *string
+	CompMounting  *string
+	ConnectorType *string
+	Notes         *string
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\db_params.go
+package techspec
+
+// =======================================================
+// ACTUATOR
+// =======================================================
+
+type CreateActuatorParams struct {
+	ID            string
+	PartNo        string
+	ConnectorType *string
+	Mounting      *string
+	Voltage       *string
+	RotationAngle *string
+	Notes         *string
+}
+
+type UpdateActuatorParams struct {
+	PartNo        string
+	ConnectorType *string
+	Mounting      *string
+	Voltage       *string
+	RotationAngle *string
+	Notes         *string
+}
+
+// =======================================================
+// BLOWER MOTOR
+// =======================================================
+
+type CreateBlowerMotorParams struct {
+	ID            string
+	PartNo        string
+	Mounting      *string
+	ConnectorType *string
+	Impeller      *string
+	Resistance    *string
+	MotorMounting *string
+	MotorType     *string
+	Voltage       *string
+	Notes         *string
+}
+
+type UpdateBlowerMotorParams struct {
+	PartNo        string
+	Mounting      *string
+	ConnectorType *string
+	Impeller      *string
+	Resistance    *string
+	MotorMounting *string
+	MotorType     *string
+	Voltage       *string
+	Notes         *string
+}
+
+// =======================================================
+// CABIN FILTER
+// =======================================================
+
+type CreateCabinFilterParams struct {
+	ID         string
+	PartNo     string
+	Type       *string
+	Dimensions *string
+	Material   *string
+	Notes      *string
+}
+
+type UpdateCabinFilterParams struct {
+	PartNo     string
+	Type       *string
+	Dimensions *string
+	Material   *string
+	Notes      *string
+}
+
+// =======================================================
+// CHILLER UNIT
+// =======================================================
+
+type CreateChillerUnitParams struct {
+	ID      string
+	PartNo  string
+	Type    *string
+	Voltage *string
+	Notes   *string
+}
+
+type UpdateChillerUnitParams struct {
+	PartNo  string
+	Type    *string
+	Voltage *string
+	Notes   *string
+}
+
+// =======================================================
+// CLUTCH ASSY
+// =======================================================
+
+type CreateClutchAssyParams struct {
+	ID                string
+	PartNo            string
+	PulleyRibs        *string
+	PulleySize        *string
+	CompressorDetails *string
+	ConnectorType     *string
+	Voltage           *string
+	ShaftType         *string
+	Notes             *string
+}
+
+type UpdateClutchAssyParams struct {
+	PartNo            string
+	PulleyRibs        *string
+	PulleySize        *string
+	CompressorDetails *string
+	ConnectorType     *string
+	Voltage           *string
+	ShaftType         *string
+	Notes             *string
+}
+
+// =======================================================
+// COMPRESSOR VALVE
+// =======================================================
+
+type CreateCompressorValveParams struct {
+	ID                string
+	PartNo            string
+	Type              *string
+	Voltage           *string
+	ConnectorType     *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+type UpdateCompressorValveParams struct {
+	PartNo            string
+	Type              *string
+	Voltage           *string
+	ConnectorType     *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+// =======================================================
+// COND FAN ASSY
+// =======================================================
+
+type CreateCondFanAssyParams struct {
+	ID               string
+	PartNo           string
+	Voltage          *string
+	MotorType        *string
+	Resistance       *string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Shroud           *string
+	ConnectorType    *string
+	Notes            *string
+}
+
+type UpdateCondFanAssyParams struct {
+	PartNo           string
+	Voltage          *string
+	MotorType        *string
+	Resistance       *string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Shroud           *string
+	ConnectorType    *string
+	Notes            *string
+}
+
+// =======================================================
+// CONDENSER
+// =======================================================
+
+type CreateCondenserParams struct {
+	ID             string
+	PartNo         string
+	Size           *string
+	PipeConnector  *string
+	Drier          *string
+	PressureSwitch *string
+	Notes          *string
+}
+
+type UpdateCondenserParams struct {
+	PartNo         string
+	Size           *string
+	PipeConnector  *string
+	Drier          *string
+	PressureSwitch *string
+	Notes          *string
+}
+
+// =======================================================
+// EVAPORATOR
+// =======================================================
+
+type CreateEvaporatorParams struct {
+	ID             string
+	PartNo         string
+	Mounting       *string
+	ExpValve       *string
+	AdditionalInfo *string
+	Dimensions     *string
+	PipeConnector  *string
+	Notes          *string
+}
+
+type UpdateEvaporatorParams struct {
+	PartNo         string
+	Mounting       *string
+	ExpValve       *string
+	AdditionalInfo *string
+	Dimensions     *string
+	PipeConnector  *string
+	Notes          *string
+}
+
+// =======================================================
+// EXPANSION VALVE
+// =======================================================
+
+type CreateExpansionValveParams struct {
+	ID          string
+	PartNo      string
+	Type        *string
+	Material    *string
+	Refrigerant *string
+	Notes       *string
+}
+
+type UpdateExpansionValveParams struct {
+	PartNo      string
+	Type        *string
+	Material    *string
+	Refrigerant *string
+	Notes       *string
+}
+
+// =======================================================
+// FILTER DRIER
+// =======================================================
+
+type CreateFilterDrierParams struct {
+	ID             string
+	PartNo         string
+	PipeConnector  *string
+	Size           *string
+	PressureSwitch *string
+	Notes          *string
+}
+
+type UpdateFilterDrierParams struct {
+	PartNo         string
+	PipeConnector  *string
+	Size           *string
+	PressureSwitch *string
+	Notes          *string
+}
+
+// =======================================================
+// HEATER CORE
+// =======================================================
+
+type CreateHeaterCoreParams struct {
+	ID     string
+	PartNo string
+	Size   *string
+	Pipe   *string
+	Type   *string
+	Notes  *string
+}
+
+type UpdateHeaterCoreParams struct {
+	PartNo string
+	Size   *string
+	Pipe   *string
+	Type   *string
+	Notes  *string
+}
+
+// =======================================================
+// INTERCOOLER
+// =======================================================
+
+type CreateIntercoolerParams struct {
+	ID         string
+	PartNo     string
+	Size       *string
+	TempSensor *string
+	Notes      *string
+}
+
+type UpdateIntercoolerParams struct {
+	PartNo     string
+	Size       *string
+	TempSensor *string
+	Notes      *string
+}
+
+// =======================================================
+// PRESSURE SWITCH
+// =======================================================
+
+type CreatePressureSwitchParams struct {
+	ID            string
+	PartNo        string
+	ConnectorType *string
+	ThreadType    *string
+	Notes         *string
+}
+
+type UpdatePressureSwitchParams struct {
+	PartNo        string
+	ConnectorType *string
+	ThreadType    *string
+	Notes         *string
+}
+
+// =======================================================
+// RADIATOR
+// =======================================================
+
+type CreateRadiatorParams struct {
+	ID           string
+	PartNo       string
+	Size         *string
+	Transmission *string
+	TempSensor   *string
+	Tank         *string
+	Notes        *string
+}
+
+type UpdateRadiatorParams struct {
+	PartNo       string
+	Size         *string
+	Transmission *string
+	TempSensor   *string
+	Tank         *string
+	Notes        *string
+}
+
+// =======================================================
+// RAD FAN ASSY
+// =======================================================
+
+type CreateRadFanAssyParams struct {
+	ID               string
+	PartNo           string
+	Voltage          *string
+	MotorType        *string
+	Resistance       *string
+	NumberOfSockets  *int32
+	Shroud           *string
+	ConnectorType    *string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Notes            *string
+}
+
+type UpdateRadFanAssyParams struct {
+	PartNo           string
+	Voltage          *string
+	MotorType        *string
+	Resistance       *string
+	NumberOfSockets  *int32
+	Shroud           *string
+	ConnectorType    *string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Notes            *string
+}
+
+// =======================================================
+// RAD FAN MOTOR
+// =======================================================
+
+type CreateRadFanMotorParams struct {
+	ID               string
+	PartNo           string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Voltage          *string
+	NumberOfSockets  *int32
+	ConnectorType    *string
+	Notes            *string
+}
+
+type UpdateRadFanMotorParams struct {
+	PartNo           string
+	FanBladeDiameter *string
+	NumberOfBlades   *int32
+	Voltage          *string
+	NumberOfSockets  *int32
+	ConnectorType    *string
+	Notes            *string
+}
+
+// =======================================================
+// RESISTOR
+// =======================================================
+
+type CreateResistorParams struct {
+	ID            string
+	PartNo        string
+	Type          *string
+	ConnectorType *string
+	Voltage       *string
+	Notes         *string
+}
+
+type UpdateResistorParams struct {
+	PartNo        string
+	Type          *string
+	ConnectorType *string
+	Voltage       *string
+	Notes         *string
+}
+
+// =======================================================
+// ROTOR
+// =======================================================
+
+type CreateRotorParams struct {
+	ID                string
+	PartNo            string
+	PulleyRibs        *string
+	PulleySize        *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+type UpdateRotorParams struct {
+	PartNo            string
+	PulleyRibs        *string
+	PulleySize        *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+// =======================================================
+// STATOR
+// =======================================================
+
+type CreateStatorParams struct {
+	ID                string
+	PartNo            string
+	Voltage           *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+type UpdateStatorParams struct {
+	PartNo            string
+	Voltage           *string
+	CompressorDetails *string
+	Notes             *string
+}
+
+// =======================================================
+// COMPRESSOR
+// =======================================================
+
+type CreateCompressorParams struct {
+	ID            string
+	PartNo        string
+	CompressorID  *string
+	Oil           *string
+	Refrigerant   *string
+	Voltage       *string
+	PulleyRibs    *string
+	PulleySize    *string
+	PipeConnector *string
+	CompType      *string
+	CompMounting  *string
+	ConnectorType *string
+	Notes         *string
+}
+
+type UpdateCompressorParams struct {
+	PartNo        string
+	CompressorID  *string
+	Oil           *string
+	Refrigerant   *string
+	Voltage       *string
+	PulleyRibs    *string
+	PulleySize    *string
+	PipeConnector *string
+	CompType      *string
+	CompMounting  *string
+	ConnectorType *string
+	Notes         *string
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\errors.go
+package techspec
+
+import "errors"
+
+// =======================================================
+// GENERIC TECHSPEC ERRORS
+// =======================================================
+
+var (
+	// Common
+	ErrInvalidPartNo     = errors.New("invalid part number")
+	ErrTechSpecNotFound  = errors.New("technical specification not found")
+	ErrDuplicateTechSpec = errors.New("technical specification already exists")
+	ErrInvalidTechSpec   = errors.New("invalid technical specification")
+	ErrUnsupportedType   = errors.New("unsupported technical specification type")
+	ErrInternal          = errors.New("internal error")
+)
+
+// =======================================================
+// CREATE ERRORS
+// =======================================================
+
+var (
+	ErrCreateActuatorFailed        = errors.New("failed to create actuator")
+	ErrCreateBlowerMotorFailed     = errors.New("failed to create blower motor")
+	ErrCreateCabinFilterFailed     = errors.New("failed to create cabin filter")
+	ErrCreateChillerUnitFailed     = errors.New("failed to create chiller unit")
+	ErrCreateClutchAssyFailed      = errors.New("failed to create clutch assembly")
+	ErrCreateCompressorValveFailed = errors.New("failed to create compressor valve")
+	ErrCreateCondFanAssyFailed     = errors.New("failed to create condenser fan assembly")
+	ErrCreateCondenserFailed       = errors.New("failed to create condenser")
+	ErrCreateEvaporatorFailed      = errors.New("failed to create evaporator")
+	ErrCreateExpansionValveFailed  = errors.New("failed to create expansion valve")
+	ErrCreateFilterDrierFailed     = errors.New("failed to create filter drier")
+	ErrCreateHeaterCoreFailed      = errors.New("failed to create heater core")
+	ErrCreateIntercoolerFailed     = errors.New("failed to create intercooler")
+	ErrCreatePressureSwitchFailed  = errors.New("failed to create pressure switch")
+	ErrCreateRadiatorFailed        = errors.New("failed to create radiator")
+	ErrCreateRadFanAssyFailed      = errors.New("failed to create radiator fan assembly")
+	ErrCreateRadFanMotorFailed     = errors.New("failed to create radiator fan motor")
+	ErrCreateResistorFailed        = errors.New("failed to create resistor")
+	ErrCreateRotorFailed           = errors.New("failed to create rotor")
+	ErrCreateStatorFailed          = errors.New("failed to create stator")
+	ErrCreateCompressorFailed      = errors.New("failed to create compressor")
+)
+
+// =======================================================
+// UPDATE ERRORS
+// =======================================================
+
+var (
+	ErrUpdateActuatorFailed        = errors.New("failed to update actuator")
+	ErrUpdateBlowerMotorFailed     = errors.New("failed to update blower motor")
+	ErrUpdateCabinFilterFailed     = errors.New("failed to update cabin filter")
+	ErrUpdateChillerUnitFailed     = errors.New("failed to update chiller unit")
+	ErrUpdateClutchAssyFailed      = errors.New("failed to update clutch assembly")
+	ErrUpdateCompressorValveFailed = errors.New("failed to update compressor valve")
+	ErrUpdateCondFanAssyFailed     = errors.New("failed to update condenser fan assembly")
+	ErrUpdateCondenserFailed       = errors.New("failed to update condenser")
+	ErrUpdateEvaporatorFailed      = errors.New("failed to update evaporator")
+	ErrUpdateExpansionValveFailed  = errors.New("failed to update expansion valve")
+	ErrUpdateFilterDrierFailed     = errors.New("failed to update filter drier")
+	ErrUpdateHeaterCoreFailed      = errors.New("failed to update heater core")
+	ErrUpdateIntercoolerFailed     = errors.New("failed to update intercooler")
+	ErrUpdatePressureSwitchFailed  = errors.New("failed to update pressure switch")
+	ErrUpdateRadiatorFailed        = errors.New("failed to update radiator")
+	ErrUpdateRadFanAssyFailed      = errors.New("failed to update radiator fan assembly")
+	ErrUpdateRadFanMotorFailed     = errors.New("failed to update radiator fan motor")
+	ErrUpdateResistorFailed        = errors.New("failed to update resistor")
+	ErrUpdateRotorFailed           = errors.New("failed to update rotor")
+	ErrUpdateStatorFailed          = errors.New("failed to update stator")
+	ErrUpdateCompressorFailed      = errors.New("failed to update compressor")
+)
+
+// =======================================================
+// DELETE ERRORS
+// =======================================================
+
+var (
+	ErrDeleteActuatorFailed        = errors.New("failed to delete actuator")
+	ErrDeleteBlowerMotorFailed     = errors.New("failed to delete blower motor")
+	ErrDeleteCabinFilterFailed     = errors.New("failed to delete cabin filter")
+	ErrDeleteChillerUnitFailed     = errors.New("failed to delete chiller unit")
+	ErrDeleteClutchAssyFailed      = errors.New("failed to delete clutch assembly")
+	ErrDeleteCompressorValveFailed = errors.New("failed to delete compressor valve")
+	ErrDeleteCondFanAssyFailed     = errors.New("failed to delete condenser fan assembly")
+	ErrDeleteCondenserFailed       = errors.New("failed to delete condenser")
+	ErrDeleteEvaporatorFailed      = errors.New("failed to delete evaporator")
+	ErrDeleteExpansionValveFailed  = errors.New("failed to delete expansion valve")
+	ErrDeleteFilterDrierFailed     = errors.New("failed to delete filter drier")
+	ErrDeleteHeaterCoreFailed      = errors.New("failed to delete heater core")
+	ErrDeleteIntercoolerFailed     = errors.New("failed to delete intercooler")
+	ErrDeletePressureSwitchFailed  = errors.New("failed to delete pressure switch")
+	ErrDeleteRadiatorFailed        = errors.New("failed to delete radiator")
+	ErrDeleteRadFanAssyFailed      = errors.New("failed to delete radiator fan assembly")
+	ErrDeleteRadFanMotorFailed     = errors.New("failed to delete radiator fan motor")
+	ErrDeleteResistorFailed        = errors.New("failed to delete resistor")
+	ErrDeleteRotorFailed           = errors.New("failed to delete rotor")
+	ErrDeleteStatorFailed          = errors.New("failed to delete stator")
+	ErrDeleteCompressorFailed      = errors.New("failed to delete compressor")
+)
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\evaporator.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateEvaporatorInput(in *EvaporatorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateEvaporatorParams(partNo string, in *EvaporatorInput) (CreateEvaporatorParams, error) {
+	if partNo == "" {
+		return CreateEvaporatorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateEvaporatorInput(in); err != nil {
+		return CreateEvaporatorParams{}, err
+	}
+
+	return CreateEvaporatorParams{
+		ID:             uuid.NewString(),
+		PartNo:         partNo,
+		Mounting:       ptr.StringOrNil(in.Mounting),
+		ExpValve:       ptr.StringOrNil(in.ExpValve),
+		AdditionalInfo: ptr.StringOrNil(in.AdditionalInfo),
+		Dimensions:     ptr.StringOrNil(in.Dimensions),
+		PipeConnector:  ptr.StringOrNil(in.PipeConnector),
+		Notes:          ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateEvaporatorParams(partNo string, in *EvaporatorInput) (UpdateEvaporatorParams, error) {
+	if partNo == "" {
+		return UpdateEvaporatorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateEvaporatorInput(in); err != nil {
+		return UpdateEvaporatorParams{}, err
+	}
+
+	return UpdateEvaporatorParams{
+		PartNo:         partNo,
+		Mounting:       ptr.StringOrNil(in.Mounting),
+		ExpValve:       ptr.StringOrNil(in.ExpValve),
+		AdditionalInfo: ptr.StringOrNil(in.AdditionalInfo),
+		Dimensions:     ptr.StringOrNil(in.Dimensions),
+		PipeConnector:  ptr.StringOrNil(in.PipeConnector),
+		Notes:          ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateEvaporator(ctx context.Context, q Queries, partNo string, in *EvaporatorInput) (*EvaporatorRow, error) {
+	p, err := BuildCreateEvaporatorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateEvaporator(ctx, p)
+	if err != nil {
+		return nil, ErrCreateEvaporatorFailed
+	}
+	return row, nil
+}
+
+func UpdateEvaporator(ctx context.Context, q Queries, partNo string, in *EvaporatorInput) (*EvaporatorRow, error) {
+	p, err := BuildUpdateEvaporatorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateEvaporatorByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateEvaporatorFailed
+	}
+	return row, nil
+}
+
+func DeleteEvaporator(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteEvaporatorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteEvaporatorFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\expansion_valve.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateExpansionValveInput(in *ExpansionValveInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateExpansionValveParams(partNo string, in *ExpansionValveInput) (CreateExpansionValveParams, error) {
+	if partNo == "" {
+		return CreateExpansionValveParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateExpansionValveInput(in); err != nil {
+		return CreateExpansionValveParams{}, err
+	}
+
+	return CreateExpansionValveParams{
+		ID:          uuid.NewString(),
+		PartNo:      partNo,
+		Type:        ptr.StringOrNil(in.Type),
+		Material:    ptr.StringOrNil(in.Material),
+		Refrigerant: ptr.StringOrNil(in.Refrigerant),
+		Notes:       ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateExpansionValveParams(partNo string, in *ExpansionValveInput) (UpdateExpansionValveParams, error) {
+	if partNo == "" {
+		return UpdateExpansionValveParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateExpansionValveInput(in); err != nil {
+		return UpdateExpansionValveParams{}, err
+	}
+
+	return UpdateExpansionValveParams{
+		PartNo:      partNo,
+		Type:        ptr.StringOrNil(in.Type),
+		Material:    ptr.StringOrNil(in.Material),
+		Refrigerant: ptr.StringOrNil(in.Refrigerant),
+		Notes:       ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateExpansionValve(ctx context.Context, q Queries, partNo string, in *ExpansionValveInput) (*ExpansionValveRow, error) {
+	p, err := BuildCreateExpansionValveParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateExpansionValve(ctx, p)
+	if err != nil {
+		return nil, ErrCreateExpansionValveFailed
+	}
+	return row, nil
+}
+
+func UpdateExpansionValve(ctx context.Context, q Queries, partNo string, in *ExpansionValveInput) (*ExpansionValveRow, error) {
+	p, err := BuildUpdateExpansionValveParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateExpansionValveByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateExpansionValveFailed
+	}
+	return row, nil
+}
+
+func DeleteExpansionValve(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteExpansionValveByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteExpansionValveFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\filter_drier.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateFilterDrierInput(in *FilterDrierInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateFilterDrierParams(partNo string, in *FilterDrierInput) (CreateFilterDrierParams, error) {
+	if partNo == "" {
+		return CreateFilterDrierParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateFilterDrierInput(in); err != nil {
+		return CreateFilterDrierParams{}, err
+	}
+
+	return CreateFilterDrierParams{
+		ID:             uuid.NewString(),
+		PartNo:         partNo,
+		PipeConnector:  ptr.StringOrNil(in.PipeConnector),
+		Size:           ptr.StringOrNil(in.Size),
+		PressureSwitch: ptr.StringOrNil(in.PressureSwitch),
+		Notes:          ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateFilterDrierParams(partNo string, in *FilterDrierInput) (UpdateFilterDrierParams, error) {
+	if partNo == "" {
+		return UpdateFilterDrierParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateFilterDrierInput(in); err != nil {
+		return UpdateFilterDrierParams{}, err
+	}
+
+	return UpdateFilterDrierParams{
+		PartNo:         partNo,
+		PipeConnector:  ptr.StringOrNil(in.PipeConnector),
+		Size:           ptr.StringOrNil(in.Size),
+		PressureSwitch: ptr.StringOrNil(in.PressureSwitch),
+		Notes:          ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateFilterDrier(ctx context.Context, q Queries, partNo string, in *FilterDrierInput) (*FilterDrierRow, error) {
+	p, err := BuildCreateFilterDrierParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateFilterDrier(ctx, p)
+	if err != nil {
+		return nil, ErrCreateFilterDrierFailed
+	}
+	return row, nil
+}
+
+func UpdateFilterDrier(ctx context.Context, q Queries, partNo string, in *FilterDrierInput) (*FilterDrierRow, error) {
+	p, err := BuildUpdateFilterDrierParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateFilterDrierByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateFilterDrierFailed
+	}
+	return row, nil
+}
+
+func DeleteFilterDrier(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteFilterDrierByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteFilterDrierFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\heater_core.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateHeaterCoreInput(in *HeaterCoreInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateHeaterCoreParams(partNo string, in *HeaterCoreInput) (CreateHeaterCoreParams, error) {
+	if partNo == "" {
+		return CreateHeaterCoreParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateHeaterCoreInput(in); err != nil {
+		return CreateHeaterCoreParams{}, err
+	}
+
+	return CreateHeaterCoreParams{
+		ID:     uuid.NewString(),
+		PartNo: partNo,
+		Size:   ptr.StringOrNil(in.Size),
+		Pipe:   ptr.StringOrNil(in.Pipe),
+		Type:   ptr.StringOrNil(in.Type),
+		Notes:  ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateHeaterCoreParams(partNo string, in *HeaterCoreInput) (UpdateHeaterCoreParams, error) {
+	if partNo == "" {
+		return UpdateHeaterCoreParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateHeaterCoreInput(in); err != nil {
+		return UpdateHeaterCoreParams{}, err
+	}
+
+	return UpdateHeaterCoreParams{
+		PartNo: partNo,
+		Size:   ptr.StringOrNil(in.Size),
+		Pipe:   ptr.StringOrNil(in.Pipe),
+		Type:   ptr.StringOrNil(in.Type),
+		Notes:  ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateHeaterCore(ctx context.Context, q Queries, partNo string, in *HeaterCoreInput) (*HeaterCoreRow, error) {
+	p, err := BuildCreateHeaterCoreParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateHeaterCore(ctx, p)
+	if err != nil {
+		return nil, ErrCreateHeaterCoreFailed
+	}
+	return row, nil
+}
+
+func UpdateHeaterCore(ctx context.Context, q Queries, partNo string, in *HeaterCoreInput) (*HeaterCoreRow, error) {
+	p, err := BuildUpdateHeaterCoreParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateHeaterCoreByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateHeaterCoreFailed
+	}
+	return row, nil
+}
+
+func DeleteHeaterCore(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteHeaterCoreByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteHeaterCoreFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\inputs.go
+package techspec
+
+// =======================================================
+// ROOT TECH SPECS INPUT
+// =======================================================
+
+type TechnicalSpecsInput struct {
+	Type string `json:"type"`
+
+	Actuator        *ActuatorInput
+	BlowerMotor     *BlowerMotorInput
+	CabinFilter     *CabinFilterInput
+	ChillerUnit     *ChillerUnitInput
+	ClutchAssy      *ClutchAssyInput
+	CompressorValve *CompressorValveInput
+	CondFanAssy     *CondFanAssyInput
+	Condenser       *CondenserInput
+	Evaporator      *EvaporatorInput
+	ExpansionValve  *ExpansionValveInput
+	FilterDrier     *FilterDrierInput
+	HeaterCore      *HeaterCoreInput
+	Intercooler     *IntercoolerInput
+	PressureSwitch  *PressureSwitchInput
+	Radiator        *RadiatorInput
+	RadFanAssy      *RadFanAssyInput
+	RadFanMotor     *RadFanMotorInput
+	Resistor        *ResistorInput
+	Rotor           *RotorInput
+	Stator          *StatorInput
+	Compressor      *CompressorInput
+}
+
+// =======================================================
+// INPUT STRUCTS (flat, no overthinking)
+// =======================================================
+
+type ActuatorInput struct {
+	ConnectorType string
+	Mounting      string
+	Voltage       string
+	RotationAngle string
+	Notes         string
+}
+
+type BlowerMotorInput struct {
+	Mounting      string
+	ConnectorType string
+	Impeller      string
+	Resistance    string
+	MotorMounting string
+	MotorType     string
+	Voltage       string
+	Notes         string
+}
+
+type CabinFilterInput struct {
+	Type       string
+	Dimensions string
+	Material   string
+	Notes      string
+}
+
+type ChillerUnitInput struct {
+	Type    string
+	Voltage string
+	Notes   string
+}
+
+type ClutchAssyInput struct {
+	PulleyRibs        string
+	PulleySize        string
+	CompressorDetails string
+	ConnectorType     string
+	Voltage           string
+	ShaftType         string
+	Notes             string
+}
+
+type CompressorValveInput struct {
+	Type              string
+	Voltage           string
+	ConnectorType     string
+	CompressorDetails string
+	Notes             string
+}
+
+type CondFanAssyInput struct {
+	Voltage          string
+	MotorType        string
+	Resistance       string
+	FanBladeDiameter string
+	NumberOfBlades   *int32
+	Shroud           string
+	ConnectorType    string
+	Notes            string
+}
+
+type CondenserInput struct {
+	Size           string
+	PipeConnector  string
+	Drier          string
+	PressureSwitch string
+	Notes          string
+}
+
+type EvaporatorInput struct {
+	Mounting       string
+	ExpValve       string
+	AdditionalInfo string
+	Dimensions     string
+	PipeConnector  string
+	Notes          string
+}
+
+type ExpansionValveInput struct {
+	Type        string
+	Material    string
+	Refrigerant string
+	Notes       string
+}
+
+type FilterDrierInput struct {
+	PipeConnector  string
+	Size           string
+	PressureSwitch string
+	Notes          string
+}
+
+type HeaterCoreInput struct {
+	Size  string
+	Pipe  string
+	Type  string
+	Notes string
+}
+
+type IntercoolerInput struct {
+	Size       string
+	TempSensor string
+	Notes      string
+}
+
+type PressureSwitchInput struct {
+	ConnectorType string
+	ThreadType    string
+	Notes         string
+}
+
+type RadiatorInput struct {
+	Size         string
+	Transmission string
+	TempSensor   string
+	Tank         string
+	Notes        string
+}
+
+type RadFanAssyInput struct {
+	Voltage          string
+	MotorType        string
+	Resistance       string
+	NumberOfSockets  *int32
+	Shroud           string
+	ConnectorType    string
+	FanBladeDiameter string
+	NumberOfBlades   *int32
+	Notes            string
+}
+
+type RadFanMotorInput struct {
+	FanBladeDiameter string
+	NumberOfBlades   *int32
+	Voltage          string
+	NumberOfSockets  *int32
+	ConnectorType    string
+	Notes            string
+}
+
+type ResistorInput struct {
+	Type          string
+	ConnectorType string
+	Voltage       string
+	Notes         string
+}
+
+type RotorInput struct {
+	PulleyRibs        string
+	PulleySize        string
+	CompressorDetails string
+	Notes             string
+}
+
+type StatorInput struct {
+	Voltage           string
+	CompressorDetails string
+	Notes             string
+}
+
+type CompressorInput struct {
+	CompressorID  string
+	Oil           string
+	Refrigerant   string
+	Voltage       string
+	PulleyRibs    string
+	PulleySize    string
+	PipeConnector string
+	CompType      string
+	CompMounting  string
+	ConnectorType string
+	Notes         string
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\intercooler.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateIntercoolerInput(in *IntercoolerInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateIntercoolerParams(partNo string, in *IntercoolerInput) (CreateIntercoolerParams, error) {
+	if partNo == "" {
+		return CreateIntercoolerParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateIntercoolerInput(in); err != nil {
+		return CreateIntercoolerParams{}, err
+	}
+
+	return CreateIntercoolerParams{
+		ID:         uuid.NewString(),
+		PartNo:     partNo,
+		Size:       ptr.StringOrNil(in.Size),
+		TempSensor: ptr.StringOrNil(in.TempSensor),
+		Notes:      ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateIntercoolerParams(partNo string, in *IntercoolerInput) (UpdateIntercoolerParams, error) {
+	if partNo == "" {
+		return UpdateIntercoolerParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateIntercoolerInput(in); err != nil {
+		return UpdateIntercoolerParams{}, err
+	}
+
+	return UpdateIntercoolerParams{
+		PartNo:     partNo,
+		Size:       ptr.StringOrNil(in.Size),
+		TempSensor: ptr.StringOrNil(in.TempSensor),
+		Notes:      ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateIntercooler(ctx context.Context, q Queries, partNo string, in *IntercoolerInput) (*IntercoolerRow, error) {
+	p, err := BuildCreateIntercoolerParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateIntercooler(ctx, p)
+	if err != nil {
+		return nil, ErrCreateIntercoolerFailed
+	}
+	return row, nil
+}
+
+func UpdateIntercooler(ctx context.Context, q Queries, partNo string, in *IntercoolerInput) (*IntercoolerRow, error) {
+	p, err := BuildUpdateIntercoolerParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateIntercoolerByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateIntercoolerFailed
+	}
+	return row, nil
+}
+
+func DeleteIntercooler(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteIntercoolerByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteIntercoolerFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\interfaces.go
+package techspec
+
+import (
+	"context"
+	"database/sql"
+)
+
+// =======================================================
+// QUERIES INTERFACE (READ + WRITE CONTRACT)
+// =======================================================
+
+type Queries interface {
+
+	// ================= ACTUATOR =================
+	GetActuatorByPartNo(ctx context.Context, partNo string) (*ActuatorRow, error)
+	CreateActuator(ctx context.Context, p CreateActuatorParams) (*ActuatorRow, error)
+	UpdateActuatorByPartNo(ctx context.Context, p UpdateActuatorParams) (*ActuatorRow, error)
+	DeleteActuatorByPartNo(ctx context.Context, partNo string) error
+
+	// ================= BLOWER MOTOR =================
+	GetBlowerMotorByPartNo(ctx context.Context, partNo string) (*BlowerMotorRow, error)
+	CreateBlowerMotor(ctx context.Context, p CreateBlowerMotorParams) (*BlowerMotorRow, error)
+	UpdateBlowerMotorByPartNo(ctx context.Context, p UpdateBlowerMotorParams) (*BlowerMotorRow, error)
+	DeleteBlowerMotorByPartNo(ctx context.Context, partNo string) error
+
+	// ================= CABIN FILTER =================
+	GetCabinFilterByPartNo(ctx context.Context, partNo string) (*CabinFilterRow, error)
+	CreateCabinFilter(ctx context.Context, p CreateCabinFilterParams) (*CabinFilterRow, error)
+	UpdateCabinFilterByPartNo(ctx context.Context, p UpdateCabinFilterParams) (*CabinFilterRow, error)
+	DeleteCabinFilterByPartNo(ctx context.Context, partNo string) error
+
+	// ================= CHILLER UNIT =================
+	GetChillerUnitByPartNo(ctx context.Context, partNo string) (*ChillerUnitRow, error)
+	CreateChillerUnit(ctx context.Context, p CreateChillerUnitParams) (*ChillerUnitRow, error)
+	UpdateChillerUnitByPartNo(ctx context.Context, p UpdateChillerUnitParams) (*ChillerUnitRow, error)
+	DeleteChillerUnitByPartNo(ctx context.Context, partNo string) error
+
+	// ================= CLUTCH ASSY =================
+	GetClutchAssyByPartNo(ctx context.Context, partNo string) (*ClutchAssyRow, error)
+	CreateClutchAssy(ctx context.Context, p CreateClutchAssyParams) (*ClutchAssyRow, error)
+	UpdateClutchAssyByPartNo(ctx context.Context, p UpdateClutchAssyParams) (*ClutchAssyRow, error)
+	DeleteClutchAssyByPartNo(ctx context.Context, partNo string) error
+
+	// ================= COMPRESSOR =================
+	GetCompressorByPartNo(ctx context.Context, partNo string) (*CompressorRow, error)
+	CreateCompressor(ctx context.Context, p CreateCompressorParams) (*CompressorRow, error)
+	UpdateCompressorByPartNo(ctx context.Context, p UpdateCompressorParams) (*CompressorRow, error)
+	DeleteCompressorByPartNo(ctx context.Context, partNo string) error
+
+	// ================= COMPRESSOR VALVE =================
+	GetCompressorValveByPartNo(ctx context.Context, partNo string) (*CompressorValveRow, error)
+	CreateCompressorValve(ctx context.Context, p CreateCompressorValveParams) (*CompressorValveRow, error)
+	UpdateCompressorValveByPartNo(ctx context.Context, p UpdateCompressorValveParams) (*CompressorValveRow, error)
+	DeleteCompressorValveByPartNo(ctx context.Context, partNo string) error
+
+	// ================= CONDENSER FAN ASSY =================
+	GetCondFanAssyByPartNo(ctx context.Context, partNo string) (*CondFanAssyRow, error)
+	CreateCondFanAssy(ctx context.Context, p CreateCondFanAssyParams) (*CondFanAssyRow, error)
+	UpdateCondFanAssyByPartNo(ctx context.Context, p UpdateCondFanAssyParams) (*CondFanAssyRow, error)
+	DeleteCondFanAssyByPartNo(ctx context.Context, partNo string) error
+
+	// ================= CONDENSER =================
+	GetCondenserByPartNo(ctx context.Context, partNo string) (*CondenserRow, error)
+	CreateCondenser(ctx context.Context, p CreateCondenserParams) (*CondenserRow, error)
+	UpdateCondenserByPartNo(ctx context.Context, p UpdateCondenserParams) (*CondenserRow, error)
+	DeleteCondenserByPartNo(ctx context.Context, partNo string) error
+
+	// ================= EVAPORATOR =================
+	GetEvaporatorByPartNo(ctx context.Context, partNo string) (*EvaporatorRow, error)
+	CreateEvaporator(ctx context.Context, p CreateEvaporatorParams) (*EvaporatorRow, error)
+	UpdateEvaporatorByPartNo(ctx context.Context, p UpdateEvaporatorParams) (*EvaporatorRow, error)
+	DeleteEvaporatorByPartNo(ctx context.Context, partNo string) error
+
+	// ================= EXPANSION VALVE =================
+	GetExpansionValveByPartNo(ctx context.Context, partNo string) (*ExpansionValveRow, error)
+	CreateExpansionValve(ctx context.Context, p CreateExpansionValveParams) (*ExpansionValveRow, error)
+	UpdateExpansionValveByPartNo(ctx context.Context, p UpdateExpansionValveParams) (*ExpansionValveRow, error)
+	DeleteExpansionValveByPartNo(ctx context.Context, partNo string) error
+
+	// ================= FILTER DRIER =================
+	GetFilterDrierByPartNo(ctx context.Context, partNo string) (*FilterDrierRow, error)
+	CreateFilterDrier(ctx context.Context, p CreateFilterDrierParams) (*FilterDrierRow, error)
+	UpdateFilterDrierByPartNo(ctx context.Context, p UpdateFilterDrierParams) (*FilterDrierRow, error)
+	DeleteFilterDrierByPartNo(ctx context.Context, partNo string) error
+
+	// ================= HEATER CORE =================
+	GetHeaterCoreByPartNo(ctx context.Context, partNo string) (*HeaterCoreRow, error)
+	CreateHeaterCore(ctx context.Context, p CreateHeaterCoreParams) (*HeaterCoreRow, error)
+	UpdateHeaterCoreByPartNo(ctx context.Context, p UpdateHeaterCoreParams) (*HeaterCoreRow, error)
+	DeleteHeaterCoreByPartNo(ctx context.Context, partNo string) error
+
+	// ================= INTERCOOLER =================
+	GetIntercoolerByPartNo(ctx context.Context, partNo string) (*IntercoolerRow, error)
+	CreateIntercooler(ctx context.Context, p CreateIntercoolerParams) (*IntercoolerRow, error)
+	UpdateIntercoolerByPartNo(ctx context.Context, p UpdateIntercoolerParams) (*IntercoolerRow, error)
+	DeleteIntercoolerByPartNo(ctx context.Context, partNo string) error
+
+	// ================= PRESSURE SWITCH =================
+	GetPressureSwitchByPartNo(ctx context.Context, partNo string) (*PressureSwitchRow, error)
+	CreatePressureSwitch(ctx context.Context, p CreatePressureSwitchParams) (*PressureSwitchRow, error)
+	UpdatePressureSwitchByPartNo(ctx context.Context, p UpdatePressureSwitchParams) (*PressureSwitchRow, error)
+	DeletePressureSwitchByPartNo(ctx context.Context, partNo string) error
+
+	// ================= RADIATOR =================
+	GetRadiatorByPartNo(ctx context.Context, partNo string) (*RadiatorRow, error)
+	CreateRadiator(ctx context.Context, p CreateRadiatorParams) (*RadiatorRow, error)
+	UpdateRadiatorByPartNo(ctx context.Context, p UpdateRadiatorParams) (*RadiatorRow, error)
+	DeleteRadiatorByPartNo(ctx context.Context, partNo string) error
+
+	// ================= RAD FAN ASSY =================
+	GetRadFanAssyByPartNo(ctx context.Context, partNo string) (*RadFanAssyRow, error)
+	CreateRadFanAssy(ctx context.Context, p CreateRadFanAssyParams) (*RadFanAssyRow, error)
+	UpdateRadFanAssyByPartNo(ctx context.Context, p UpdateRadFanAssyParams) (*RadFanAssyRow, error)
+	DeleteRadFanAssyByPartNo(ctx context.Context, partNo string) error
+
+	// ================= RAD FAN MOTOR =================
+	GetRadFanMotorByPartNo(ctx context.Context, partNo string) (*RadFanMotorRow, error)
+	CreateRadFanMotor(ctx context.Context, p CreateRadFanMotorParams) (*RadFanMotorRow, error)
+	UpdateRadFanMotorByPartNo(ctx context.Context, p UpdateRadFanMotorParams) (*RadFanMotorRow, error)
+	DeleteRadFanMotorByPartNo(ctx context.Context, partNo string) error
+
+	// ================= RESISTOR =================
+	GetResistorByPartNo(ctx context.Context, partNo string) (*ResistorRow, error)
+	CreateResistor(ctx context.Context, p CreateResistorParams) (*ResistorRow, error)
+	UpdateResistorByPartNo(ctx context.Context, p UpdateResistorParams) (*ResistorRow, error)
+	DeleteResistorByPartNo(ctx context.Context, partNo string) error
+
+	// ================= ROTOR =================
+	GetRotorByPartNo(ctx context.Context, partNo string) (*RotorRow, error)
+	CreateRotor(ctx context.Context, p CreateRotorParams) (*RotorRow, error)
+	UpdateRotorByPartNo(ctx context.Context, p UpdateRotorParams) (*RotorRow, error)
+	DeleteRotorByPartNo(ctx context.Context, partNo string) error
+
+	// ================= STATOR =================
+	GetStatorByPartNo(ctx context.Context, partNo string) (*StatorRow, error)
+	CreateStator(ctx context.Context, p CreateStatorParams) (*StatorRow, error)
+	UpdateStatorByPartNo(ctx context.Context, p UpdateStatorParams) (*StatorRow, error)
+	DeleteStatorByPartNo(ctx context.Context, partNo string) error
+}
+
+// =======================================================
+// DB INTERFACE (TRANSACTION BOUNDARY)
+// =======================================================
+
+type DB interface {
+	BeginTx(ctx context.Context) (*sql.Tx, Queries, error)
+	Queries() Queries
+	NewQueriesFromTx(tx *sql.Tx) Queries
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\models.go
+package techspec
+
+// =======================================================
+// DOMAIN MODELS
+// =======================================================
+//
+// These are domain-level models used by services / handlers.
+// They are NOT DB rows and NOT sqlc models.
+// DB rows are mapped into these if needed.
+//
+
+type Actuator struct {
+	PartNo        string
+	ConnectorType string
+	Mounting      string
+	Voltage       string
+	RotationAngle string
+	Notes         string
+}
+
+type BlowerMotor struct {
+	PartNo        string
+	Mounting      string
+	ConnectorType string
+	Impeller      string
+	Resistance    string
+	MotorMounting string
+	MotorType     string
+	Voltage       string
+	Notes         string
+}
+
+type CabinFilter struct {
+	PartNo     string
+	Type       string
+	Dimensions string
+	Material   string
+	Notes      string
+}
+
+type ChillerUnit struct {
+	PartNo  string
+	Type    string
+	Voltage string
+	Notes   string
+}
+
+type ClutchAssy struct {
+	PartNo            string
+	PulleyRibs        string
+	PulleySize        string
+	CompressorDetails string
+	ConnectorType     string
+	Voltage           string
+	ShaftType         string
+	Notes             string
+}
+
+type CompressorValve struct {
+	PartNo            string
+	Type              string
+	Voltage           string
+	ConnectorType     string
+	CompressorDetails string
+	Notes             string
+}
+
+type CondFanAssy struct {
+	PartNo           string
+	Voltage          string
+	MotorType        string
+	Resistance       string
+	FanBladeDiameter string
+	NumberOfBlades   *int32
+	Shroud           string
+	ConnectorType    string
+	Notes            string
+}
+
+type Condenser struct {
+	PartNo         string
+	Size           string
+	PipeConnector  string
+	Drier          string
+	PressureSwitch string
+	Notes          string
+}
+
+type Evaporator struct {
+	PartNo         string
+	Mounting       string
+	ExpValve       string
+	AdditionalInfo string
+	Dimensions     string
+	PipeConnector  string
+	Notes          string
+}
+
+type ExpansionValve struct {
+	PartNo      string
+	Type        string
+	Material    string
+	Refrigerant string
+	Notes       string
+}
+
+type FilterDrier struct {
+	PartNo         string
+	PipeConnector  string
+	Size           string
+	PressureSwitch string
+	Notes          string
+}
+
+type HeaterCore struct {
+	PartNo string
+	Size   string
+	Pipe   string
+	Type   string
+	Notes  string
+}
+
+type Intercooler struct {
+	PartNo     string
+	Size       string
+	TempSensor string
+	Notes      string
+}
+
+type PressureSwitch struct {
+	PartNo        string
+	ConnectorType string
+	ThreadType    string
+	Notes         string
+}
+
+type Radiator struct {
+	PartNo       string
+	Size         string
+	Transmission string
+	TempSensor   string
+	Tank         string
+	Notes        string
+}
+
+type RadFanAssy struct {
+	PartNo           string
+	Voltage          string
+	MotorType        string
+	Resistance       string
+	NumberOfSockets  *int32
+	Shroud           string
+	ConnectorType    string
+	FanBladeDiameter string
+	NumberOfBlades   *int32
+	Notes            string
+}
+
+type RadFanMotor struct {
+	PartNo           string
+	FanBladeDiameter string
+	NumberOfBlades   *int32
+	Voltage          string
+	NumberOfSockets  *int32
+	ConnectorType    string
+	Notes            string
+}
+
+type Resistor struct {
+	PartNo        string
+	Type          string
+	ConnectorType string
+	Voltage       string
+	Notes         string
+}
+
+type Rotor struct {
+	PartNo            string
+	PulleyRibs        string
+	PulleySize        string
+	CompressorDetails string
+	Notes             string
+}
+
+type Stator struct {
+	PartNo            string
+	Voltage           string
+	CompressorDetails string
+	Notes             string
+}
+
+type Compressor struct {
+	PartNo        string
+	CompressorID  string
+	Oil           string
+	Refrigerant   string
+	Voltage       string
+	PulleyRibs    string
+	PulleySize    string
+	PipeConnector string
+	CompType      string
+	CompMounting  string
+	ConnectorType string
+	Notes         string
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\pressure_switch.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidatePressureSwitchInput(in *PressureSwitchInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreatePressureSwitchParams(partNo string, in *PressureSwitchInput) (CreatePressureSwitchParams, error) {
+	if partNo == "" {
+		return CreatePressureSwitchParams{}, ErrInvalidPartNo
+	}
+	if err := ValidatePressureSwitchInput(in); err != nil {
+		return CreatePressureSwitchParams{}, err
+	}
+
+	return CreatePressureSwitchParams{
+		ID:            uuid.NewString(),
+		PartNo:        partNo,
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		ThreadType:    ptr.StringOrNil(in.ThreadType),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdatePressureSwitchParams(partNo string, in *PressureSwitchInput) (UpdatePressureSwitchParams, error) {
+	if partNo == "" {
+		return UpdatePressureSwitchParams{}, ErrInvalidPartNo
+	}
+	if err := ValidatePressureSwitchInput(in); err != nil {
+		return UpdatePressureSwitchParams{}, err
+	}
+
+	return UpdatePressureSwitchParams{
+		PartNo:        partNo,
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		ThreadType:    ptr.StringOrNil(in.ThreadType),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreatePressureSwitch(ctx context.Context, q Queries, partNo string, in *PressureSwitchInput) (*PressureSwitchRow, error) {
+	p, err := BuildCreatePressureSwitchParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreatePressureSwitch(ctx, p)
+	if err != nil {
+		return nil, ErrCreatePressureSwitchFailed
+	}
+	return row, nil
+}
+
+func UpdatePressureSwitch(ctx context.Context, q Queries, partNo string, in *PressureSwitchInput) (*PressureSwitchRow, error) {
+	p, err := BuildUpdatePressureSwitchParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdatePressureSwitchByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdatePressureSwitchFailed
+	}
+	return row, nil
+}
+
+func DeletePressureSwitch(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeletePressureSwitchByPartNo(ctx, partNo); err != nil {
+		return ErrDeletePressureSwitchFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\radiator.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateRadiatorInput(in *RadiatorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateRadiatorParams(partNo string, in *RadiatorInput) (CreateRadiatorParams, error) {
+	if partNo == "" {
+		return CreateRadiatorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateRadiatorInput(in); err != nil {
+		return CreateRadiatorParams{}, err
+	}
+
+	return CreateRadiatorParams{
+		ID:           uuid.NewString(),
+		PartNo:       partNo,
+		Size:         ptr.StringOrNil(in.Size),
+		Transmission: ptr.StringOrNil(in.Transmission),
+		TempSensor:   ptr.StringOrNil(in.TempSensor),
+		Tank:         ptr.StringOrNil(in.Tank),
+		Notes:        ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateRadiatorParams(partNo string, in *RadiatorInput) (UpdateRadiatorParams, error) {
+	if partNo == "" {
+		return UpdateRadiatorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateRadiatorInput(in); err != nil {
+		return UpdateRadiatorParams{}, err
+	}
+
+	return UpdateRadiatorParams{
+		PartNo:       partNo,
+		Size:         ptr.StringOrNil(in.Size),
+		Transmission: ptr.StringOrNil(in.Transmission),
+		TempSensor:   ptr.StringOrNil(in.TempSensor),
+		Tank:         ptr.StringOrNil(in.Tank),
+		Notes:        ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateRadiator(ctx context.Context, q Queries, partNo string, in *RadiatorInput) (*RadiatorRow, error) {
+	p, err := BuildCreateRadiatorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateRadiator(ctx, p)
+	if err != nil {
+		return nil, ErrCreateRadiatorFailed
+	}
+	return row, nil
+}
+
+func UpdateRadiator(ctx context.Context, q Queries, partNo string, in *RadiatorInput) (*RadiatorRow, error) {
+	p, err := BuildUpdateRadiatorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateRadiatorByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateRadiatorFailed
+	}
+	return row, nil
+}
+
+func DeleteRadiator(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteRadiatorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteRadiatorFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\rad_fan_assy.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateRadFanAssyInput(in *RadFanAssyInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateRadFanAssyParams(partNo string, in *RadFanAssyInput) (CreateRadFanAssyParams, error) {
+	if partNo == "" {
+		return CreateRadFanAssyParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateRadFanAssyInput(in); err != nil {
+		return CreateRadFanAssyParams{}, err
+	}
+
+	return CreateRadFanAssyParams{
+		ID:               uuid.NewString(),
+		PartNo:           partNo,
+		Voltage:          ptr.StringOrNil(in.Voltage),
+		MotorType:        ptr.StringOrNil(in.MotorType),
+		Resistance:       ptr.StringOrNil(in.Resistance),
+		NumberOfSockets:  ptr.Int32OrNil(in.NumberOfSockets),
+		Shroud:           ptr.StringOrNil(in.Shroud),
+		ConnectorType:    ptr.StringOrNil(in.ConnectorType),
+		FanBladeDiameter: ptr.StringOrNil(in.FanBladeDiameter),
+		NumberOfBlades:   ptr.Int32OrNil(in.NumberOfBlades),
+		Notes:            ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateRadFanAssyParams(partNo string, in *RadFanAssyInput) (UpdateRadFanAssyParams, error) {
+	if partNo == "" {
+		return UpdateRadFanAssyParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateRadFanAssyInput(in); err != nil {
+		return UpdateRadFanAssyParams{}, err
+	}
+
+	return UpdateRadFanAssyParams{
+		PartNo:           partNo,
+		Voltage:          ptr.StringOrNil(in.Voltage),
+		MotorType:        ptr.StringOrNil(in.MotorType),
+		Resistance:       ptr.StringOrNil(in.Resistance),
+		NumberOfSockets:  ptr.Int32OrNil(in.NumberOfSockets),
+		Shroud:           ptr.StringOrNil(in.Shroud),
+		ConnectorType:    ptr.StringOrNil(in.ConnectorType),
+		FanBladeDiameter: ptr.StringOrNil(in.FanBladeDiameter),
+		NumberOfBlades:   ptr.Int32OrNil(in.NumberOfBlades),
+		Notes:            ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateRadFanAssy(ctx context.Context, q Queries, partNo string, in *RadFanAssyInput) (*RadFanAssyRow, error) {
+	p, err := BuildCreateRadFanAssyParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateRadFanAssy(ctx, p)
+	if err != nil {
+		return nil, ErrCreateRadFanAssyFailed
+	}
+	return row, nil
+}
+
+func UpdateRadFanAssy(ctx context.Context, q Queries, partNo string, in *RadFanAssyInput) (*RadFanAssyRow, error) {
+	p, err := BuildUpdateRadFanAssyParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateRadFanAssyByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateRadFanAssyFailed
+	}
+	return row, nil
+}
+
+func DeleteRadFanAssy(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteRadFanAssyByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteRadFanAssyFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\rad_fan_motor.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateRadFanMotorInput(in *RadFanMotorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateRadFanMotorParams(partNo string, in *RadFanMotorInput) (CreateRadFanMotorParams, error) {
+	if partNo == "" {
+		return CreateRadFanMotorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateRadFanMotorInput(in); err != nil {
+		return CreateRadFanMotorParams{}, err
+	}
+
+	return CreateRadFanMotorParams{
+		ID:               uuid.NewString(),
+		PartNo:           partNo,
+		FanBladeDiameter: ptr.StringOrNil(in.FanBladeDiameter),
+		NumberOfBlades:   ptr.Int32OrNil(in.NumberOfBlades),
+		Voltage:          ptr.StringOrNil(in.Voltage),
+		NumberOfSockets:  ptr.Int32OrNil(in.NumberOfSockets),
+		ConnectorType:    ptr.StringOrNil(in.ConnectorType),
+		Notes:            ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateRadFanMotorParams(partNo string, in *RadFanMotorInput) (UpdateRadFanMotorParams, error) {
+	if partNo == "" {
+		return UpdateRadFanMotorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateRadFanMotorInput(in); err != nil {
+		return UpdateRadFanMotorParams{}, err
+	}
+
+	return UpdateRadFanMotorParams{
+		PartNo:           partNo,
+		FanBladeDiameter: ptr.StringOrNil(in.FanBladeDiameter),
+		NumberOfBlades:   ptr.Int32OrNil(in.NumberOfBlades),
+		Voltage:          ptr.StringOrNil(in.Voltage),
+		NumberOfSockets:  ptr.Int32OrNil(in.NumberOfSockets),
+		ConnectorType:    ptr.StringOrNil(in.ConnectorType),
+		Notes:            ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateRadFanMotor(ctx context.Context, q Queries, partNo string, in *RadFanMotorInput) (*RadFanMotorRow, error) {
+	p, err := BuildCreateRadFanMotorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateRadFanMotor(ctx, p)
+	if err != nil {
+		return nil, ErrCreateRadFanMotorFailed
+	}
+	return row, nil
+}
+
+func UpdateRadFanMotor(ctx context.Context, q Queries, partNo string, in *RadFanMotorInput) (*RadFanMotorRow, error) {
+	p, err := BuildUpdateRadFanMotorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateRadFanMotorByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateRadFanMotorFailed
+	}
+	return row, nil
+}
+
+func DeleteRadFanMotor(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteRadFanMotorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteRadFanMotorFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\resistor.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateResistorInput(in *ResistorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateResistorParams(partNo string, in *ResistorInput) (CreateResistorParams, error) {
+	if partNo == "" {
+		return CreateResistorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateResistorInput(in); err != nil {
+		return CreateResistorParams{}, err
+	}
+
+	return CreateResistorParams{
+		ID:            uuid.NewString(),
+		PartNo:        partNo,
+		Type:          ptr.StringOrNil(in.Type),
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		Voltage:       ptr.StringOrNil(in.Voltage),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateResistorParams(partNo string, in *ResistorInput) (UpdateResistorParams, error) {
+	if partNo == "" {
+		return UpdateResistorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateResistorInput(in); err != nil {
+		return UpdateResistorParams{}, err
+	}
+
+	return UpdateResistorParams{
+		PartNo:        partNo,
+		Type:          ptr.StringOrNil(in.Type),
+		ConnectorType: ptr.StringOrNil(in.ConnectorType),
+		Voltage:       ptr.StringOrNil(in.Voltage),
+		Notes:         ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateResistor(ctx context.Context, q Queries, partNo string, in *ResistorInput) (*ResistorRow, error) {
+	p, err := BuildCreateResistorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateResistor(ctx, p)
+	if err != nil {
+		return nil, ErrCreateResistorFailed
+	}
+	return row, nil
+}
+
+func UpdateResistor(ctx context.Context, q Queries, partNo string, in *ResistorInput) (*ResistorRow, error) {
+	p, err := BuildUpdateResistorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateResistorByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateResistorFailed
+	}
+	return row, nil
+}
+
+func DeleteResistor(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteResistorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteResistorFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\rotor.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateRotorInput(in *RotorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateRotorParams(partNo string, in *RotorInput) (CreateRotorParams, error) {
+	if partNo == "" {
+		return CreateRotorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateRotorInput(in); err != nil {
+		return CreateRotorParams{}, err
+	}
+
+	return CreateRotorParams{
+		ID:                uuid.NewString(),
+		PartNo:            partNo,
+		PulleyRibs:        ptr.StringOrNil(in.PulleyRibs),
+		PulleySize:        ptr.StringOrNil(in.PulleySize),
+		CompressorDetails: ptr.StringOrNil(in.CompressorDetails),
+		Notes:             ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateRotorParams(partNo string, in *RotorInput) (UpdateRotorParams, error) {
+	if partNo == "" {
+		return UpdateRotorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateRotorInput(in); err != nil {
+		return UpdateRotorParams{}, err
+	}
+
+	return UpdateRotorParams{
+		PartNo:            partNo,
+		PulleyRibs:        ptr.StringOrNil(in.PulleyRibs),
+		PulleySize:        ptr.StringOrNil(in.PulleySize),
+		CompressorDetails: ptr.StringOrNil(in.CompressorDetails),
+		Notes:             ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateRotor(ctx context.Context, q Queries, partNo string, in *RotorInput) (*RotorRow, error) {
+	p, err := BuildCreateRotorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateRotor(ctx, p)
+	if err != nil {
+		return nil, ErrCreateRotorFailed
+	}
+	return row, nil
+}
+
+func UpdateRotor(ctx context.Context, q Queries, partNo string, in *RotorInput) (*RotorRow, error) {
+	p, err := BuildUpdateRotorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateRotorByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateRotorFailed
+	}
+	return row, nil
+}
+
+func DeleteRotor(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteRotorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteRotorFailed
+	}
+	return nil
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\service.go
+package techspec
+
+import (
+	"context"
+)
+
+// =======================================================
+// TECH SPEC SERVICE
+// =======================================================
+
+type Service struct {
+	DB DB
+}
+
+func NewService(db DB) *Service {
+	return &Service{DB: db}
+}
+
+// =======================================================
+// CREATE
+// =======================================================
+
+func (s *Service) CreateTechSpec(
+	ctx context.Context,
+	Q Queries,
+	partNo string,
+	in *TechnicalSpecsInput,
+) error {
+
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+
+	var err error
+
+	switch in.Type {
+
+	case "ACTUATOR":
+		_, err = CreateActuator(ctx, Q, partNo, in.Actuator)
+
+	case "BLOWER_MOTOR":
+		_, err = CreateBlowerMotor(ctx, Q, partNo, in.BlowerMotor)
+
+	case "CABIN_FILTER":
+		_, err = CreateCabinFilter(ctx, Q, partNo, in.CabinFilter)
+
+	case "CHILLER_UNIT":
+		_, err = CreateChillerUnit(ctx, Q, partNo, in.ChillerUnit)
+
+	case "CLUTCH_ASSY":
+		_, err = CreateClutchAssy(ctx, Q, partNo, in.ClutchAssy)
+
+	case "COMPRESSOR_VALVE":
+		_, err = CreateCompressorValve(ctx, Q, partNo, in.CompressorValve)
+
+	case "COND_FAN_ASSY":
+		_, err = CreateCondFanAssy(ctx, Q, partNo, in.CondFanAssy)
+
+	case "CONDENSER":
+		_, err = CreateCondenser(ctx, Q, partNo, in.Condenser)
+
+	case "EVAPORATOR":
+		_, err = CreateEvaporator(ctx, Q, partNo, in.Evaporator)
+
+	case "EXPANSION_VALVE":
+		_, err = CreateExpansionValve(ctx, Q, partNo, in.ExpansionValve)
+
+	case "FILTER_DRIER":
+		_, err = CreateFilterDrier(ctx, Q, partNo, in.FilterDrier)
+
+	case "HEATER_CORE":
+		_, err = CreateHeaterCore(ctx, Q, partNo, in.HeaterCore)
+
+	case "INTERCOOLER":
+		_, err = CreateIntercooler(ctx, Q, partNo, in.Intercooler)
+
+	case "PRESSURE_SWITCH":
+		_, err = CreatePressureSwitch(ctx, Q, partNo, in.PressureSwitch)
+
+	case "RADIATOR":
+		_, err = CreateRadiator(ctx, Q, partNo, in.Radiator)
+
+	case "RAD_FAN_ASSY":
+		_, err = CreateRadFanAssy(ctx, Q, partNo, in.RadFanAssy)
+
+	case "RAD_FAN_MOTOR":
+		_, err = CreateRadFanMotor(ctx, Q, partNo, in.RadFanMotor)
+
+	case "RESISTOR":
+		_, err = CreateResistor(ctx, Q, partNo, in.Resistor)
+
+	case "ROTOR":
+		_, err = CreateRotor(ctx, Q, partNo, in.Rotor)
+
+	case "STATOR":
+		_, err = CreateStator(ctx, Q, partNo, in.Stator)
+
+	case "COMPRESSOR":
+		_, err = CreateCompressor(ctx, Q, partNo, in.Compressor)
+
+	default:
+		return ErrUnsupportedType
+	}
+
+	if err != nil {
+		return err
+	}
+
+	return err
+}
+
+// =======================================================
+// UPDATE
+// =======================================================
+
+func (s *Service) UpdateTechSpec(
+	ctx context.Context,
+	Q Queries,
+	partNo string,
+	in *TechnicalSpecsInput,
+) error {
+
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+
+	var err error
+
+	switch in.Type {
+
+	case "ACTUATOR":
+		_, err = UpdateActuator(ctx, Q, partNo, in.Actuator)
+
+	case "BLOWER_MOTOR":
+		_, err = UpdateBlowerMotor(ctx, Q, partNo, in.BlowerMotor)
+
+	case "CABIN_FILTER":
+		_, err = UpdateCabinFilter(ctx, Q, partNo, in.CabinFilter)
+
+	case "CHILLER_UNIT":
+		_, err = UpdateChillerUnit(ctx, Q, partNo, in.ChillerUnit)
+
+	case "CLUTCH_ASSY":
+		_, err = UpdateClutchAssy(ctx, Q, partNo, in.ClutchAssy)
+
+	case "COMPRESSOR_VALVE":
+		_, err = UpdateCompressorValve(ctx, Q, partNo, in.CompressorValve)
+
+	case "COND_FAN_ASSY":
+		_, err = UpdateCondFanAssy(ctx, Q, partNo, in.CondFanAssy)
+
+	case "CONDENSER":
+		_, err = UpdateCondenser(ctx, Q, partNo, in.Condenser)
+
+	case "EVAPORATOR":
+		_, err = UpdateEvaporator(ctx, Q, partNo, in.Evaporator)
+
+	case "EXPANSION_VALVE":
+		_, err = UpdateExpansionValve(ctx, Q, partNo, in.ExpansionValve)
+
+	case "FILTER_DRIER":
+		_, err = UpdateFilterDrier(ctx, Q, partNo, in.FilterDrier)
+
+	case "HEATER_CORE":
+		_, err = UpdateHeaterCore(ctx, Q, partNo, in.HeaterCore)
+
+	case "INTERCOOLER":
+		_, err = UpdateIntercooler(ctx, Q, partNo, in.Intercooler)
+
+	case "PRESSURE_SWITCH":
+		_, err = UpdatePressureSwitch(ctx, Q, partNo, in.PressureSwitch)
+
+	case "RADIATOR":
+		_, err = UpdateRadiator(ctx, Q, partNo, in.Radiator)
+
+	case "RAD_FAN_ASSY":
+		_, err = UpdateRadFanAssy(ctx, Q, partNo, in.RadFanAssy)
+
+	case "RAD_FAN_MOTOR":
+		_, err = UpdateRadFanMotor(ctx, Q, partNo, in.RadFanMotor)
+
+	case "RESISTOR":
+		_, err = UpdateResistor(ctx, Q, partNo, in.Resistor)
+
+	case "ROTOR":
+		_, err = UpdateRotor(ctx, Q, partNo, in.Rotor)
+
+	case "STATOR":
+		_, err = UpdateStator(ctx, Q, partNo, in.Stator)
+
+	case "COMPRESSOR":
+		_, err = UpdateCompressor(ctx, Q, partNo, in.Compressor)
+
+	default:
+		return ErrUnsupportedType
+	}
+
+	return err
+}
+
+// =======================================================
+// DELETE
+// =======================================================
+
+func (s *Service) DeleteTechSpec(
+	ctx context.Context,
+	Q Queries,
+	partNo string,
+	techType string,
+) error {
+
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+
+	var err error
+
+	switch techType {
+
+	case "ACTUATOR":
+		err = DeleteActuator(ctx, Q, partNo)
+
+	case "BLOWER_MOTOR":
+		err = DeleteBlowerMotor(ctx, Q, partNo)
+
+	case "CABIN_FILTER":
+		err = DeleteCabinFilter(ctx, Q, partNo)
+
+	case "CHILLER_UNIT":
+		err = DeleteChillerUnit(ctx, Q, partNo)
+
+	case "CLUTCH_ASSY":
+		err = DeleteClutchAssy(ctx, Q, partNo)
+
+	case "COMPRESSOR_VALVE":
+		err = DeleteCompressorValve(ctx, Q, partNo)
+
+	case "COND_FAN_ASSY":
+		err = DeleteCondFanAssy(ctx, Q, partNo)
+
+	case "CONDENSER":
+		err = DeleteCondenser(ctx, Q, partNo)
+
+	case "EVAPORATOR":
+		err = DeleteEvaporator(ctx, Q, partNo)
+
+	case "EXPANSION_VALVE":
+		err = DeleteExpansionValve(ctx, Q, partNo)
+
+	case "FILTER_DRIER":
+		err = DeleteFilterDrier(ctx, Q, partNo)
+
+	case "HEATER_CORE":
+		err = DeleteHeaterCore(ctx, Q, partNo)
+
+	case "INTERCOOLER":
+		err = DeleteIntercooler(ctx, Q, partNo)
+
+	case "PRESSURE_SWITCH":
+		err = DeletePressureSwitch(ctx, Q, partNo)
+
+	case "RADIATOR":
+		err = DeleteRadiator(ctx, Q, partNo)
+
+	case "RAD_FAN_ASSY":
+		err = DeleteRadFanAssy(ctx, Q, partNo)
+
+	case "RAD_FAN_MOTOR":
+		err = DeleteRadFanMotor(ctx, Q, partNo)
+
+	case "RESISTOR":
+		err = DeleteResistor(ctx, Q, partNo)
+
+	case "ROTOR":
+		err = DeleteRotor(ctx, Q, partNo)
+
+	case "STATOR":
+		err = DeleteStator(ctx, Q, partNo)
+
+	case "COMPRESSOR":
+		err = DeleteCompressor(ctx, Q, partNo)
+
+	default:
+		return ErrUnsupportedType
+	}
+
+	return err
+}
+
+D:\Local\coolaid-backend-model\internal\domain\techspec\stator.go
+package techspec
+
+import (
+	"context"
+
+	"github.com/google/uuid"
+	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
+)
+
+func ValidateStatorInput(in *StatorInput) error {
+	if in == nil {
+		return ErrInvalidTechSpec
+	}
+	return nil
+}
+
+func BuildCreateStatorParams(partNo string, in *StatorInput) (CreateStatorParams, error) {
+	if partNo == "" {
+		return CreateStatorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateStatorInput(in); err != nil {
+		return CreateStatorParams{}, err
+	}
+
+	return CreateStatorParams{
+		ID:                uuid.NewString(),
+		PartNo:            partNo,
+		Voltage:           ptr.StringOrNil(in.Voltage),
+		CompressorDetails: ptr.StringOrNil(in.CompressorDetails),
+		Notes:             ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func BuildUpdateStatorParams(partNo string, in *StatorInput) (UpdateStatorParams, error) {
+	if partNo == "" {
+		return UpdateStatorParams{}, ErrInvalidPartNo
+	}
+	if err := ValidateStatorInput(in); err != nil {
+		return UpdateStatorParams{}, err
+	}
+
+	return UpdateStatorParams{
+		PartNo:            partNo,
+		Voltage:           ptr.StringOrNil(in.Voltage),
+		CompressorDetails: ptr.StringOrNil(in.CompressorDetails),
+		Notes:             ptr.StringOrNil(in.Notes),
+	}, nil
+}
+
+func CreateStator(ctx context.Context, q Queries, partNo string, in *StatorInput) (*StatorRow, error) {
+	p, err := BuildCreateStatorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.CreateStator(ctx, p)
+	if err != nil {
+		return nil, ErrCreateStatorFailed
+	}
+	return row, nil
+}
+
+func UpdateStator(ctx context.Context, q Queries, partNo string, in *StatorInput) (*StatorRow, error) {
+	p, err := BuildUpdateStatorParams(partNo, in)
+	if err != nil {
+		return nil, err
+	}
+	row, err := q.UpdateStatorByPartNo(ctx, p)
+	if err != nil {
+		return nil, ErrUpdateStatorFailed
+	}
+	return row, nil
+}
+
+func DeleteStator(ctx context.Context, q Queries, partNo string) error {
+	if partNo == "" {
+		return ErrInvalidPartNo
+	}
+	if err := q.DeleteStatorByPartNo(ctx, partNo); err != nil {
+		return ErrDeleteStatorFailed
+	}
+	return nil
+}
+

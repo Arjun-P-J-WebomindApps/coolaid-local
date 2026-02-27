@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetChillerUnit(ctx context.Context, partNo string) (*ChillerUnitRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetChillerUnitByPartNo(ctx, partNo)
+}
+
 func ValidateChillerUnitInput(in *ChillerUnitInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

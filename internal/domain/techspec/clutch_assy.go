@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetClutchAssy(ctx context.Context, partNo string) (*ClutchAssyRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetClutchAssyByPartNo(ctx, partNo)
+}
+
 func ValidateClutchAssyInput(in *ClutchAssyInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

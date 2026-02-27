@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetStator(ctx context.Context, partNo string) (*StatorRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetStatorByPartNo(ctx, partNo)
+}
+
 func ValidateStatorInput(in *StatorInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

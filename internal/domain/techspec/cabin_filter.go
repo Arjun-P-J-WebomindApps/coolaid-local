@@ -7,6 +7,17 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+// =======================================================
+// CABIN FILTER
+// =======================================================
+
+func (s *Service) GetCabinFilter(ctx context.Context, partNo string) (*CabinFilterRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetCabinFilterByPartNo(ctx, partNo)
+}
+
 func ValidateCabinFilterInput(in *CabinFilterInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

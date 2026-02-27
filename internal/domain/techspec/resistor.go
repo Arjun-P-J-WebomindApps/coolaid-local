@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetResistor(ctx context.Context, partNo string) (*ResistorRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetResistorByPartNo(ctx, partNo)
+}
+
 func ValidateResistorInput(in *ResistorInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

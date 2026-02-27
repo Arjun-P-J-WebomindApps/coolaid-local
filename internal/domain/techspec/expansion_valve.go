@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetExpansionValve(ctx context.Context, partNo string) (*ExpansionValveRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetExpansionValveByPartNo(ctx, partNo)
+}
+
 func ValidateExpansionValveInput(in *ExpansionValveInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

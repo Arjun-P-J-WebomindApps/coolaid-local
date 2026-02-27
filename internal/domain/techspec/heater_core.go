@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetHeaterCore(ctx context.Context, partNo string) (*HeaterCoreRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetHeaterCoreByPartNo(ctx, partNo)
+}
+
 func ValidateHeaterCoreInput(in *HeaterCoreInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

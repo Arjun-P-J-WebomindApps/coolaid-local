@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetPressureSwitch(ctx context.Context, partNo string) (*PressureSwitchRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetPressureSwitchByPartNo(ctx, partNo)
+}
+
 func ValidatePressureSwitchInput(in *PressureSwitchInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec

@@ -7,6 +7,13 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/shared/ptr"
 )
 
+func (s *Service) GetRadFanMotor(ctx context.Context, partNo string) (*RadFanMotorRow, error) {
+	if partNo == "" {
+		return nil, ErrInvalidPartNo
+	}
+	return s.DB.Queries().GetRadFanMotorByPartNo(ctx, partNo)
+}
+
 func ValidateRadFanMotorInput(in *RadFanMotorInput) error {
 	if in == nil {
 		return ErrInvalidTechSpec
