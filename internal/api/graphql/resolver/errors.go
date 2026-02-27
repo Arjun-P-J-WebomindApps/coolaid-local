@@ -6,6 +6,7 @@ import (
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/master/company"
 	models "github.com/webomindapps-dev/coolaid-backend/internal/domain/master/model"
 	"github.com/webomindapps-dev/coolaid-backend/internal/domain/product"
+	"github.com/webomindapps-dev/coolaid-backend/internal/domain/techspec"
 )
 
 func mapAuthError(err error) error {
@@ -130,6 +131,124 @@ func mapProductError(err error) error {
 		return gqlerror.Errorf("pricing not found")
 
 	case product.ErrInternal:
+		return gqlerror.Errorf("internal error")
+
+	default:
+		return gqlerror.Errorf("internal error")
+	}
+}
+
+func mapTechSpecError(err error) error {
+	switch err {
+
+	// =======================================================
+	// GENERIC
+	// =======================================================
+
+	case techspec.ErrTechSpecNotFound:
+		return gqlerror.Errorf("technical specification not found")
+
+	case techspec.ErrDuplicateTechSpec:
+		return gqlerror.Errorf("technical specification already exists")
+
+	case techspec.ErrInvalidTechSpec:
+		return gqlerror.Errorf("invalid technical specification")
+
+	case techspec.ErrInvalidPartNo:
+		return gqlerror.Errorf("invalid part number")
+
+	case techspec.ErrUnsupportedType:
+		return gqlerror.Errorf("unsupported technical specification type")
+
+	// =======================================================
+	// CREATE
+	// =======================================================
+
+	case techspec.ErrCreateActuatorFailed,
+		techspec.ErrCreateBlowerMotorFailed,
+		techspec.ErrCreateCabinFilterFailed,
+		techspec.ErrCreateChillerUnitFailed,
+		techspec.ErrCreateClutchAssyFailed,
+		techspec.ErrCreateCompressorValveFailed,
+		techspec.ErrCreateCondFanAssyFailed,
+		techspec.ErrCreateCondenserFailed,
+		techspec.ErrCreateEvaporatorFailed,
+		techspec.ErrCreateExpansionValveFailed,
+		techspec.ErrCreateFilterDrierFailed,
+		techspec.ErrCreateHeaterCoreFailed,
+		techspec.ErrCreateIntercoolerFailed,
+		techspec.ErrCreatePressureSwitchFailed,
+		techspec.ErrCreateRadiatorFailed,
+		techspec.ErrCreateRadFanAssyFailed,
+		techspec.ErrCreateRadFanMotorFailed,
+		techspec.ErrCreateResistorFailed,
+		techspec.ErrCreateRotorFailed,
+		techspec.ErrCreateStatorFailed,
+		techspec.ErrCreateCompressorFailed:
+
+		return gqlerror.Errorf("failed to create technical specification")
+
+	// =======================================================
+	// UPDATE
+	// =======================================================
+
+	case techspec.ErrUpdateActuatorFailed,
+		techspec.ErrUpdateBlowerMotorFailed,
+		techspec.ErrUpdateCabinFilterFailed,
+		techspec.ErrUpdateChillerUnitFailed,
+		techspec.ErrUpdateClutchAssyFailed,
+		techspec.ErrUpdateCompressorValveFailed,
+		techspec.ErrUpdateCondFanAssyFailed,
+		techspec.ErrUpdateCondenserFailed,
+		techspec.ErrUpdateEvaporatorFailed,
+		techspec.ErrUpdateExpansionValveFailed,
+		techspec.ErrUpdateFilterDrierFailed,
+		techspec.ErrUpdateHeaterCoreFailed,
+		techspec.ErrUpdateIntercoolerFailed,
+		techspec.ErrUpdatePressureSwitchFailed,
+		techspec.ErrUpdateRadiatorFailed,
+		techspec.ErrUpdateRadFanAssyFailed,
+		techspec.ErrUpdateRadFanMotorFailed,
+		techspec.ErrUpdateResistorFailed,
+		techspec.ErrUpdateRotorFailed,
+		techspec.ErrUpdateStatorFailed,
+		techspec.ErrUpdateCompressorFailed:
+
+		return gqlerror.Errorf("failed to update technical specification")
+
+	// =======================================================
+	// DELETE
+	// =======================================================
+
+	case techspec.ErrDeleteActuatorFailed,
+		techspec.ErrDeleteBlowerMotorFailed,
+		techspec.ErrDeleteCabinFilterFailed,
+		techspec.ErrDeleteChillerUnitFailed,
+		techspec.ErrDeleteClutchAssyFailed,
+		techspec.ErrDeleteCompressorValveFailed,
+		techspec.ErrDeleteCondFanAssyFailed,
+		techspec.ErrDeleteCondenserFailed,
+		techspec.ErrDeleteEvaporatorFailed,
+		techspec.ErrDeleteExpansionValveFailed,
+		techspec.ErrDeleteFilterDrierFailed,
+		techspec.ErrDeleteHeaterCoreFailed,
+		techspec.ErrDeleteIntercoolerFailed,
+		techspec.ErrDeletePressureSwitchFailed,
+		techspec.ErrDeleteRadiatorFailed,
+		techspec.ErrDeleteRadFanAssyFailed,
+		techspec.ErrDeleteRadFanMotorFailed,
+		techspec.ErrDeleteResistorFailed,
+		techspec.ErrDeleteRotorFailed,
+		techspec.ErrDeleteStatorFailed,
+		techspec.ErrDeleteCompressorFailed:
+
+		return gqlerror.Errorf("failed to delete technical specification")
+
+	// =======================================================
+	// INTERNAL
+	// =======================================================
+
+	case techspec.ErrInternal:
 		return gqlerror.Errorf("internal error")
 
 	default:

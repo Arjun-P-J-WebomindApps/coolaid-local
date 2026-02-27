@@ -594,107 +594,493 @@ func (r *queryResolver) GetPlacedOrders(ctx context.Context) ([]*model.RestockOr
 
 // GetActuatorByPartNo is the resolver for the getActuatorByPartNo field.
 func (r *queryResolver) GetActuatorByPartNo(ctx context.Context, partNo string) (*model.Actuator, error) {
-	panic(fmt.Errorf("not implemented: GetActuatorByPartNo - getActuatorByPartNo"))
+	row, err := r.Services.TechSpec.GetActuator(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Actuator{
+		ID:            uid,
+		PartNo:        row.PartNo,
+		ConnectorType: row.ConnectorType,
+		Mounting:      row.Mounting,
+		Voltage:       row.Voltage,
+		RotationAngle: row.RotationAngle,
+		Notes:         row.Notes,
+	}, nil
 }
 
 // GetBlowerMotorByPartNo is the resolver for the getBlowerMotorByPartNo field.
 func (r *queryResolver) GetBlowerMotorByPartNo(ctx context.Context, partNo string) (*model.BlowerMotor, error) {
-	panic(fmt.Errorf("not implemented: GetBlowerMotorByPartNo - getBlowerMotorByPartNo"))
+
+	row, err := r.Services.TechSpec.GetBlowerMotor(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.BlowerMotor{
+		ID:            uid,
+		PartNo:        row.PartNo,
+		Mounting:      row.Mounting,
+		ConnectorType: row.ConnectorType,
+		Impeller:      row.Impeller,
+		Resistance:    row.Resistance,
+		MotorMounting: row.MotorMounting,
+		MotorType:     row.MotorType,
+		Voltage:       row.Voltage,
+		Notes:         row.Notes,
+	}, nil
 }
 
 // GetCabinFilterByPartNo is the resolver for the getCabinFilterByPartNo field.
 func (r *queryResolver) GetCabinFilterByPartNo(ctx context.Context, partNo string) (*model.CabinFilter, error) {
-	panic(fmt.Errorf("not implemented: GetCabinFilterByPartNo - getCabinFilterByPartNo"))
+	row, err := r.Services.TechSpec.GetCabinFilter(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.CabinFilter{
+		ID:         uid,
+		PartNo:     row.PartNo,
+		Type:       row.Type,
+		Dimensions: row.Dimensions,
+		Material:   row.Material,
+		Notes:      row.Notes,
+	}, nil
 }
 
 // GetChillerUnitByPartNo is the resolver for the getChillerUnitByPartNo field.
 func (r *queryResolver) GetChillerUnitByPartNo(ctx context.Context, partNo string) (*model.ChillerUnit, error) {
-	panic(fmt.Errorf("not implemented: GetChillerUnitByPartNo - getChillerUnitByPartNo"))
+
+	row, err := r.Services.TechSpec.GetChillerUnit(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.ChillerUnit{
+		ID:      uid,
+		PartNo:  row.PartNo,
+		Type:    row.Type,
+		Voltage: row.Voltage,
+		Notes:   row.Notes,
+	}, nil
 }
 
 // GetClutchAssyByPartNo is the resolver for the getClutchAssyByPartNo field.
 func (r *queryResolver) GetClutchAssyByPartNo(ctx context.Context, partNo string) (*model.ClutchAssy, error) {
-	panic(fmt.Errorf("not implemented: GetClutchAssyByPartNo - getClutchAssyByPartNo"))
+
+	row, err := r.Services.TechSpec.GetClutchAssy(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.ClutchAssy{
+		ID:                uid,
+		PartNo:            row.PartNo,
+		PulleyRibs:        row.PulleyRibs,
+		PulleySize:        row.PulleySize,
+		CompressorDetails: row.CompressorDetails,
+		ConnectorType:     row.ConnectorType,
+		Voltage:           row.Voltage,
+		ShaftType:         row.ShaftType,
+		Notes:             row.Notes,
+	}, nil
 }
 
 // GetCompressorValveByPartNo is the resolver for the getCompressorValveByPartNo field.
 func (r *queryResolver) GetCompressorValveByPartNo(ctx context.Context, partNo string) (*model.CompressorValve, error) {
-	panic(fmt.Errorf("not implemented: GetCompressorValveByPartNo - getCompressorValveByPartNo"))
+	row, err := r.Services.TechSpec.GetCompressorValve(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.CompressorValve{
+		ID:                uid,
+		PartNo:            row.PartNo,
+		Type:              row.Type,
+		Voltage:           row.Voltage,
+		ConnectorType:     row.ConnectorType,
+		CompressorDetails: row.CompressorDetails,
+		Notes:             row.Notes,
+	}, nil
 }
 
 // GetCondFanAssyByPartNo is the resolver for the getCondFanAssyByPartNo field.
 func (r *queryResolver) GetCondFanAssyByPartNo(ctx context.Context, partNo string) (*model.CondFanAssy, error) {
-	panic(fmt.Errorf("not implemented: GetCondFanAssyByPartNo - getCondFanAssyByPartNo"))
+	row, err := r.Services.TechSpec.GetCondFanAssy(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.CondFanAssy{
+		ID:               uid,
+		PartNo:           row.PartNo,
+		Voltage:          row.Voltage,
+		MotorType:        row.MotorType,
+		Resistance:       row.Resistance,
+		FanBladeDiameter: row.FanBladeDiameter,
+		NumberOfBlades:   row.NumberOfBlades,
+		Shroud:           row.Shroud,
+		ConnectorType:    row.ConnectorType,
+		Notes:            row.Notes,
+	}, nil
 }
 
 // GetCondenserByPartNo is the resolver for the getCondenserByPartNo field.
 func (r *queryResolver) GetCondenserByPartNo(ctx context.Context, partNo string) (*model.Condenser, error) {
-	panic(fmt.Errorf("not implemented: GetCondenserByPartNo - getCondenserByPartNo"))
+	row, err := r.Services.TechSpec.GetCondenser(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Condenser{
+		ID:             uid,
+		PartNo:         row.PartNo,
+		Size:           row.Size,
+		PipeConnector:  row.PipeConnector,
+		Drier:          row.Drier,
+		PressureSwitch: row.PressureSwitch,
+		Notes:          row.Notes,
+	}, nil
 }
 
-// GetEvaporatorByPartNo is the resolver for the getEvaporatorByPartNo field.
 func (r *queryResolver) GetEvaporatorByPartNo(ctx context.Context, partNo string) (*model.Evaporator, error) {
-	panic(fmt.Errorf("not implemented: GetEvaporatorByPartNo - getEvaporatorByPartNo"))
+	row, err := r.Services.TechSpec.GetEvaporator(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Evaporator{
+		ID:             uid,
+		PartNo:         row.PartNo,
+		Mounting:       row.Mounting,
+		ExpValve:       row.ExpValve,
+		AdditionalInfo: row.AdditionalInfo,
+		Dimensions:     row.Dimensions,
+		PipeConnector:  row.PipeConnector,
+		Notes:          row.Notes,
+	}, nil
 }
 
 // GetExpansionValveByPartNo is the resolver for the getExpansionValveByPartNo field.
 func (r *queryResolver) GetExpansionValveByPartNo(ctx context.Context, partNo string) (*model.ExpansionValve, error) {
-	panic(fmt.Errorf("not implemented: GetExpansionValveByPartNo - getExpansionValveByPartNo"))
+	row, err := r.Services.TechSpec.GetExpansionValve(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.ExpansionValve{
+		ID:          uid,
+		PartNo:      row.PartNo,
+		Type:        row.Type,
+		Material:    row.Material,
+		Refrigerant: row.Refrigerant,
+		Notes:       row.Notes,
+	}, nil
 }
 
 // GetFilterDrierByPartNo is the resolver for the getFilterDrierByPartNo field.
 func (r *queryResolver) GetFilterDrierByPartNo(ctx context.Context, partNo string) (*model.FilterDrier, error) {
-	panic(fmt.Errorf("not implemented: GetFilterDrierByPartNo - getFilterDrierByPartNo"))
+	row, err := r.Services.TechSpec.GetFilterDrier(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.FilterDrier{
+		ID:             uid,
+		PartNo:         row.PartNo,
+		PipeConnector:  row.PipeConnector,
+		Size:           row.Size,
+		PressureSwitch: row.PressureSwitch,
+		Notes:          row.Notes,
+	}, nil
 }
 
 // GetHeaterCoreByPartNo is the resolver for the getHeaterCoreByPartNo field.
 func (r *queryResolver) GetHeaterCoreByPartNo(ctx context.Context, partNo string) (*model.HeaterCore, error) {
-	panic(fmt.Errorf("not implemented: GetHeaterCoreByPartNo - getHeaterCoreByPartNo"))
+	row, err := r.Services.TechSpec.GetHeaterCore(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.HeaterCore{
+		ID:     uid,
+		PartNo: row.PartNo,
+		Size:   row.Size,
+		Pipe:   row.Pipe,
+		Type:   row.Type,
+		Notes:  row.Notes,
+	}, nil
 }
 
 // GetIntercoolerByPartNo is the resolver for the getIntercoolerByPartNo field.
 func (r *queryResolver) GetIntercoolerByPartNo(ctx context.Context, partNo string) (*model.Intercooler, error) {
-	panic(fmt.Errorf("not implemented: GetIntercoolerByPartNo - getIntercoolerByPartNo"))
+	row, err := r.Services.TechSpec.GetIntercooler(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Intercooler{
+		ID:         uid,
+		PartNo:     row.PartNo,
+		Size:       row.Size,
+		TempSensor: row.TempSensor,
+		Notes:      row.Notes,
+	}, nil
 }
 
 // GetPressureSwitchByPartNo is the resolver for the getPressureSwitchByPartNo field.
 func (r *queryResolver) GetPressureSwitchByPartNo(ctx context.Context, partNo string) (*model.PressureSwitch, error) {
-	panic(fmt.Errorf("not implemented: GetPressureSwitchByPartNo - getPressureSwitchByPartNo"))
+	row, err := r.Services.TechSpec.GetPressureSwitch(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.PressureSwitch{
+		ID:            uid,
+		PartNo:        row.PartNo,
+		ConnectorType: row.ConnectorType,
+		ThreadType:    row.ThreadType,
+		Notes:         row.Notes,
+	}, nil
 }
 
 // GetRadiatorByPartNo is the resolver for the getRadiatorByPartNo field.
 func (r *queryResolver) GetRadiatorByPartNo(ctx context.Context, partNo string) (*model.Radiator, error) {
-	panic(fmt.Errorf("not implemented: GetRadiatorByPartNo - getRadiatorByPartNo"))
+	row, err := r.Services.TechSpec.GetRadiator(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Radiator{
+		ID:           uid,
+		PartNo:       row.PartNo,
+		Size:         row.Size,
+		Transmission: row.Transmission,
+		TempSensor:   row.TempSensor,
+		Tank:         row.Tank,
+		Notes:        row.Notes,
+	}, nil
 }
 
 // GetRadFanAssyByPartNo is the resolver for the getRadFanAssyByPartNo field.
 func (r *queryResolver) GetRadFanAssyByPartNo(ctx context.Context, partNo string) (*model.RadFanAssy, error) {
-	panic(fmt.Errorf("not implemented: GetRadFanAssyByPartNo - getRadFanAssyByPartNo"))
+	row, err := r.Services.TechSpec.GetRadFanAssy(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.RadFanAssy{
+		ID:               uid,
+		PartNo:           row.PartNo,
+		Voltage:          row.Voltage,
+		MotorType:        row.MotorType,
+		Resistance:       row.Resistance,
+		NumberOfSockets:  row.NumberOfSockets,
+		Shroud:           row.Shroud,
+		ConnectorType:    row.ConnectorType,
+		FanBladeDiameter: row.FanBladeDiameter,
+		NumberOfBlades:   row.NumberOfBlades,
+		Notes:            row.Notes,
+	}, nil
 }
 
 // GetRadFanMotorByPartNo is the resolver for the getRadFanMotorByPartNo field.
 func (r *queryResolver) GetRadFanMotorByPartNo(ctx context.Context, partNo string) (*model.RadFanMotor, error) {
-	panic(fmt.Errorf("not implemented: GetRadFanMotorByPartNo - getRadFanMotorByPartNo"))
+	row, err := r.Services.TechSpec.GetRadFanMotor(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.RadFanMotor{
+		ID:               uid,
+		PartNo:           row.PartNo,
+		FanBladeDiameter: row.FanBladeDiameter,
+		NumberOfBlades:   row.NumberOfBlades,
+		Voltage:          row.Voltage,
+		NumberOfSockets:  row.NumberOfSockets,
+		ConnectorType:    row.ConnectorType,
+		Notes:            row.Notes,
+	}, nil
 }
 
 // GetResistorByPartNo is the resolver for the getResistorByPartNo field.
 func (r *queryResolver) GetResistorByPartNo(ctx context.Context, partNo string) (*model.Resistor, error) {
-	panic(fmt.Errorf("not implemented: GetResistorByPartNo - getResistorByPartNo"))
+	row, err := r.Services.TechSpec.GetResistor(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Resistor{
+		ID:            uid,
+		PartNo:        row.PartNo,
+		Type:          row.Type,
+		ConnectorType: row.ConnectorType,
+		Voltage:       row.Voltage,
+		Notes:         row.Notes,
+	}, nil
 }
 
 // GetRotorByPartNo is the resolver for the getRotorByPartNo field.
 func (r *queryResolver) GetRotorByPartNo(ctx context.Context, partNo string) (*model.Rotor, error) {
-	panic(fmt.Errorf("not implemented: GetRotorByPartNo - getRotorByPartNo"))
+	row, err := r.Services.TechSpec.GetRotor(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Rotor{
+		ID:                uid,
+		PartNo:            row.PartNo,
+		PulleyRibs:        row.PulleyRibs,
+		PulleySize:        row.PulleySize,
+		CompressorDetails: row.CompressorDetails,
+		Notes:             row.Notes,
+	}, nil
 }
 
 // GetStatorByPartNo is the resolver for the getStatorByPartNo field.
 func (r *queryResolver) GetStatorByPartNo(ctx context.Context, partNo string) (*model.Stator, error) {
-	panic(fmt.Errorf("not implemented: GetStatorByPartNo - getStatorByPartNo"))
+	row, err := r.Services.TechSpec.GetStator(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Stator{
+		ID:                uid,
+		PartNo:            row.PartNo,
+		Voltage:           row.Voltage,
+		CompressorDetails: row.CompressorDetails,
+		Notes:             row.Notes,
+	}, nil
 }
 
 // GetCompressorByPartNo is the resolver for the getCompressorByPartNo field.
 func (r *queryResolver) GetCompressorByPartNo(ctx context.Context, partNo string) (*model.Compressor, error) {
-	panic(fmt.Errorf("not implemented: GetCompressorByPartNo - getCompressorByPartNo"))
+	row, err := r.Services.TechSpec.GetCompressor(ctx, partNo)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	uid, err := helpers.ParseUUIDOrInternal(row.ID)
+	if err != nil {
+		return nil, mapTechSpecError(err)
+	}
+
+	return &model.Compressor{
+		ID:            uid,
+		PartNo:        row.PartNo,
+		CompressorID:  row.CompressorID,
+		Oil:           row.Oil,
+		Refrigerant:   row.Refrigerant,
+		Voltage:       row.Voltage,
+		PulleyRibs:    row.PulleyRibs,
+		PulleySize:    row.PulleySize,
+		PipeConnector: row.PipeConnector,
+		CompType:      row.CompType,
+		CompMounting:  row.CompMounting,
+		ConnectorType: row.ConnectorType,
+		Notes:         row.Notes,
+	}, nil
 }
 
 // Query returns graphql1.QueryResolver implementation.
